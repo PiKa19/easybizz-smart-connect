@@ -1,0 +1,43 @@
+
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  price: string;
+  image: string;
+  category: string;
+}
+
+interface ProductCardProps {
+  product: Product;
+  onSelect: (product: Product) => void;
+}
+
+const ProductCard = ({ product, onSelect }: ProductCardProps) => {
+  return (
+    <Card className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+      <CardContent className="p-4 text-center">
+        <div className="w-20 h-20 mx-auto mb-3 bg-gray-100 rounded-lg flex items-center justify-center">
+          <div className="w-16 h-16 bg-red-600 rounded-lg flex items-center justify-center">
+            <div className="text-white text-xs font-bold">COCA</div>
+          </div>
+        </div>
+        
+        <h3 className="font-semibold text-gray-800 text-sm mb-1">{product.name}</h3>
+        <p className="text-xs text-gray-600 mb-3">{product.description}</p>
+        
+        <Button
+          onClick={() => onSelect(product)}
+          className="w-full bg-[#E1275C] hover:bg-[#C91F4F] text-white rounded-lg py-2 text-xs font-medium"
+        >
+          Buy now
+        </Button>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default ProductCard;
