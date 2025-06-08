@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,18 +44,20 @@ const Index = () => {
       <header className="py-4 px-6">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-blue-600">EASY</span>
-            <span className="text-2xl font-bold text-red-500">Bizz</span>
-            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+            <img 
+              src="/lovable-uploads/5142faa5-d964-4021-b411-2ea1ad268901.png" 
+              alt="EasyBizz Logo" 
+              className="h-8 w-auto"
+            />
           </div>
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-blue-600 font-medium hover:text-blue-700 transition-colors">features</a>
-            <a href="#about" className="text-blue-600 font-medium hover:text-blue-700 transition-colors">about</a>
-            <a href="#contact" className="text-blue-600 font-medium hover:text-blue-700 transition-colors">contact</a>
+            <a href="#features" className="text-[#0794FE] font-medium hover:text-blue-700 transition-colors">features</a>
+            <a href="#about" className="text-[#0794FE] font-medium hover:text-blue-700 transition-colors">about</a>
+            <a href="#contact" className="text-[#0794FE] font-medium hover:text-blue-700 transition-colors">contact</a>
           </nav>
           <Button 
             onClick={() => setShowAuth(true)}
-            className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full font-medium"
+            className="bg-[#E1275C] hover:bg-[#C91F4F] text-white px-6 py-2 rounded-full font-medium"
           >
             Sign In
           </Button>
@@ -72,7 +75,7 @@ const Index = () => {
           </p>
           <Button 
             onClick={() => setShowAuth(true)}
-            className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-full font-medium text-lg"
+            className="bg-[#E1275C] hover:bg-[#C91F4F] text-white px-8 py-3 rounded-full font-medium text-lg"
           >
             Get Started
           </Button>
@@ -88,7 +91,7 @@ const Index = () => {
             <Card className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6">
               <CardHeader className="text-center pb-4">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-6 h-6 text-blue-600" />
+                  <Users className="w-6 h-6 text-[#0794FE]" />
                 </div>
                 <CardTitle className="text-blue-900 text-xl">Smart Supplier Matching</CardTitle>
               </CardHeader>
@@ -102,7 +105,7 @@ const Index = () => {
             <Card className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6">
               <CardHeader className="text-center pb-4">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Package className="w-6 h-6 text-blue-600" />
+                  <Package className="w-6 h-6 text-[#0794FE]" />
                 </div>
                 <CardTitle className="text-blue-900 text-xl">Automated Inventory</CardTitle>
               </CardHeader>
@@ -116,7 +119,7 @@ const Index = () => {
             <Card className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6">
               <CardHeader className="text-center pb-4">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <BarChart3 className="w-6 h-6 text-blue-600" />
+                  <BarChart3 className="w-6 h-6 text-[#0794FE]" />
                 </div>
                 <CardTitle className="text-blue-900 text-xl">Insightful Analytics</CardTitle>
               </CardHeader>
@@ -158,7 +161,7 @@ const Index = () => {
                           <p className="text-gray-700 mb-4 text-center">
                             "{testimonial.text}"
                           </p>
-                          <p className="text-blue-600 font-medium text-center">{testimonial.author}</p>
+                          <p className="text-[#0794FE] font-medium text-center">{testimonial.author}</p>
                         </CardContent>
                       </Card>
                     </div>
@@ -180,7 +183,7 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto text-center">
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <Mail className="w-6 h-6 text-blue-600" />
+                <Mail className="w-6 h-6 text-[#0794FE]" />
               </div>
               <h3 className="font-semibold text-blue-900 mb-2">Email</h3>
               <p className="text-gray-600">EasyBizz@gmail.com</p>
@@ -188,7 +191,7 @@ const Index = () => {
 
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <Phone className="w-6 h-6 text-blue-600" />
+                <Phone className="w-6 h-6 text-[#0794FE]" />
               </div>
               <h3 className="font-semibold text-blue-900 mb-2">Phone</h3>
               <p className="text-gray-600">+213 778 84 74 73</p>
@@ -196,10 +199,10 @@ const Index = () => {
 
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <MapPin className="w-6 h-6 text-blue-600" />
+                <MapPin className="w-6 h-6 text-[#0794FE]" />
               </div>
               <h3 className="font-semibold text-blue-900 mb-2">Location</h3>
-              <p className="text-gray-600">PDN Universitas les Koliba, 47000,<br />Tianfa Algeria</p>
+              <p className="text-gray-600">Pôle universitaire de Koléa,<br />42003, Tipaza, Algérie</p>
             </div>
           </div>
 

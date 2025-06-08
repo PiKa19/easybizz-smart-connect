@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Eye, EyeOff } from "lucide-react";
 
 interface AuthDialogProps {
   open: boolean;
@@ -17,6 +18,7 @@ const AuthDialog = ({ open, onOpenChange, onAuthSuccess }: AuthDialogProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,90 +28,145 @@ const AuthDialog = ({ open, onOpenChange, onAuthSuccess }: AuthDialogProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-center text-2xl font-bold text-blue-900">
-            {isLogin ? "Welcome Back" : "Create Account"}
-          </DialogTitle>
-        </DialogHeader>
-        
-        <Card className="border-0 shadow-none">
-          <CardHeader className="text-center pb-4">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <span className="text-2xl font-bold text-blue-600">EASY</span>
-              <span className="text-2xl font-bold text-red-500">Bizz</span>
-              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+      <DialogContent className="max-w-md bg-white">
+        <div className="flex flex-col items-center p-6">
+          {/* Logo */}
+          <div className="mb-8">
+            <img 
+              src="/lovable-uploads/5142faa5-d964-4021-b411-2ea1ad268901.png" 
+              alt="EasyBizz Logo" 
+              className="h-16 w-auto"
+            />
+          </div>
+
+          {/* Login/Register Toggle */}
+          <div className="w-full mb-6">
+            <div className="flex bg-gray-100 rounded-lg p-1">
+              <button
+                type="button"
+                onClick={() => setIsLogin(true)}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  isLogin 
+                    ? 'bg-white text-[#0794FE] shadow-sm' 
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Login
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsLogin(false)}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  !isLogin 
+                    ? 'bg-white text-[#0794FE] shadow-sm' 
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Register
+              </button>
             </div>
-            <CardDescription>
+          </div>
+
+          {/* Welcome Message */}
+          <div className="text-center mb-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">
+              {isLogin ? "Welcome Back" : "Create Account"}
+            </h2>
+            <p className="text-sm text-gray-600">
               {isLogin 
-                ? "Sign in to your account to continue" 
-                : "Create your account to get started"
+                ? "Fill in the information below in order to access your account." 
+                : "Fill in the information below to create your account."
               }
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {!isLogin && (
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input
-                    id="name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    className="rounded-lg"
-                  />
-                </div>
-              )}
-              
+            </p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="w-full space-y-4">
+            {!isLogin && (
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="name" className="text-gray-700">Full Name</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   required
-                  className="rounded-lg"
+                  className="rounded-lg border-gray-300"
                 />
               </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+            )}
+            
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-gray-700">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="rounded-lg border-gray-300"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-gray-700">Password</Label>
+              <div className="relative">
                 <Input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="rounded-lg"
+                  className="rounded-lg border-gray-300 pr-10"
                 />
-              </div>
-              
-              <Button 
-                type="submit" 
-                className="w-full bg-red-500 hover:bg-red-600 text-white rounded-lg py-2 font-medium"
-              >
-                {isLogin ? "Sign In" : "Create Account"}
-              </Button>
-            </form>
-            
-            <div className="text-center mt-4">
-              <p className="text-sm text-gray-600">
-                {isLogin ? "Don't have an account?" : "Already have an account?"}
                 <button
                   type="button"
-                  onClick={() => setIsLogin(!isLogin)}
-                  className="text-blue-600 hover:text-blue-700 font-medium ml-1"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
-                  {isLogin ? "Sign up" : "Sign in"}
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4 text-gray-400" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-gray-400" />
+                  )}
                 </button>
-              </p>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+            
+            <Button 
+              type="submit" 
+              className="w-full bg-[#E1275C] hover:bg-[#C91F4F] text-white rounded-lg py-3 font-medium mt-6"
+            >
+              {isLogin ? "Login" : "Create Account"}
+            </Button>
+          </form>
+          
+          {isLogin && (
+            <>
+              <div className="text-center mt-4">
+                <p className="text-sm text-gray-600">
+                  Are you a supplier?
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="mt-2 border-[#0794FE] text-[#0794FE] hover:bg-[#0794FE] hover:text-white rounded-lg"
+                >
+                  Espace fournisseur
+                </Button>
+              </div>
+              
+              <div className="text-center mt-4">
+                <button
+                  type="button"
+                  className="text-sm text-gray-600 hover:text-gray-800"
+                >
+                  Forgot Password?
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );
