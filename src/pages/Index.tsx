@@ -1,8 +1,8 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Package, BarChart3, Mail, Phone, MapPin } from "lucide-react";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import AuthDialog from "@/components/AuthDialog";
 import Dashboard from "@/components/Dashboard";
 
@@ -13,6 +13,29 @@ const Index = () => {
   if (isAuthenticated) {
     return <Dashboard onLogout={() => setIsAuthenticated(false)} />;
   }
+
+  const testimonials = [
+    {
+      text: "EasyBizz helped me streamline my business operations more than ever. Now I can focus on scaling rather than managing inventory.",
+      author: "- Satisfied Customer"
+    },
+    {
+      text: "I love how easy it makes tracking my stock and finding the right partners. It truly helped boost my business efficiency.",
+      author: "- Happy User"
+    },
+    {
+      text: "The analytics dashboard gives me insights I never had before. My business decisions are now data-driven and more profitable.",
+      author: "- Business Owner"
+    },
+    {
+      text: "Finding reliable suppliers was always a challenge. EasyBizz connected me with the perfect partners for my business needs.",
+      author: "- Retailer"
+    },
+    {
+      text: "The automated inventory alerts saved me from stockouts multiple times. This platform is a game-changer for small businesses.",
+      author: "- Store Manager"
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-blue-50">
@@ -124,26 +147,27 @@ const Index = () => {
         <div className="container mx-auto">
           <h2 className="text-3xl font-bold text-center text-blue-900 mb-12">What Our Users Say</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <Card className="bg-white rounded-2xl shadow-md p-6">
-              <CardContent className="pt-6">
-                <p className="text-gray-700 mb-4">
-                  "EasyBizz helped me streamline my business operations more than ever. 
-                  Now I can focus on scaling rather than managing inventory."
-                </p>
-                <p className="text-blue-600 font-medium">- Satisfied Customer</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white rounded-2xl shadow-md p-6">
-              <CardContent className="pt-6">
-                <p className="text-gray-700 mb-4">
-                  "I love how easy it makes tracking my stock and finding the 
-                  right partners. It truly helped boost my business efficiency."
-                </p>
-                <p className="text-blue-600 font-medium">- Happy User</p>
-              </CardContent>
-            </Card>
+          <div className="max-w-4xl mx-auto">
+            <Carousel className="w-full">
+              <CarouselContent>
+                {testimonials.map((testimonial, index) => (
+                  <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/2">
+                    <div className="p-1">
+                      <Card className="bg-white rounded-2xl shadow-md h-full">
+                        <CardContent className="pt-6 flex flex-col justify-between h-full">
+                          <p className="text-gray-700 mb-4 text-center">
+                            "{testimonial.text}"
+                          </p>
+                          <p className="text-blue-600 font-medium text-center">{testimonial.author}</p>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
           </div>
         </div>
       </section>
