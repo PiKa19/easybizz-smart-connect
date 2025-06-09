@@ -1,31 +1,65 @@
-
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Home, Package, BarChart3, Settings, LogOut, Search, ShoppingCart } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Home, 
+  Settings, 
+  Package, 
+  BarChart3, 
+  ShoppingCart, 
+  History, 
+  Bell, 
+  CreditCard, 
+  LogOut, 
+  HelpCircle,
+  Search,
+  ChevronRight,
+  Package2
+} from "lucide-react";
+import { Input } from "@/components/ui/input";
 import ProductCard from "./ProductCard";
 import ProductDetail from "./ProductDetail";
+import { LanguageContext } from "@/contexts/LanguageContext";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 interface DashboardProps {
   onLogout: () => void;
 }
 
 const Dashboard = ({ onLogout }: DashboardProps) => {
-  const [activeSection, setActiveSection] = useState("home");
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [currentSection, setCurrentSection] = useState('home');
+  const [isHovered, setIsHovered] = useState(false);
+  const { t } = useContext(LanguageContext);
 
   const navigationItems = [
-    { id: "home", icon: Home, label: "Home" },
-    { id: "buy-products", icon: ShoppingCart, label: "Buy products" },
-    { id: "analytics", icon: BarChart3, label: "View analytics" },
-    { id: "inventory", icon: Package, label: "Inventory management" },
-    { id: "settings", icon: Settings, label: "Settings" },
+    { id: 'home', icon: Home, label: t('home') },
+    { id: 'bizz', icon: Package2, label: t('bizz') },
+    { id: 'analytics', icon: BarChart3, label: t('analytics') },
+    { id: 'inventory', icon: Package, label: t('inventory') },
+    { id: 'products', icon: ShoppingCart, label: t('products') },
+    { id: 'historique', icon: History, label: t('historique') },
+    { id: 'notification', icon: Bell, label: t('notification') },
+    { id: 'cashier', icon: CreditCard, label: t('cashier') },
+    { id: 'settings', icon: Settings, label: t('settings') },
+    { id: 'logout', icon: LogOut, label: t('logout') },
+    { id: 'faq', icon: HelpCircle, label: t('faq') }
   ];
 
   const products = [
     {
       id: 1,
+      name: "Premium Shampoo",
+      price: 1500,
+      supplier: "Beauty Supplies Co.",
+      image: "/placeholder.svg",
+      description: "Professional grade shampoo for all hair types",
+      stock: 50,
+      category: "Hair Care"
+    },
+    {
+      id: 2,
       name: "Coca-cola",
       description: "2 liter bottle",
       price: "150 DZD",
@@ -37,7 +71,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
       usage: "Ideal for supermarkets, convenience stores, and HoReCa"
     },
     {
-      id: 2,
+      id: 3,
       name: "Coca-cola",
       description: "1 liter bottle",
       price: "90 DZD",
@@ -45,7 +79,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
       category: "Beverages"
     },
     {
-      id: 3,
+      id: 4,
       name: "Hamoud bida",
       description: "2 liter bottle",
       price: "130 DZD",
@@ -53,7 +87,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
       category: "Beverages"
     },
     {
-      id: 4,
+      id: 5,
       name: "Hamoud bida",
       description: "1 liter bottle",
       price: "80 DZD",
@@ -61,7 +95,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
       category: "Beverages"
     },
     {
-      id: 5,
+      id: 6,
       name: "Coca-cola",
       description: "2 liter bottle",
       price: "150 DZD",
@@ -70,215 +104,227 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     }
   ];
 
-  const categories = ["Beverages", "Snacks", "Cleaning", "Meat & Poultry", "Seafood", "Dairy Products", "Frozen Foods", "Canned Foods"];
-
-  const handleProductSelect = (product: any) => {
-    setSelectedProduct(product);
+  const handleNavClick = (id: string) => {
+    if (id === 'logout') {
+      onLogout();
+    } else {
+      setCurrentSection(id);
+      setSelectedProduct(null);
+    }
   };
 
-  const handleBackToProducts = () => {
-    setSelectedProduct(null);
-  };
+  if (selectedProduct) {
+    return <ProductDetail product={selectedProduct} onBack={() => setSelectedProduct(null)} />;
+  }
 
-  const renderHomeSection = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <Card className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6 cursor-pointer"
-            onClick={() => setActiveSection("buy-products")}>
-        <CardHeader className="text-center pb-4">
-          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <ShoppingCart className="w-6 h-6 text-[#0794FE]" />
+  const renderHomeCards = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
+      <Card 
+        className="cursor-pointer hover:shadow-lg transition-shadow bg-white rounded-xl border border-gray-100"
+        onClick={() => setCurrentSection('bizz')}
+      >
+        <CardHeader className="pb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-50 rounded-lg">
+              <Package2 className="w-6 h-6 text-[#0794FE]" />
+            </div>
+            <div className="flex-1">
+              <CardTitle className="text-lg text-gray-800">{t('buy_products')}</CardTitle>
+              <CardDescription className="text-sm text-gray-600 mt-1">
+                {t('buy_products_desc')}
+              </CardDescription>
+            </div>
+            <ChevronRight className="w-5 h-5 text-gray-400" />
           </div>
-          <CardTitle className="text-blue-900 text-xl">Buy products</CardTitle>
         </CardHeader>
-        <CardContent>
-          <CardDescription className="text-gray-600 text-center">
-            browse and order directly from suppliers
-          </CardDescription>
-        </CardContent>
       </Card>
 
-      <Card className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6 cursor-pointer"
-            onClick={() => setActiveSection("analytics")}>
-        <CardHeader className="text-center pb-4">
-          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <BarChart3 className="w-6 h-6 text-[#0794FE]" />
+      <Card 
+        className="cursor-pointer hover:shadow-lg transition-shadow bg-white rounded-xl border border-gray-100"
+        onClick={() => setCurrentSection('analytics')}
+      >
+        <CardHeader className="pb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-50 rounded-lg">
+              <BarChart3 className="w-6 h-6 text-[#0794FE]" />
+            </div>
+            <div className="flex-1">
+              <CardTitle className="text-lg text-gray-800">{t('view_analytics')}</CardTitle>
+              <CardDescription className="text-sm text-gray-600 mt-1">
+                {t('view_analytics_desc')}
+              </CardDescription>
+            </div>
+            <ChevronRight className="w-5 h-5 text-gray-400" />
           </div>
-          <CardTitle className="text-blue-900 text-xl">View analytics</CardTitle>
         </CardHeader>
-        <CardContent>
-          <CardDescription className="text-gray-600 text-center">
-            browse and order directly from suppliers
-          </CardDescription>
-        </CardContent>
       </Card>
 
-      <Card className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6 cursor-pointer"
-            onClick={() => setActiveSection("inventory")}>
-        <CardHeader className="text-center pb-4">
-          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Package className="w-6 h-6 text-[#0794FE]" />
+      <Card 
+        className="cursor-pointer hover:shadow-lg transition-shadow bg-white rounded-xl border border-gray-100"
+        onClick={() => setCurrentSection('inventory')}
+      >
+        <CardHeader className="pb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-50 rounded-lg">
+              <Package className="w-6 h-6 text-[#0794FE]" />
+            </div>
+            <div className="flex-1">
+              <CardTitle className="text-lg text-gray-800">{t('inventory_management')}</CardTitle>
+              <CardDescription className="text-sm text-gray-600 mt-1">
+                {t('inventory_management_desc')}
+              </CardDescription>
+            </div>
+            <ChevronRight className="w-5 h-5 text-gray-400" />
           </div>
-          <CardTitle className="text-blue-900 text-xl">Inventory management</CardTitle>
         </CardHeader>
-        <CardContent>
-          <CardDescription className="text-gray-600 text-center">
-            browse and order directly from suppliers
-          </CardDescription>
-        </CardContent>
       </Card>
 
-      <Card className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6 cursor-pointer"
-            onClick={() => setActiveSection("buy-products")}>
-        <CardHeader className="text-center pb-4">
-          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <ShoppingCart className="w-6 h-6 text-[#0794FE]" />
+      <Card 
+        className="cursor-pointer hover:shadow-lg transition-shadow bg-white rounded-xl border border-gray-100"
+        onClick={() => setCurrentSection('bizz')}
+      >
+        <CardHeader className="pb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-50 rounded-lg">
+              <Package2 className="w-6 h-6 text-[#0794FE]" />
+            </div>
+            <div className="flex-1">
+              <CardTitle className="text-lg text-gray-800">{t('buy_products')}</CardTitle>
+              <CardDescription className="text-sm text-gray-600 mt-1">
+                {t('buy_products_desc')}
+              </CardDescription>
+            </div>
+            <ChevronRight className="w-5 h-5 text-gray-400" />
           </div>
-          <CardTitle className="text-blue-900 text-xl">Buy products</CardTitle>
         </CardHeader>
-        <CardContent>
-          <CardDescription className="text-gray-600 text-center">
-            browse and order directly from suppliers
-          </CardDescription>
-        </CardContent>
       </Card>
     </div>
   );
 
-  const renderBuyProductsSection = () => {
-    if (selectedProduct) {
-      return <ProductDetail product={selectedProduct} onBack={handleBackToProducts} />;
-    }
-
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-800">Buy products from official wholesalers</h2>
-          <select className="border border-gray-300 rounded-lg px-4 py-2 text-sm">
-            <option>Filters</option>
-            <option>Price: Low to High</option>
-            <option>Price: High to Low</option>
-            <option>Name: A to Z</option>
-          </select>
-        </div>
-
-        <div className="flex gap-4 overflow-x-auto pb-2">
-          {categories.map((category) => (
-            <Button
-              key={category}
-              variant="outline"
-              className="whitespace-nowrap rounded-full px-6 py-2 text-sm"
-            >
-              {category}
-            </Button>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onSelect={handleProductSelect}
-            />
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  const renderContent = () => {
-    switch (activeSection) {
-      case "home":
-        return renderHomeSection();
-      case "buy-products":
-        return renderBuyProductsSection();
-      case "analytics":
-        return <div className="text-center py-20 text-gray-500">Analytics section coming soon...</div>;
-      case "inventory":
-        return <div className="text-center py-20 text-gray-500">Inventory management section coming soon...</div>;
-      case "settings":
-        return <div className="text-center py-20 text-gray-500">Settings section coming soon...</div>;
-      default:
-        return renderHomeSection();
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Left Sidebar */}
-      <div className="w-16 bg-white shadow-lg flex flex-col items-center py-6 space-y-6">
+      {/* Dynamic Sidebar */}
+      <div 
+        className={`bg-white border-r border-gray-200 transition-all duration-300 flex flex-col ${
+          isHovered ? 'w-64' : 'w-16'
+        }`}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         {/* Logo */}
-        <div className="mb-8">
-          <img 
-            src="/lovable-uploads/5142faa5-d964-4021-b411-2ea1ad268901.png" 
-            alt="EasyBizz Logo" 
-            className="h-8 w-auto"
-          />
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex items-center gap-3">
+            <img 
+              src="/lovable-uploads/5142faa5-d964-4021-b411-2ea1ad268901.png" 
+              alt="EasyBizz Logo" 
+              className="h-8 w-8 flex-shrink-0"
+            />
+            {isHovered && (
+              <span className="font-semibold text-gray-800 text-sm">EasyBizz</span>
+            )}
+          </div>
         </div>
 
-        {/* Navigation Icons */}
-        {navigationItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <button
-              key={item.id}
-              onClick={() => setActiveSection(item.id)}
-              className={`p-3 rounded-lg transition-colors ${
-                activeSection === item.id
-                  ? 'bg-[#0794FE] text-white'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-              title={item.label}
-            >
-              <Icon className="w-6 h-6" />
-            </button>
-          );
-        })}
-
-        {/* Logout Button */}
-        <button
-          onClick={onLogout}
-          className="mt-auto p-3 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
-          title="Logout"
-        >
-          <LogOut className="w-6 h-6" />
-        </button>
+        {/* Navigation */}
+        <nav className="flex-1 py-4">
+          {navigationItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = currentSection === item.id;
+            
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleNavClick(item.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors ${
+                  isActive 
+                    ? 'bg-blue-50 text-[#0794FE] border-r-2 border-[#0794FE]' 
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
+                }`}
+              >
+                <Icon className="w-5 h-5 flex-shrink-0" />
+                {isHovered && (
+                  <span className="truncate">{item.label}</span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
-        {/* Top Header */}
-        <div className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
-          <div>
-            <h1 className="text-xl font-semibold text-gray-800">bonjour, supérette elbaraka</h1>
-            <p className="text-sm text-gray-600">Start managing your supermarket</p>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Search"
-                className="pl-10 pr-4 py-2 w-64 rounded-lg border-gray-300"
-              />
+        {/* Header */}
+        <header className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-semibold text-gray-800">{t('dashboard_greeting')}</h1>
+              <p className="text-sm text-gray-600">{t('dashboard_subtitle')}</p>
             </div>
-            
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-[#E1275C] rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                B
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  placeholder="Search"
+                  className="pl-10 w-64"
+                />
               </div>
-              <div className="text-sm">
-                <div className="font-medium">Baraka</div>
-                <div className="text-gray-500">barakat@gmail.com</div>
+              <LanguageSwitcher />
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-[#0794FE] rounded-full flex items-center justify-center text-white text-sm font-medium">
+                  B
+                </div>
+                <div className="text-sm">
+                  <div className="font-medium text-gray-800">Baraka</div>
+                  <div className="text-gray-500">baraka@gmail.com</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </header>
 
-        {/* Page Content */}
-        <div className="flex-1 p-6">
-          {renderContent()}
-        </div>
+        {/* Content */}
+        <main className="flex-1 p-6">
+          {currentSection === 'home' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-center">
+                {renderHomeCards()}
+              </div>
+            </div>
+          )}
+
+          {currentSection === 'bizz' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-gray-800">{t('buy_products')}</h2>
+                <Badge variant="secondary" className="bg-blue-100 text-[#0794FE]">
+                  {products.length} Products Available
+                </Badge>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {products.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onViewDetails={setSelectedProduct}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {(currentSection === 'analytics' || currentSection === 'inventory' || currentSection === 'products') && (
+            <div className="text-center py-12">
+              <div className="text-gray-400 mb-4">
+                <Package className="w-16 h-16 mx-auto" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-600 mb-2">
+                {currentSection.charAt(0).toUpperCase() + currentSection.slice(1)} Section
+              </h3>
+              <p className="text-gray-500">This section is under development</p>
+            </div>
+          )}
+        </main>
       </div>
     </div>
   );
