@@ -1,3 +1,4 @@
+
 import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +17,8 @@ import {
   Search,
   ChevronRight,
   Package2,
-  ChevronDown
+  ChevronDown,
+  Store
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -49,11 +51,12 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   );
 
   const navigationItems = [
+    { id: 'boutique', icon: Store, label: t('boutique') || 'Boutique' },
     { id: 'home', icon: Home, label: t('home') },
     { id: 'bizz', icon: BizzIcon, label: t('bizz') },
     { id: 'analytics', icon: BarChart3, label: t('analytics') },
     { id: 'inventory', icon: Package, label: t('inventory') },
-    { id: 'products', icon: ShoppingCart, label: t('products') },
+    { id: 'products', icon: Package2, label: t('products') },
     { id: 'historique', icon: History, label: t('historique') },
     { id: 'notification', icon: Bell, label: t('notification') },
     { id: 'cashier', icon: CreditCard, label: t('cashier') },
@@ -362,18 +365,6 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                 />
               </div>
               <LanguageSwitcher />
-              <Button
-                variant="outline"
-                onClick={() => setCurrentSection('cart')}
-                className="relative"
-              >
-                <ShoppingCart className="w-4 h-4" />
-                {cart.length > 0 && (
-                  <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1 min-w-[1.25rem] h-5">
-                    {cart.length}
-                  </Badge>
-                )}
-              </Button>
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-[#0794FE] rounded-full flex items-center justify-center text-white text-sm font-medium">
                   B
@@ -421,6 +412,19 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                   <Badge variant="secondary" className="bg-blue-100 text-[#0794FE]">
                     {filteredProducts.length} Products Available
                   </Badge>
+                  <Button
+                    variant="outline"
+                    onClick={() => setCurrentSection('cart')}
+                    className="relative"
+                  >
+                    <ShoppingCart className="w-4 h-4" />
+                    Cart
+                    {cart.length > 0 && (
+                      <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1 min-w-[1.25rem] h-5">
+                        {cart.length}
+                      </Badge>
+                    )}
+                  </Button>
                 </div>
               </div>
 
