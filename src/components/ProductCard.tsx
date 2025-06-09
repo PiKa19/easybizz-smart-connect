@@ -20,10 +20,12 @@ const ProductCard = ({ product, onSelect }: ProductCardProps) => {
   return (
     <Card className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
       <CardContent className="p-4 text-center">
-        <div className="w-20 h-20 mx-auto mb-3 bg-gray-100 rounded-lg flex items-center justify-center">
-          <div className="w-16 h-16 bg-red-600 rounded-lg flex items-center justify-center">
-            <div className="text-white text-xs font-bold">COCA</div>
-          </div>
+        <div className="w-full h-32 mb-3 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden">
+          <img 
+            src={product.image} 
+            alt={product.name}
+            className="w-full h-full object-contain"
+          />
         </div>
         
         <h3 className="font-semibold text-gray-800 text-sm mb-1">{product.name}</h3>

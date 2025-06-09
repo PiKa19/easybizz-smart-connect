@@ -1,3 +1,4 @@
+
 import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,9 +16,17 @@ import {
   HelpCircle,
   Search,
   ChevronRight,
-  Package2
+  Package2,
+  ChevronDown
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import ProductCard from "./ProductCard";
 import ProductDetail from "./ProductDetail";
 import { LanguageContext } from "@/contexts/LanguageContext";
@@ -31,6 +40,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [currentSection, setCurrentSection] = useState('home');
   const [isHovered, setIsHovered] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const { t } = useContext(LanguageContext);
 
   const navigationItems = [
@@ -47,62 +57,98 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     { id: 'faq', icon: HelpCircle, label: t('faq') }
   ];
 
+  const categories = [
+    { id: 'all', name: 'All Products' },
+    { id: 'beverages', name: 'Beverages' },
+    { id: 'snacks', name: 'Snacks' },
+    { id: 'cleaning', name: 'Cleaning' },
+    { id: 'meat-poultry', name: 'Meat & Poultry' },
+    { id: 'seafood', name: 'Seafood' },
+    { id: 'dairy', name: 'Dairy Products' },
+    { id: 'frozen', name: 'Frozen Foods' },
+    { id: 'canned', name: 'Canned Foods' }
+  ];
+
   const products = [
     {
       id: 1,
-      name: "Premium Shampoo",
-      price: "1500 DZD",
-      supplier: "Beauty Supplies Co.",
-      image: "/placeholder.svg",
-      description: "Professional grade shampoo for all hair types",
-      stock: 50,
-      category: "Hair Care"
+      name: "Coca-cola",
+      description: "2 liter bottle",
+      price: "150 DZD",
+      image: "/lovable-uploads/bc27ac7e-7ac9-405e-bf04-b04f5339fe06.png",
+      category: "beverages",
+      volume: "2 Liters",
+      packaging: "PET bottle with resealable cap",
+      storage: "Shelf stable and easy to store",
+      usage: "Ideal for supermarkets, convenience stores, and HoReCa",
+      sellers: [
+        { id: 1, name: "FRS semmar", rating: "99%", reviews: 4458, price: "150.00 DZD", isDefault: true },
+        { id: 2, name: "FRS semmar blanc", rating: "99%", reviews: 4458, price: "151.00 DZD" },
+        { id: 3, name: "FRS blida eurl", rating: "99%", reviews: 4458, price: "151.20 DZD" },
+        { id: 4, name: "FRS cheraga", rating: "99%", reviews: 4458, price: "152.00 DZD" },
+        { id: 5, name: "FRS alger", rating: "99%", reviews: 4458, price: "153.33 DZD" }
+      ]
     },
     {
       id: 2,
       name: "Coca-cola",
-      description: "2 liter bottle",
-      price: "150 DZD",
-      image: "/api/placeholder/150/150",
-      category: "Beverages",
-      volume: "2 Liters",
-      packaging: "PET bottle with resealable cap",
-      storage: "Shelf stable and easy to store",
-      usage: "Ideal for supermarkets, convenience stores, and HoReCa"
+      description: "1 liter bottle",
+      price: "90 DZD",
+      image: "/lovable-uploads/bc27ac7e-7ac9-405e-bf04-b04f5339fe06.png",
+      category: "beverages",
+      sellers: [
+        { id: 1, name: "FRS semmar", rating: "99%", reviews: 4458, price: "90.00 DZD", isDefault: true }
+      ]
     },
     {
       id: 3,
-      name: "Coca-cola",
-      description: "1 liter bottle",
-      price: "90 DZD",
-      image: "/api/placeholder/150/150",
-      category: "Beverages"
+      name: "Hamoud bida",
+      description: "2 liter bottle",
+      price: "130 DZD",
+      image: "/lovable-uploads/146f2919-20c5-498a-ba87-e4ab9afc14f6.png",
+      category: "beverages",
+      sellers: [
+        { id: 1, name: "FRS semmar", rating: "99%", reviews: 4458, price: "130.00 DZD", isDefault: true }
+      ]
     },
     {
       id: 4,
       name: "Hamoud bida",
-      description: "2 liter bottle",
-      price: "130 DZD",
-      image: "/api/placeholder/150/150",
-      category: "Beverages"
+      description: "1 liter bottle",
+      price: "80 DZD",
+      image: "/lovable-uploads/146f2919-20c5-498a-ba87-e4ab9afc14f6.png",
+      category: "beverages",
+      sellers: [
+        { id: 1, name: "FRS semmar", rating: "99%", reviews: 4458, price: "80.00 DZD", isDefault: true }
+      ]
     },
     {
       id: 5,
-      name: "Hamoud bida",
-      description: "1 liter bottle",
-      price: "80 DZD",
+      name: "Premium Pasta",
+      description: "500g package",
+      price: "200 DZD",
       image: "/api/placeholder/150/150",
-      category: "Beverages"
+      category: "snacks",
+      sellers: [
+        { id: 1, name: "FRS semmar", rating: "99%", reviews: 4458, price: "200.00 DZD", isDefault: true }
+      ]
     },
     {
       id: 6,
-      name: "Coca-cola",
-      description: "2 liter bottle",
-      price: "150 DZD",
+      name: "Chicken Breast",
+      description: "1kg fresh",
+      price: "800 DZD",
       image: "/api/placeholder/150/150",
-      category: "Beverages"
+      category: "meat-poultry",
+      sellers: [
+        { id: 1, name: "FRS semmar", rating: "99%", reviews: 4458, price: "800.00 DZD", isDefault: true }
+      ]
     }
   ];
+
+  const filteredProducts = selectedCategory === 'all' 
+    ? products 
+    : products.filter(product => product.category === selectedCategory);
 
   const handleNavClick = (id: string) => {
     if (id === 'logout') {
@@ -296,13 +342,44 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-gray-800">{t('buy_products')}</h2>
-                <Badge variant="secondary" className="bg-blue-100 text-[#0794FE]">
-                  {products.length} Products Available
-                </Badge>
+                <div className="flex items-center gap-4">
+                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                    <SelectTrigger className="w-48">
+                      <SelectValue placeholder="Filter by category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Badge variant="secondary" className="bg-blue-100 text-[#0794FE]">
+                    {filteredProducts.length} Products Available
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Category Pills */}
+              <div className="flex gap-2 flex-wrap">
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                      selectedCategory === category.id
+                        ? 'bg-[#0794FE] text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {category.name}
+                  </button>
+                ))}
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {products.map((product) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                {filteredProducts.map((product) => (
                   <ProductCard
                     key={product.id}
                     product={product}
