@@ -1,4 +1,3 @@
-
 import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,7 +17,10 @@ import {
   ChevronRight,
   Package2,
   ChevronDown,
-  Store
+  Store,
+  Plus,
+  Edit,
+  Trash2
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -28,6 +30,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import ProductCard from "./ProductCard";
 import ProductDetail from "./ProductDetail";
 import CartPage from "./CartPage";
@@ -38,13 +49,68 @@ interface DashboardProps {
   onLogout: () => void;
 }
 
+interface Boutique {
+  id: number;
+  name: string;
+  address: string;
+  isActive: boolean;
+}
+
+interface Product {
+  id: number;
+  name: string;
+  reference: string;
+  barcode: string;
+  quantity: number;
+  alert: number;
+  buyingPrice: number;
+  sellingPrice: number;
+  rotation: string;
+  status: 'Rapid' | 'Normal' | 'Slow';
+}
+
 const Dashboard = ({ onLogout }: DashboardProps) => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [currentSection, setCurrentSection] = useState('home');
   const [isHovered, setIsHovered] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [cart, setCart] = useState<any[]>([]);
+  const [selectedBoutique, setSelectedBoutique] = useState<number>(1);
+  const [isAddBoutiqueOpen, setIsAddBoutiqueOpen] = useState(false);
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [newBoutique, setNewBoutique] = useState({ name: '', address: '' });
+  const [newProduct, setNewProduct] = useState({
+    name: '',
+    reference: '',
+    barcode: '',
+    quantity: 0,
+    alert: 0,
+    buyingPrice: 0,
+    sellingPrice: 0
+  });
+  
   const { t } = useContext(LanguageContext);
+
+  const [boutiques, setBoutiques] = useState<Boutique[]>([
+    { id: 1, name: "supérette elbaraka", address: "123 Main St", isActive: true },
+    { id: 2, name: "Boutique Centre", address: "456 Center Ave", isActive: false },
+    { id: 3, name: "Mini Market Nord", address: "789 North Rd", isActive: false }
+  ]);
+
+  const [products, setProducts] = useState<Product[]>([
+    {
+      id: 1,
+      name: "Huile SL elio",
+      reference: "HUI-001",
+      barcode: "59446032664B",
+      quantity: 5,
+      alert: 50,
+      buyingPrice: 630.00,
+      sellingPrice: 650.00,
+      rotation: "5 days",
+      status: 'Rapid'
+    }
+  ]);
 
   const BizzIcon = () => (
     <img src="/lovable-uploads/b7b53d1c-2060-4de4-931d-52706bd84107.png" alt="Bizz" className="w-5 h-5" />
@@ -77,7 +143,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     { id: 'canned', name: 'Canned Foods' }
   ];
 
-  const products = [
+  const bizzProducts = [
     {
       id: 1,
       name: "Coca-cola",
@@ -154,9 +220,9 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     }
   ];
 
-  const filteredProducts = selectedCategory === 'all' 
-    ? products 
-    : products.filter(product => product.category === selectedCategory);
+  const filteredBizzProducts = selectedCategory === 'all' 
+    ? bizzProducts 
+    : bizzProducts.filter(product => product.category === selectedCategory);
 
   const addToCart = (product: any, quantity: number, seller: any) => {
     const cartItem = {
@@ -188,6 +254,55 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     } else {
       setCurrentSection(id);
       setSelectedProduct(null);
+    }
+  };
+
+  const handleAddBoutique = () => {
+    if (newBoutique.name && newBoutique.address) {
+      const newId = Math.max(...boutiques.map(b => b.id)) + 1;
+      setBoutiques(prev => [...prev, {
+        id: newId,
+        name: newBoutique.name,
+        address: newBoutique.address,
+        isActive: false
+      }]);
+      setNewBoutique({ name: '', address: '' });
+      setIsAddBoutiqueOpen(false);
+    }
+  };
+
+  const handleAddProduct = () => {
+    if (newProduct.name && newProduct.reference) {
+      const newId = Math.max(...products.map(p => p.id)) + 1;
+      setProducts(prev => [...prev, {
+        ...newProduct,
+        id: newId,
+        rotation: "New",
+        status: 'Normal' as const
+      }]);
+      setNewProduct({
+        name: '',
+        reference: '',
+        barcode: '',
+        quantity: 0,
+        alert: 0,
+        buyingPrice: 0,
+        sellingPrice: 0
+      });
+      setIsAddProductOpen(false);
+    }
+  };
+
+  const handleDeleteProduct = (productId: number) => {
+    setProducts(prev => prev.filter(p => p.id !== productId));
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Rapid': return 'bg-red-500';
+      case 'Normal': return 'bg-blue-500';
+      case 'Slow': return 'bg-gray-500';
+      default: return 'bg-gray-500';
     }
   };
 
@@ -259,23 +374,301 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 
       <Card 
         className="cursor-pointer hover:shadow-lg transition-shadow bg-white rounded-xl border border-gray-100"
-        onClick={() => setCurrentSection('bizz')}
+        onClick={() => setCurrentSection('products')}
       >
         <CardHeader className="pb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-50 rounded-lg">
-              <BizzIcon />
+              <Package2 className="w-6 h-6 text-[#0794FE]" />
             </div>
             <div className="flex-1">
-              <CardTitle className="text-lg text-gray-800">{t('buy_products')}</CardTitle>
+              <CardTitle className="text-lg text-gray-800">{t('products')}</CardTitle>
               <CardDescription className="text-sm text-gray-600 mt-1">
-                {t('buy_products_desc')}
+                Manage your product inventory
               </CardDescription>
             </div>
             <ChevronRight className="w-5 h-5 text-gray-400" />
           </div>
         </CardHeader>
       </Card>
+    </div>
+  );
+
+  const renderBoutiqueSection = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-800">Boutique Management</h2>
+        <Dialog open={isAddBoutiqueOpen} onOpenChange={setIsAddBoutiqueOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-[#0794FE] hover:bg-[#0670CC] text-white flex items-center gap-2">
+              <Plus className="w-4 h-4" />
+              Add Boutique
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Boutique</DialogTitle>
+              <DialogDescription>
+                Create a new boutique to manage your business locations.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="boutique-name">Boutique Name</Label>
+                <Input
+                  id="boutique-name"
+                  value={newBoutique.name}
+                  onChange={(e) => setNewBoutique(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Enter boutique name"
+                />
+              </div>
+              <div>
+                <Label htmlFor="boutique-address">Address</Label>
+                <Input
+                  id="boutique-address"
+                  value={newBoutique.address}
+                  onChange={(e) => setNewBoutique(prev => ({ ...prev, address: e.target.value }))}
+                  placeholder="Enter boutique address"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={handleAddBoutique} className="bg-[#0794FE] hover:bg-[#0670CC]">
+                  Add Boutique
+                </Button>
+                <Button variant="outline" onClick={() => setIsAddBoutiqueOpen(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {boutiques.map((boutique) => (
+          <Card 
+            key={boutique.id} 
+            className={`cursor-pointer transition-all ${
+              selectedBoutique === boutique.id 
+                ? 'ring-2 ring-[#0794FE] bg-blue-50' 
+                : 'hover:shadow-md'
+            }`}
+            onClick={() => setSelectedBoutique(boutique.id)}
+          >
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold text-gray-800">{boutique.name}</h3>
+                <Badge variant={boutique.isActive ? "default" : "secondary"}>
+                  {boutique.isActive ? "Active" : "Inactive"}
+                </Badge>
+              </div>
+              <p className="text-sm text-gray-600">{boutique.address}</p>
+              <div className="flex gap-2 mt-3">
+                <Button size="sm" variant="outline" className="flex-1">
+                  <Edit className="w-3 h-3 mr-1" />
+                  Edit
+                </Button>
+                <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700">
+                  <Trash2 className="w-3 h-3" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderProductsSection = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800">
+            bonjour, {boutiques.find(b => b.id === selectedBoutique)?.name}
+          </h2>
+          <p className="text-gray-600">Start managing your supermarket</p>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Input
+              placeholder="Search a product"
+              className="pl-10 w-64"
+            />
+          </div>
+          <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-[#0794FE] hover:bg-[#0670CC] text-white flex items-center gap-2">
+                <Plus className="w-4 h-4" />
+                Add a product
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Add New Product</DialogTitle>
+                <DialogDescription>
+                  Add a new product to your inventory.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="product-name">Product Name</Label>
+                  <Input
+                    id="product-name"
+                    value={newProduct.name}
+                    onChange={(e) => setNewProduct(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="Enter product name"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="product-reference">Reference</Label>
+                  <Input
+                    id="product-reference"
+                    value={newProduct.reference}
+                    onChange={(e) => setNewProduct(prev => ({ ...prev, reference: e.target.value }))}
+                    placeholder="Enter reference"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="product-barcode">Barcode</Label>
+                  <Input
+                    id="product-barcode"
+                    value={newProduct.barcode}
+                    onChange={(e) => setNewProduct(prev => ({ ...prev, barcode: e.target.value }))}
+                    placeholder="Enter barcode"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="product-quantity">Quantity</Label>
+                  <Input
+                    id="product-quantity"
+                    type="number"
+                    value={newProduct.quantity}
+                    onChange={(e) => setNewProduct(prev => ({ ...prev, quantity: parseInt(e.target.value) || 0 }))}
+                    placeholder="Enter quantity"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="product-alert">Alert Level</Label>
+                  <Input
+                    id="product-alert"
+                    type="number"
+                    value={newProduct.alert}
+                    onChange={(e) => setNewProduct(prev => ({ ...prev, alert: parseInt(e.target.value) || 0 }))}
+                    placeholder="Enter alert level"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="product-buying-price">Buying Price (DZD)</Label>
+                  <Input
+                    id="product-buying-price"
+                    type="number"
+                    step="0.01"
+                    value={newProduct.buyingPrice}
+                    onChange={(e) => setNewProduct(prev => ({ ...prev, buyingPrice: parseFloat(e.target.value) || 0 }))}
+                    placeholder="Enter buying price"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <Label htmlFor="product-selling-price">Selling Price (DZD)</Label>
+                  <Input
+                    id="product-selling-price"
+                    type="number"
+                    step="0.01"
+                    value={newProduct.sellingPrice}
+                    onChange={(e) => setNewProduct(prev => ({ ...prev, sellingPrice: parseFloat(e.target.value) || 0 }))}
+                    placeholder="Enter selling price"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={handleAddProduct} className="bg-[#0794FE] hover:bg-[#0670CC]">
+                  Add Product
+                </Button>
+                <Button variant="outline" onClick={() => setIsAddProductOpen(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
+
+      {/* Products Table */}
+      <div className="bg-white rounded-lg shadow-sm border">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-[#0794FE] text-white">
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-medium">Product</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">Reference</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">Barcode</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">Quantity</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">Alert</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">Buying Price</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">Selling Price</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">Rotation Status</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map((product) => (
+                <tr key={product.id} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-3 text-sm">{product.name}</td>
+                  <td className="px-4 py-3 text-sm">{product.reference}</td>
+                  <td className="px-4 py-3 text-sm">{product.barcode}</td>
+                  <td className="px-4 py-3 text-sm">{product.quantity}</td>
+                  <td className="px-4 py-3 text-sm">{product.alert}</td>
+                  <td className="px-4 py-3 text-sm">{product.buyingPrice.toFixed(2)} DZD</td>
+                  <td className="px-4 py-3 text-sm">{product.sellingPrice.toFixed(2)} DZD</td>
+                  <td className="px-4 py-3 text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full ${getStatusColor(product.status)}`}></span>
+                      <span className={`px-2 py-1 rounded text-xs font-medium text-white ${getStatusColor(product.status)}`}>
+                        {product.status}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-sm">
+                    <div className="flex gap-1">
+                      <Button size="sm" variant="outline" className="text-blue-600">
+                        <Edit className="w-3 h-3" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="text-red-600"
+                        onClick={() => handleDeleteProduct(product.id)}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+        <div className="flex items-center justify-between px-4 py-3 border-t">
+          <div className="text-sm text-gray-600">
+            Rows per page: 
+            <Select defaultValue="5">
+              <SelectTrigger className="w-16 ml-2 inline-flex">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="text-sm text-gray-600">
+            1-1 of 1
+          </div>
+        </div>
+      </div>
     </div>
   );
 
@@ -339,21 +732,6 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                 <h1 className="text-xl font-semibold text-gray-800">{t('dashboard_greeting')}</h1>
                 <p className="text-sm text-gray-600">{t('dashboard_subtitle')}</p>
               </div>
-              
-              {/* Boutique Selection */}
-              <div className="flex items-center gap-2">
-                <Select defaultValue="one">
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="Select boutique" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="one">One boutique</SelectItem>
-                    <SelectItem value="two">Two boutiques</SelectItem>
-                    <SelectItem value="three">Three boutiques</SelectItem>
-                    <SelectItem value="multiple">Multiple boutiques</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
             
             <div className="flex items-center gap-4">
@@ -392,6 +770,10 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                 {renderHomeCards()}
               </div>
             </div>
+          ) : currentSection === 'boutique' ? (
+            renderBoutiqueSection()
+          ) : currentSection === 'products' ? (
+            renderProductsSection()
           ) : currentSection === 'bizz' ? (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
@@ -410,7 +792,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                     </SelectContent>
                   </Select>
                   <Badge variant="secondary" className="bg-blue-100 text-[#0794FE]">
-                    {filteredProducts.length} Products Available
+                    {filteredBizzProducts.length} Products Available
                   </Badge>
                   <Button
                     variant="outline"
@@ -446,7 +828,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                {filteredProducts.map((product) => (
+                {filteredBizzProducts.map((product) => (
                   <ProductCard
                     key={product.id}
                     product={product}
