@@ -61,10 +61,12 @@ interface Product {
   name: string;
   reference: string;
   barcode: string;
-  quantity: number;
+  quantityInStock: number;
+  quantitySold: number;
   alert: number;
-  buyingPrice: number;
-  sellingPrice: number;
+  buyingPriceIncVat: number;
+  sellingPriceExcVat: number;
+  sellingPriceIncVat: number;
   rotation: string;
   status: 'Rapid' | 'Normal' | 'Slow';
 }
@@ -78,15 +80,19 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   const [selectedBoutique, setSelectedBoutique] = useState<number>(1);
   const [isAddBoutiqueOpen, setIsAddBoutiqueOpen] = useState(false);
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [isEditProductOpen, setIsEditProductOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newBoutique, setNewBoutique] = useState({ name: '', address: '' });
   const [newProduct, setNewProduct] = useState({
     name: '',
     reference: '',
     barcode: '',
-    quantity: 0,
+    quantityInStock: 0,
+    quantitySold: 0,
     alert: 0,
-    buyingPrice: 0,
-    sellingPrice: 0
+    buyingPriceIncVat: 0,
+    sellingPriceExcVat: 0,
+    sellingPriceIncVat: 0
   });
   
   const { t } = useContext(LanguageContext);
@@ -103,10 +109,12 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
       name: "Huile SL elio",
       reference: "HUI-001",
       barcode: "59446032664B",
-      quantity: 5,
+      quantityInStock: 5,
+      quantitySold: 45,
       alert: 50,
-      buyingPrice: 630.00,
-      sellingPrice: 650.00,
+      buyingPriceIncVat: 630.00,
+      sellingPriceExcVat: 550.00,
+      sellingPriceIncVat: 650.00,
       rotation: "5 days",
       status: 'Rapid'
     }
@@ -132,15 +140,15 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   ];
 
   const categories = [
-    { id: 'all', name: 'All Products' },
-    { id: 'beverages', name: 'Beverages' },
-    { id: 'snacks', name: 'Snacks' },
-    { id: 'cleaning', name: 'Cleaning' },
-    { id: 'meat-poultry', name: 'Meat & Poultry' },
-    { id: 'seafood', name: 'Seafood' },
-    { id: 'dairy', name: 'Dairy Products' },
-    { id: 'frozen', name: 'Frozen Foods' },
-    { id: 'canned', name: 'Canned Foods' }
+    { id: 'all', name: t('all_products') || 'All Products' },
+    { id: 'beverages', name: t('beverages') || 'Beverages' },
+    { id: 'snacks', name: t('snacks') || 'Snacks' },
+    { id: 'cleaning', name: t('cleaning') || 'Cleaning' },
+    { id: 'meat-poultry', name: t('meat_poultry') || 'Meat & Poultry' },
+    { id: 'seafood', name: t('seafood') || 'Seafood' },
+    { id: 'dairy', name: t('dairy') || 'Dairy Products' },
+    { id: 'frozen', name: t('frozen') || 'Frozen Foods' },
+    { id: 'canned', name: t('canned') || 'Canned Foods' }
   ];
 
   const bizzProducts = [
@@ -284,17 +292,40 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
         name: '',
         reference: '',
         barcode: '',
-        quantity: 0,
+        quantityInStock: 0,
+        quantitySold: 0,
         alert: 0,
-        buyingPrice: 0,
-        sellingPrice: 0
+        buyingPriceIncVat: 0,
+        sellingPriceExcVat: 0,
+        sellingPriceIncVat: 0
       });
       setIsAddProductOpen(false);
     }
   };
 
+  const handleEditProduct = (product: Product) => {
+    setEditingProduct(product);
+    setIsEditProductOpen(true);
+  };
+
+  const handleUpdateProduct = () => {
+    if (editingProduct) {
+      setProducts(prev => prev.map(p => 
+        p.id === editingProduct.id ? editingProduct : p
+      ));
+      setEditingProduct(null);
+      setIsEditProductOpen(false);
+    }
+  };
+
   const handleDeleteProduct = (productId: number) => {
     setProducts(prev => prev.filter(p => p.id !== productId));
+  };
+
+  const handleStatusChange = (productId: number, newStatus: 'Rapid' | 'Normal' | 'Slow') => {
+    setProducts(prev => prev.map(p => 
+      p.id === productId ? { ...p, status: newStatus } : p
+    ));
   };
 
   const getStatusColor = (status: string) => {
@@ -384,7 +415,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
             <div className="flex-1">
               <CardTitle className="text-lg text-gray-800">{t('products')}</CardTitle>
               <CardDescription className="text-sm text-gray-600 mt-1">
-                Manage your product inventory
+                {t('manage_product_inventory') || 'Manage your product inventory'}
               </CardDescription>
             </div>
             <ChevronRight className="w-5 h-5 text-gray-400" />
@@ -397,46 +428,46 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   const renderBoutiqueSection = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-800">Boutique Management</h2>
+        <h2 className="text-2xl font-bold text-gray-800">{t('boutique_management') || 'Boutique Management'}</h2>
         <Dialog open={isAddBoutiqueOpen} onOpenChange={setIsAddBoutiqueOpen}>
           <DialogTrigger asChild>
             <Button className="bg-[#0794FE] hover:bg-[#0670CC] text-white flex items-center gap-2">
               <Plus className="w-4 h-4" />
-              Add Boutique
+              {t('add_boutique') || 'Add Boutique'}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add New Boutique</DialogTitle>
+              <DialogTitle>{t('add_new_boutique') || 'Add New Boutique'}</DialogTitle>
               <DialogDescription>
-                Create a new boutique to manage your business locations.
+                {t('create_new_boutique_desc') || 'Create a new boutique to manage your business locations.'}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="boutique-name">Boutique Name</Label>
+                <Label htmlFor="boutique-name">{t('boutique_name') || 'Boutique Name'}</Label>
                 <Input
                   id="boutique-name"
                   value={newBoutique.name}
                   onChange={(e) => setNewBoutique(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Enter boutique name"
+                  placeholder={t('enter_boutique_name') || 'Enter boutique name'}
                 />
               </div>
               <div>
-                <Label htmlFor="boutique-address">Address</Label>
+                <Label htmlFor="boutique-address">{t('address') || 'Address'}</Label>
                 <Input
                   id="boutique-address"
                   value={newBoutique.address}
                   onChange={(e) => setNewBoutique(prev => ({ ...prev, address: e.target.value }))}
-                  placeholder="Enter boutique address"
+                  placeholder={t('enter_boutique_address') || 'Enter boutique address'}
                 />
               </div>
               <div className="flex gap-2">
                 <Button onClick={handleAddBoutique} className="bg-[#0794FE] hover:bg-[#0670CC]">
-                  Add Boutique
+                  {t('add_boutique') || 'Add Boutique'}
                 </Button>
                 <Button variant="outline" onClick={() => setIsAddBoutiqueOpen(false)}>
-                  Cancel
+                  {t('cancel') || 'Cancel'}
                 </Button>
               </div>
             </div>
@@ -459,14 +490,14 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-semibold text-gray-800">{boutique.name}</h3>
                 <Badge variant={boutique.isActive ? "default" : "secondary"}>
-                  {boutique.isActive ? "Active" : "Inactive"}
+                  {boutique.isActive ? t('active') || 'Active' : t('inactive') || 'Inactive'}
                 </Badge>
               </div>
               <p className="text-sm text-gray-600">{boutique.address}</p>
               <div className="flex gap-2 mt-3">
                 <Button size="sm" variant="outline" className="flex-1">
                   <Edit className="w-3 h-3 mr-1" />
-                  Edit
+                  {t('edit') || 'Edit'}
                 </Button>
                 <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700">
                   <Trash2 className="w-3 h-3" />
@@ -484,15 +515,15 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-800">
-            bonjour, {boutiques.find(b => b.id === selectedBoutique)?.name}
+            {t('hello')}, {boutiques.find(b => b.id === selectedBoutique)?.name}
           </h2>
-          <p className="text-gray-600">Start managing your supermarket</p>
+          <p className="text-gray-600">{t('start_managing_supermarket') || 'Start managing your supermarket'}</p>
         </div>
         <div className="flex items-center gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
-              placeholder="Search a product"
+              placeholder={t('search_product') || 'Search a product'}
               className="pl-10 w-64"
             />
           </div>
@@ -500,93 +531,114 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
             <DialogTrigger asChild>
               <Button className="bg-[#0794FE] hover:bg-[#0670CC] text-white flex items-center gap-2">
                 <Plus className="w-4 h-4" />
-                Add a product
+                {t('add_product') || 'Add a product'}
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-3xl">
               <DialogHeader>
-                <DialogTitle>Add New Product</DialogTitle>
+                <DialogTitle>{t('add_new_product') || 'Add New Product'}</DialogTitle>
                 <DialogDescription>
-                  Add a new product to your inventory.
+                  {t('add_product_desc') || 'Add a new product to your inventory.'}
                 </DialogDescription>
               </DialogHeader>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="product-name">Product Name</Label>
+                  <Label htmlFor="product-name">{t('product_name') || 'Product Name'}</Label>
                   <Input
                     id="product-name"
                     value={newProduct.name}
                     onChange={(e) => setNewProduct(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Enter product name"
+                    placeholder={t('enter_product_name') || 'Enter product name'}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="product-reference">Reference</Label>
+                  <Label htmlFor="product-reference">{t('reference') || 'Reference'}</Label>
                   <Input
                     id="product-reference"
                     value={newProduct.reference}
                     onChange={(e) => setNewProduct(prev => ({ ...prev, reference: e.target.value }))}
-                    placeholder="Enter reference"
+                    placeholder={t('enter_reference') || 'Enter reference'}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="product-barcode">Barcode</Label>
+                  <Label htmlFor="product-barcode">{t('barcode') || 'Barcode'}</Label>
                   <Input
                     id="product-barcode"
                     value={newProduct.barcode}
                     onChange={(e) => setNewProduct(prev => ({ ...prev, barcode: e.target.value }))}
-                    placeholder="Enter barcode"
+                    placeholder={t('enter_barcode') || 'Enter barcode'}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="product-quantity">Quantity</Label>
+                  <Label htmlFor="product-quantity-stock">{t('quantity_in_stock') || 'Quantity in Stock'}</Label>
                   <Input
-                    id="product-quantity"
+                    id="product-quantity-stock"
                     type="number"
-                    value={newProduct.quantity}
-                    onChange={(e) => setNewProduct(prev => ({ ...prev, quantity: parseInt(e.target.value) || 0 }))}
-                    placeholder="Enter quantity"
+                    value={newProduct.quantityInStock}
+                    onChange={(e) => setNewProduct(prev => ({ ...prev, quantityInStock: parseInt(e.target.value) || 0 }))}
+                    placeholder={t('enter_quantity_stock') || 'Enter quantity in stock'}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="product-alert">Alert Level</Label>
+                  <Label htmlFor="product-quantity-sold">{t('quantity_sold') || 'Quantity Sold'}</Label>
+                  <Input
+                    id="product-quantity-sold"
+                    type="number"
+                    value={newProduct.quantitySold}
+                    onChange={(e) => setNewProduct(prev => ({ ...prev, quantitySold: parseInt(e.target.value) || 0 }))}
+                    placeholder={t('enter_quantity_sold') || 'Enter quantity sold'}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="product-alert">{t('alert_level') || 'Alert Level'}</Label>
                   <Input
                     id="product-alert"
                     type="number"
                     value={newProduct.alert}
                     onChange={(e) => setNewProduct(prev => ({ ...prev, alert: parseInt(e.target.value) || 0 }))}
-                    placeholder="Enter alert level"
+                    placeholder={t('enter_alert_level') || 'Enter alert level'}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="product-buying-price">Buying Price (DZD)</Label>
+                  <Label htmlFor="product-buying-price-inc">{t('buying_price_inc_vat') || 'Buying Price (Inc. VAT)'}</Label>
                   <Input
-                    id="product-buying-price"
+                    id="product-buying-price-inc"
                     type="number"
                     step="0.01"
-                    value={newProduct.buyingPrice}
-                    onChange={(e) => setNewProduct(prev => ({ ...prev, buyingPrice: parseFloat(e.target.value) || 0 }))}
-                    placeholder="Enter buying price"
+                    value={newProduct.buyingPriceIncVat}
+                    onChange={(e) => setNewProduct(prev => ({ ...prev, buyingPriceIncVat: parseFloat(e.target.value) || 0 }))}
+                    placeholder={t('enter_buying_price_inc') || 'Enter buying price inc. VAT'}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="product-selling-price-exc">{t('selling_price_exc_vat') || 'Selling Price (Exc. VAT)'}</Label>
+                  <Input
+                    id="product-selling-price-exc"
+                    type="number"
+                    step="0.01"
+                    value={newProduct.sellingPriceExcVat}
+                    onChange={(e) => setNewProduct(prev => ({ ...prev, sellingPriceExcVat: parseFloat(e.target.value) || 0 }))}
+                    placeholder={t('enter_selling_price_exc') || 'Enter selling price exc. VAT'}
                   />
                 </div>
                 <div className="col-span-2">
-                  <Label htmlFor="product-selling-price">Selling Price (DZD)</Label>
+                  <Label htmlFor="product-selling-price-inc">{t('selling_price_inc_vat') || 'Selling Price (Inc. VAT)'}</Label>
                   <Input
-                    id="product-selling-price"
+                    id="product-selling-price-inc"
                     type="number"
                     step="0.01"
-                    value={newProduct.sellingPrice}
-                    onChange={(e) => setNewProduct(prev => ({ ...prev, sellingPrice: parseFloat(e.target.value) || 0 }))}
-                    placeholder="Enter selling price"
+                    value={newProduct.sellingPriceIncVat}
+                    onChange={(e) => setNewProduct(prev => ({ ...prev, sellingPriceIncVat: parseFloat(e.target.value) || 0 }))}
+                    placeholder={t('enter_selling_price_inc') || 'Enter selling price inc. VAT'}
                   />
                 </div>
               </div>
               <div className="flex gap-2">
                 <Button onClick={handleAddProduct} className="bg-[#0794FE] hover:bg-[#0670CC]">
-                  Add Product
+                  {t('add_product') || 'Add Product'}
                 </Button>
                 <Button variant="outline" onClick={() => setIsAddProductOpen(false)}>
-                  Cancel
+                  {t('cancel') || 'Cancel'}
                 </Button>
               </div>
             </DialogContent>
@@ -594,21 +646,128 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
         </div>
       </div>
 
+      {/* Edit Product Dialog */}
+      <Dialog open={isEditProductOpen} onOpenChange={setIsEditProductOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>{t('edit_product') || 'Edit Product'}</DialogTitle>
+            <DialogDescription>
+              {t('edit_product_desc') || 'Update product information.'}
+            </DialogDescription>
+          </DialogHeader>
+          {editingProduct && (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-product-name">{t('product_name') || 'Product Name'}</Label>
+                <Input
+                  id="edit-product-name"
+                  value={editingProduct.name}
+                  onChange={(e) => setEditingProduct(prev => prev ? ({ ...prev, name: e.target.value }) : null)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-product-reference">{t('reference') || 'Reference'}</Label>
+                <Input
+                  id="edit-product-reference"
+                  value={editingProduct.reference}
+                  onChange={(e) => setEditingProduct(prev => prev ? ({ ...prev, reference: e.target.value }) : null)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-product-barcode">{t('barcode') || 'Barcode'}</Label>
+                <Input
+                  id="edit-product-barcode"
+                  value={editingProduct.barcode}
+                  onChange={(e) => setEditingProduct(prev => prev ? ({ ...prev, barcode: e.target.value }) : null)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-product-quantity-stock">{t('quantity_in_stock') || 'Quantity in Stock'}</Label>
+                <Input
+                  id="edit-product-quantity-stock"
+                  type="number"
+                  value={editingProduct.quantityInStock}
+                  onChange={(e) => setEditingProduct(prev => prev ? ({ ...prev, quantityInStock: parseInt(e.target.value) || 0 }) : null)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-product-quantity-sold">{t('quantity_sold') || 'Quantity Sold'}</Label>
+                <Input
+                  id="edit-product-quantity-sold"
+                  type="number"
+                  value={editingProduct.quantitySold}
+                  onChange={(e) => setEditingProduct(prev => prev ? ({ ...prev, quantitySold: parseInt(e.target.value) || 0 }) : null)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-product-alert">{t('alert_level') || 'Alert Level'}</Label>
+                <Input
+                  id="edit-product-alert"
+                  type="number"
+                  value={editingProduct.alert}
+                  onChange={(e) => setEditingProduct(prev => prev ? ({ ...prev, alert: parseInt(e.target.value) || 0 }) : null)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-product-buying-price-inc">{t('buying_price_inc_vat') || 'Buying Price (Inc. VAT)'}</Label>
+                <Input
+                  id="edit-product-buying-price-inc"
+                  type="number"
+                  step="0.01"
+                  value={editingProduct.buyingPriceIncVat}
+                  onChange={(e) => setEditingProduct(prev => prev ? ({ ...prev, buyingPriceIncVat: parseFloat(e.target.value) || 0 }) : null)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-product-selling-price-exc">{t('selling_price_exc_vat') || 'Selling Price (Exc. VAT)'}</Label>
+                <Input
+                  id="edit-product-selling-price-exc"
+                  type="number"
+                  step="0.01"
+                  value={editingProduct.sellingPriceExcVat}
+                  onChange={(e) => setEditingProduct(prev => prev ? ({ ...prev, sellingPriceExcVat: parseFloat(e.target.value) || 0 }) : null)}
+                />
+              </div>
+              <div className="col-span-2">
+                <Label htmlFor="edit-product-selling-price-inc">{t('selling_price_inc_vat') || 'Selling Price (Inc. VAT)'}</Label>
+                <Input
+                  id="edit-product-selling-price-inc"
+                  type="number"
+                  step="0.01"
+                  value={editingProduct.sellingPriceIncVat}
+                  onChange={(e) => setEditingProduct(prev => prev ? ({ ...prev, sellingPriceIncVat: parseFloat(e.target.value) || 0 }) : null)}
+                />
+              </div>
+            </div>
+          )}
+          <div className="flex gap-2">
+            <Button onClick={handleUpdateProduct} className="bg-[#0794FE] hover:bg-[#0670CC]">
+              {t('update_product') || 'Update Product'}
+            </Button>
+            <Button variant="outline" onClick={() => setIsEditProductOpen(false)}>
+              {t('cancel') || 'Cancel'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Products Table */}
       <div className="bg-white rounded-lg shadow-sm border">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-[#0794FE] text-white">
               <tr>
-                <th className="px-4 py-3 text-left text-sm font-medium">Product</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">Reference</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">Barcode</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">Quantity</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">Alert</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">Buying Price</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">Selling Price</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">Rotation Status</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">Action</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">{t('product') || 'Product'}</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">{t('reference') || 'Reference'}</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">{t('barcode') || 'Barcode'}</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">{t('qty_stock') || 'Qty Stock'}</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">{t('qty_sold') || 'Qty Sold'}</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">{t('alert') || 'Alert'}</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">{t('buy_price_inc') || 'Buy Price (Inc)'}</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">{t('sell_price_exc') || 'Sell Price (Exc)'}</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">{t('sell_price_inc') || 'Sell Price (Inc)'}</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">{t('rotation_status') || 'Rotation Status'}</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">{t('action') || 'Action'}</th>
               </tr>
             </thead>
             <tbody>
@@ -617,21 +776,53 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                   <td className="px-4 py-3 text-sm">{product.name}</td>
                   <td className="px-4 py-3 text-sm">{product.reference}</td>
                   <td className="px-4 py-3 text-sm">{product.barcode}</td>
-                  <td className="px-4 py-3 text-sm">{product.quantity}</td>
+                  <td className="px-4 py-3 text-sm">{product.quantityInStock}</td>
+                  <td className="px-4 py-3 text-sm">{product.quantitySold}</td>
                   <td className="px-4 py-3 text-sm">{product.alert}</td>
-                  <td className="px-4 py-3 text-sm">{product.buyingPrice.toFixed(2)} DZD</td>
-                  <td className="px-4 py-3 text-sm">{product.sellingPrice.toFixed(2)} DZD</td>
+                  <td className="px-4 py-3 text-sm">{product.buyingPriceIncVat.toFixed(2)} DZD</td>
+                  <td className="px-4 py-3 text-sm">{product.sellingPriceExcVat.toFixed(2)} DZD</td>
+                  <td className="px-4 py-3 text-sm">{product.sellingPriceIncVat.toFixed(2)} DZD</td>
                   <td className="px-4 py-3 text-sm">
-                    <div className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${getStatusColor(product.status)}`}></span>
-                      <span className={`px-2 py-1 rounded text-xs font-medium text-white ${getStatusColor(product.status)}`}>
-                        {product.status}
-                      </span>
-                    </div>
+                    <Select 
+                      value={product.status} 
+                      onValueChange={(value: 'Rapid' | 'Normal' | 'Slow') => handleStatusChange(product.id, value)}
+                    >
+                      <SelectTrigger className="w-24">
+                        <div className="flex items-center gap-2">
+                          <span className={`w-2 h-2 rounded-full ${getStatusColor(product.status)}`}></span>
+                          <SelectValue />
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Rapid">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                            {t('rapid') || 'Rapid'}
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="Normal">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                            {t('normal') || 'Normal'}
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="Slow">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-gray-500"></span>
+                            {t('slow') || 'Slow'}
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                   </td>
                   <td className="px-4 py-3 text-sm">
                     <div className="flex gap-1">
-                      <Button size="sm" variant="outline" className="text-blue-600">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="text-blue-600"
+                        onClick={() => handleEditProduct(product)}
+                      >
                         <Edit className="w-3 h-3" />
                       </Button>
                       <Button 
@@ -652,7 +843,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
         
         <div className="flex items-center justify-between px-4 py-3 border-t">
           <div className="text-sm text-gray-600">
-            Rows per page: 
+            {t('rows_per_page') || 'Rows per page'}: 
             <Select defaultValue="5">
               <SelectTrigger className="w-16 ml-2 inline-flex">
                 <SelectValue />
@@ -665,7 +856,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
             </Select>
           </div>
           <div className="text-sm text-gray-600">
-            1-1 of 1
+            1-1 {t('of') || 'of'} 1
           </div>
         </div>
       </div>
@@ -688,7 +879,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
             <img 
               src="/lovable-uploads/5142faa5-d964-4021-b411-2ea1ad268901.png" 
               alt="EasyBizz Logo" 
-              className="h-8 w-8 flex-shrink-0"
+              className="h-6 w-6 flex-shrink-0"
             />
             {isHovered && (
               <span className="font-semibold text-gray-800 text-sm">EasyBizz</span>
@@ -738,7 +929,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
-                  placeholder="Search"
+                  placeholder={t('search') || 'Search'}
                   className="pl-10 w-64"
                 />
               </div>
@@ -781,7 +972,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                 <div className="flex items-center gap-4">
                   <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                     <SelectTrigger className="w-48">
-                      <SelectValue placeholder="Filter by category" />
+                      <SelectValue placeholder={t('filter_by_category') || 'Filter by category'} />
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map((category) => (
@@ -792,7 +983,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                     </SelectContent>
                   </Select>
                   <Badge variant="secondary" className="bg-blue-100 text-[#0794FE]">
-                    {filteredBizzProducts.length} Products Available
+                    {filteredBizzProducts.length} {t('products_available') || 'Products Available'}
                   </Badge>
                   <Button
                     variant="outline"
@@ -800,7 +991,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                     className="relative"
                   >
                     <ShoppingCart className="w-4 h-4" />
-                    Cart
+                    {t('cart') || 'Cart'}
                     {cart.length > 0 && (
                       <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1 min-w-[1.25rem] h-5">
                         {cart.length}
@@ -849,9 +1040,9 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                 <Package className="w-16 h-16 mx-auto" />
               </div>
               <h3 className="text-lg font-medium text-gray-600 mb-2">
-                {currentSection.charAt(0).toUpperCase() + currentSection.slice(1)} Section
+                {currentSection.charAt(0).toUpperCase() + currentSection.slice(1)} {t('section') || 'Section'}
               </h3>
-              <p className="text-gray-500">This section is under development</p>
+              <p className="text-gray-500">{t('section_under_development') || 'This section is under development'}</p>
             </div>
           )}
         </main>
