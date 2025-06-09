@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import ProductCard from "./ProductCard";
 import ProductDetail from "./ProductDetail";
+import CartPage from "./CartPage";
 import { LanguageContext } from "@/contexts/LanguageContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 
@@ -43,9 +44,13 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   const [cart, setCart] = useState<any[]>([]);
   const { t } = useContext(LanguageContext);
 
+  const BizzIcon = () => (
+    <img src="/lovable-uploads/b7b53d1c-2060-4de4-931d-52706bd84107.png" alt="Bizz" className="w-5 h-5" />
+  );
+
   const navigationItems = [
     { id: 'home', icon: Home, label: t('home') },
-    { id: 'bizz', icon: () => <img src="/lovable-uploads/b7b53d1c-2060-4de4-931d-52706bd84107.png" alt="Bizz" className="w-5 h-5" />, label: t('bizz') },
+    { id: 'bizz', icon: BizzIcon, label: t('bizz') },
     { id: 'analytics', icon: BarChart3, label: t('analytics') },
     { id: 'inventory', icon: Package, label: t('inventory') },
     { id: 'products', icon: ShoppingCart, label: t('products') },
@@ -196,7 +201,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
         <CardHeader className="pb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-50 rounded-lg">
-              <img src="/lovable-uploads/b7b53d1c-2060-4de4-931d-52706bd84107.png" alt="Bizz" className="w-6 h-6" />
+              <BizzIcon />
             </div>
             <div className="flex-1">
               <CardTitle className="text-lg text-gray-800">{t('buy_products')}</CardTitle>
@@ -256,7 +261,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
         <CardHeader className="pb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-50 rounded-lg">
-              <img src="/lovable-uploads/b7b53d1c-2060-4de4-931d-52706bd84107.png" alt="Bizz" className="w-6 h-6" />
+              <BizzIcon />
             </div>
             <div className="flex-1">
               <CardTitle className="text-lg text-gray-800">{t('buy_products')}</CardTitle>
@@ -311,7 +316,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
                 }`}
               >
-                {typeof Icon === 'function' ? <Icon /> : <Icon className="w-5 h-5 flex-shrink-0" />}
+                <Icon className="w-5 h-5 flex-shrink-0" />
                 {isHovered && (
                   <span className="truncate">{item.label}</span>
                 )}
