@@ -1,4 +1,3 @@
-
 import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,11 +40,12 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   const [currentSection, setCurrentSection] = useState('home');
   const [isHovered, setIsHovered] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [cart, setCart] = useState<any[]>([]);
   const { t } = useContext(LanguageContext);
 
   const navigationItems = [
     { id: 'home', icon: Home, label: t('home') },
-    { id: 'bizz', icon: Package2, label: t('bizz') },
+    { id: 'bizz', icon: () => <img src="/lovable-uploads/b7b53d1c-2060-4de4-931d-52706bd84107.png" alt="Bizz" className="w-5 h-5" />, label: t('bizz') },
     { id: 'analytics', icon: BarChart3, label: t('analytics') },
     { id: 'inventory', icon: Package, label: t('inventory') },
     { id: 'products', icon: ShoppingCart, label: t('products') },
@@ -150,6 +150,30 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     ? products 
     : products.filter(product => product.category === selectedCategory);
 
+  const addToCart = (product: any, quantity: number, seller: any) => {
+    const cartItem = {
+      id: Date.now(),
+      product,
+      quantity,
+      seller,
+      unitPrice: parseFloat(seller.price.replace(' DZD', '')),
+      totalPrice: parseFloat(seller.price.replace(' DZD', '')) * quantity
+    };
+    setCart(prev => [...prev, cartItem]);
+  };
+
+  const removeFromCart = (itemId: number) => {
+    setCart(prev => prev.filter(item => item.id !== itemId));
+  };
+
+  const updateCartQuantity = (itemId: number, newQuantity: number) => {
+    setCart(prev => prev.map(item => 
+      item.id === itemId 
+        ? { ...item, quantity: newQuantity, totalPrice: item.unitPrice * newQuantity }
+        : item
+    ));
+  };
+
   const handleNavClick = (id: string) => {
     if (id === 'logout') {
       onLogout();
@@ -160,7 +184,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   };
 
   if (selectedProduct) {
-    return <ProductDetail product={selectedProduct} onBack={() => setSelectedProduct(null)} />;
+    return <ProductDetail product={selectedProduct} onBack={() => setSelectedProduct(null)} onAddToCart={addToCart} />;
   }
 
   const renderHomeCards = () => (
@@ -172,7 +196,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
         <CardHeader className="pb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-50 rounded-lg">
-              <Package2 className="w-6 h-6 text-[#0794FE]" />
+              <img src="/lovable-uploads/b7b53d1c-2060-4de4-931d-52706bd84107.png" alt="Bizz" className="w-6 h-6" />
             </div>
             <div className="flex-1">
               <CardTitle className="text-lg text-gray-800">{t('buy_products')}</CardTitle>
@@ -232,7 +256,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
         <CardHeader className="pb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-50 rounded-lg">
-              <Package2 className="w-6 h-6 text-[#0794FE]" />
+              <img src="/lovable-uploads/b7b53d1c-2060-4de4-931d-52706bd84107.png" alt="Bizz" className="w-6 h-6" />
             </div>
             <div className="flex-1">
               <CardTitle className="text-lg text-gray-800">{t('buy_products')}</CardTitle>
@@ -249,7 +273,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Dynamic Sidebar */}
+      {/* Dynamic Sidebar - Always Visible */}
       <div 
         className={`bg-white border-r border-gray-200 transition-all duration-300 flex flex-col ${
           isHovered ? 'w-64' : 'w-16'
@@ -287,7 +311,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
                 }`}
               >
-                <Icon className="w-5 h-5 flex-shrink-0" />
+                {typeof Icon === 'function' ? <Icon /> : <Icon className="w-5 h-5 flex-shrink-0" />}
                 {isHovered && (
                   <span className="truncate">{item.label}</span>
                 )}
@@ -299,13 +323,31 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
-        {/* Header */}
+        {/* Header - Always Visible */}
         <header className="bg-white border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-semibold text-gray-800">{t('dashboard_greeting')}</h1>
-              <p className="text-sm text-gray-600">{t('dashboard_subtitle')}</p>
+            <div className="flex items-center gap-4">
+              <div>
+                <h1 className="text-xl font-semibold text-gray-800">{t('dashboard_greeting')}</h1>
+                <p className="text-sm text-gray-600">{t('dashboard_subtitle')}</p>
+              </div>
+              
+              {/* Boutique Selection */}
+              <div className="flex items-center gap-2">
+                <Select defaultValue="one">
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Select boutique" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="one">One boutique</SelectItem>
+                    <SelectItem value="two">Two boutiques</SelectItem>
+                    <SelectItem value="three">Three boutiques</SelectItem>
+                    <SelectItem value="multiple">Multiple boutiques</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
+            
             <div className="flex items-center gap-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -315,6 +357,18 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                 />
               </div>
               <LanguageSwitcher />
+              <Button
+                variant="outline"
+                onClick={() => setCurrentSection('cart')}
+                className="relative"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                {cart.length > 0 && (
+                  <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1 min-w-[1.25rem] h-5">
+                    {cart.length}
+                  </Badge>
+                )}
+              </Button>
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-[#0794FE] rounded-full flex items-center justify-center text-white text-sm font-medium">
                   B
@@ -330,15 +384,19 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 
         {/* Content */}
         <main className="flex-1 p-6">
-          {currentSection === 'home' && (
+          {selectedProduct ? (
+            <ProductDetail 
+              product={selectedProduct} 
+              onBack={() => setSelectedProduct(null)}
+              onAddToCart={addToCart}
+            />
+          ) : currentSection === 'home' ? (
             <div className="space-y-6">
               <div className="flex items-center justify-center">
                 {renderHomeCards()}
               </div>
             </div>
-          )}
-
-          {currentSection === 'bizz' && (
+          ) : currentSection === 'bizz' ? (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-gray-800">{t('buy_products')}</h2>
@@ -388,9 +446,13 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                 ))}
               </div>
             </div>
-          )}
-
-          {(currentSection === 'analytics' || currentSection === 'inventory' || currentSection === 'products') && (
+          ) : currentSection === 'cart' ? (
+            <CartPage 
+              cartItems={cart}
+              onRemoveItem={removeFromCart}
+              onUpdateQuantity={updateCartQuantity}
+            />
+          ) : (
             <div className="text-center py-12">
               <div className="text-gray-400 mb-4">
                 <Package className="w-16 h-16 mx-auto" />

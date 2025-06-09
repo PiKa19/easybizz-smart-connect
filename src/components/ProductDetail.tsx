@@ -37,9 +37,10 @@ interface Product {
 interface ProductDetailProps {
   product: Product;
   onBack: () => void;
+  onAddToCart: (product: Product, quantity: number, seller: Seller) => void;
 }
 
-const ProductDetail = ({ product, onBack }: ProductDetailProps) => {
+const ProductDetail = ({ product, onBack, onAddToCart }: ProductDetailProps) => {
   const [quantity, setQuantity] = useState(150);
   const [selectedSeller, setSelectedSeller] = useState(
     product.sellers?.find(seller => seller.isDefault) || product.sellers?.[0]
@@ -49,6 +50,13 @@ const ProductDetail = ({ product, onBack }: ProductDetailProps) => {
     const seller = product.sellers?.find(s => s.id === parseInt(sellerId));
     if (seller) {
       setSelectedSeller(seller);
+    }
+  };
+
+  const handleAddToCart = () => {
+    if (selectedSeller) {
+      onAddToCart(product, quantity, selectedSeller);
+      // You could add a toast notification here
     }
   };
 
@@ -175,7 +183,10 @@ const ProductDetail = ({ product, onBack }: ProductDetailProps) => {
           </div>
 
           {/* Add to Cart Button */}
-          <Button className="w-full bg-[#0794FE] hover:bg-[#0670CC] text-white py-3 rounded-lg font-medium flex items-center gap-2">
+          <Button 
+            onClick={handleAddToCart}
+            className="w-full bg-[#0794FE] hover:bg-[#0670CC] text-white py-3 rounded-lg font-medium flex items-center gap-2"
+          >
             <ShoppingCart className="w-4 h-4" />
             Add to Cart
           </Button>
