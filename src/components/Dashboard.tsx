@@ -51,7 +51,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     {
       id: 1,
       name: "Premium Shampoo",
-      price: 1500,
+      price: "1500 DZD",
       supplier: "Beauty Supplies Co.",
       image: "/placeholder.svg",
       description: "Professional grade shampoo for all hair types",
@@ -306,7 +306,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                   <ProductCard
                     key={product.id}
                     product={product}
-                    onViewDetails={setSelectedProduct}
+                    onSelect={setSelectedProduct}
                   />
                 ))}
               </div>
