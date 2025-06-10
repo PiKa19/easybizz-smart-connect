@@ -79,6 +79,8 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   const [cart, setCart] = useState<any[]>([]);
   const [selectedBoutique, setSelectedBoutique] = useState<number>(1);
   const [isAddBoutiqueOpen, setIsAddBoutiqueOpen] = useState(false);
+  const [isEditBoutiqueOpen, setIsEditBoutiqueOpen] = useState(false);
+  const [editingBoutique, setEditingBoutique] = useState<Boutique | null>(null);
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [isEditProductOpen, setIsEditProductOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -265,6 +267,29 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     }
   };
 
+  const handleSelectBoutique = (boutiqueId: number) => {
+    setBoutiques(prev => prev.map(b => ({
+      ...b,
+      isActive: b.id === boutiqueId
+    })));
+    setSelectedBoutique(boutiqueId);
+  };
+
+  const handleEditBoutique = (boutique: Boutique) => {
+    setEditingBoutique(boutique);
+    setIsEditBoutiqueOpen(true);
+  };
+
+  const handleUpdateBoutique = () => {
+    if (editingBoutique) {
+      setBoutiques(prev => prev.map(b => 
+        b.id === editingBoutique.id ? editingBoutique : b
+      ));
+      setEditingBoutique(null);
+      setIsEditBoutiqueOpen(false);
+    }
+  };
+
   const handleAddBoutique = () => {
     if (newBoutique.name && newBoutique.address) {
       const newId = Math.max(...boutiques.map(b => b.id)) + 1;
@@ -336,10 +361,6 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
       default: return 'bg-gray-500';
     }
   };
-
-  if (selectedProduct) {
-    return <ProductDetail product={selectedProduct} onBack={() => setSelectedProduct(null)} onAddToCart={addToCart} />;
-  }
 
   const renderHomeCards = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
@@ -475,16 +496,56 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
         </Dialog>
       </div>
 
+      {/* Edit Boutique Dialog */}
+      <Dialog open={isEditBoutiqueOpen} onOpenChange={setIsEditBoutiqueOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Boutique</DialogTitle>
+            <DialogDescription>
+              Update boutique information.
+            </DialogDescription>
+          </DialogHeader>
+          {editingBoutique && (
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="edit-boutique-name">Boutique Name</Label>
+                <Input
+                  id="edit-boutique-name"
+                  value={editingBoutique.name}
+                  onChange={(e) => setEditingBoutique(prev => prev ? ({ ...prev, name: e.target.value }) : null)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-boutique-address">Address</Label>
+                <Input
+                  id="edit-boutique-address"
+                  value={editingBoutique.address}
+                  onChange={(e) => setEditingBoutique(prev => prev ? ({ ...prev, address: e.target.value }) : null)}
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={handleUpdateBoutique} className="bg-[#0794FE] hover:bg-[#0670CC]">
+                  Update Boutique
+                </Button>
+                <Button variant="outline" onClick={() => setIsEditBoutiqueOpen(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {boutiques.map((boutique) => (
           <Card 
             key={boutique.id} 
             className={`cursor-pointer transition-all ${
-              selectedBoutique === boutique.id 
+              boutique.isActive 
                 ? 'ring-2 ring-[#0794FE] bg-blue-50' 
                 : 'hover:shadow-md'
             }`}
-            onClick={() => setSelectedBoutique(boutique.id)}
+            onClick={() => handleSelectBoutique(boutique.id)}
           >
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-2">
@@ -495,7 +556,15 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
               </div>
               <p className="text-sm text-gray-600">{boutique.address}</p>
               <div className="flex gap-2 mt-3">
-                <Button size="sm" variant="outline" className="flex-1">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEditBoutique(boutique);
+                  }}
+                >
                   <Edit className="w-3 h-3 mr-1" />
                   {t('edit') || 'Edit'}
                 </Button>
@@ -515,7 +584,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-800">
-            {t('hello')}, {boutiques.find(b => b.id === selectedBoutique)?.name}
+            {t('hello')}, {boutiques.find(b => b.isActive)?.name || boutiques.find(b => b.id === selectedBoutique)?.name}
           </h2>
           <p className="text-gray-600">{t('start_managing_supermarket') || 'Start managing your supermarket'}</p>
         </div>

@@ -1,4 +1,3 @@
-
 import { useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -171,38 +170,50 @@ const Index = () => {
       </section>
 
       {/* Contact Footer */}
-      <footer id="contact" className="bg-white py-12 px-6 mt-16">
+      <footer id="contact" className="bg-[#0794FE] py-12 px-6 mt-16">
         <div className="container mx-auto">
-          <h2 className="text-2xl font-bold text-center text-blue-900 mb-8">{t('contact_us')}</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto text-center">
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <Mail className="w-6 h-6 text-[#0794FE]" />
-              </div>
-              <h3 className="font-semibold text-blue-900 mb-2">Email</h3>
-              <p className="text-gray-600">EasyBizz@gmail.com</p>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-white">
+            {/* EASYBIZZ Section */}
+            <div>
+              <h3 className="font-bold text-lg mb-4">EASYBIZZ</h3>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className="hover:underline">À propos</a></li>
+                <li><a href="#" className="hover:underline">Notre équipe</a></li>
+              </ul>
             </div>
 
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <Phone className="w-6 h-6 text-[#0794FE]" />
-              </div>
-              <h3 className="font-semibold text-blue-900 mb-2">Phone</h3>
-              <p className="text-gray-600">+213 778 84 74 73</p>
+            {/* Resources Section */}
+            <div>
+              <h3 className="font-bold text-lg mb-4">Resources</h3>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className="hover:underline">Blog</a></li>
+                <li><a href="#" className="hover:underline">portfolio</a></li>
+                <li><a href="#" className="hover:underline">partenariat</a></li>
+              </ul>
             </div>
 
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <MapPin className="w-6 h-6 text-[#0794FE]" />
-              </div>
-              <h3 className="font-semibold text-blue-900 mb-2">Location</h3>
-              <p className="text-gray-600">Pôle universitaire de Koléa,<br />42003, Tipaza, Algérie</p>
+            {/* Legal Section */}
+            <div>
+              <h3 className="font-bold text-lg mb-4">Legal</h3>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className="hover:underline">Conditions d'utilisation</a></li>
+                <li><a href="#" className="hover:underline">Politique des cookies</a></li>
+                <li><a href="#" className="hover:underline">Politique de confidentialité</a></li>
+              </ul>
+            </div>
+
+            {/* Nos produits Section */}
+            <div>
+              <h3 className="font-bold text-lg mb-4">Nos produits</h3>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className="hover:underline">Easybizz caisse</a></li>
+                <li><a href="#" className="hover:underline">Easybizz</a></li>
+              </ul>
             </div>
           </div>
 
-          <div className="text-center mt-8 pt-8 border-t border-gray-200">
-            <p className="text-gray-500 text-sm">All rights reserved easybizz 2025</p>
+          <div className="text-center mt-8 pt-8 border-t border-blue-400">
+            <p className="text-white text-sm">depuis 2025</p>
           </div>
         </div>
       </footer>

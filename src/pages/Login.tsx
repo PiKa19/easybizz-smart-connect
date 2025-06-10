@@ -1,4 +1,3 @@
-
 import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,13 +10,20 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
   const { t } = useContext(LanguageContext);
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate authentication
-    navigate('/dashboard');
+    setError("");
+
+    // Check for the specific allowed user
+    if (email === "baraka@gmail.com" && password === "baraka123") {
+      navigate('/dashboard');
+    } else {
+      setError("Invalid email or password. Please use baraka@gmail.com with password baraka123");
+    }
   };
 
   return (
@@ -33,6 +39,12 @@ const Login = () => {
           <h1 className="text-2xl font-bold text-gray-800">{t('welcome_back')}</h1>
           <p className="text-gray-600 mt-2">{t('login_subtitle')}</p>
         </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
