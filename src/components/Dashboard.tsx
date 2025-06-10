@@ -20,7 +20,11 @@ import {
   Store,
   Plus,
   Edit,
-  Trash2
+  Trash2,
+  List,
+  ClipboardList,
+  Download,
+  ChevronLeft
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -69,6 +73,27 @@ interface Product {
   sellingPriceIncVat: number;
   rotation: string;
   status: 'Rapid' | 'Normal' | 'Slow';
+}
+
+interface Order {
+  id: string;
+  supplierId: number;
+  supplierName: string;
+  date: string;
+  amount: number;
+  status: 'confirmed' | 'on-hold' | 'canceled' | 'delivered';
+  items: any[];
+}
+
+interface Supplier {
+  id: number;
+  name: string;
+  rating: string;
+  reviews: number;
+  items: number;
+  badges: string[];
+  categories: { name: string; count: number }[];
+  products: any[];
 }
 
 const Dashboard = ({ onLogout }: DashboardProps) => {
@@ -122,6 +147,53 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     }
   ]);
 
+  const [orders, setOrders] = useState<Order[]>([
+    {
+      id: "10545",
+      supplierId: 1,
+      supplierName: "FRS Semmar",
+      date: "15/06/2025",
+      amount: 5000.00,
+      status: 'confirmed',
+      items: []
+    }
+  ]);
+  const [orderSearchTerm, setOrderSearchTerm] = useState('');
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
+  
+  const suppliers: Supplier[] = [
+    {
+      id: 1,
+      name: "Ultimate_choices",
+      rating: "100%",
+      reviews: 86288,
+      items: 12772,
+      badges: ["EXCELLENT SELLER"],
+      categories: [
+        { name: "Gaming", count: 3689 },
+        { name: "Software", count: 50 },
+        { name: "Gift cards", count: 9452 },
+        { name: "Subscriptions", count: 251 },
+        { name: "Mobile Games", count: 97 },
+        { name: "For Adults", count: 25 }
+      ],
+      products: [
+        {
+          id: 1,
+          name: "Microsoft Windows 11 Pro - PC",
+          platform: "Microsoft",
+          type: "Key",
+          region: "GLOBAL",
+          price: 22.13,
+          originalPrice: 148.02,
+          discount: 85,
+          canActivateInAlgeria: true,
+          image: "/api/placeholder/100/100"
+        }
+      ]
+    }
+  ];
+
   const BizzIcon = () => (
     <img src="/lovable-uploads/b7b53d1c-2060-4de4-931d-52706bd84107.png" alt="Bizz" className="w-5 h-5" />
   );
@@ -132,7 +204,8 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     { id: 'bizz', icon: BizzIcon, label: t('bizz') },
     { id: 'analytics', icon: BarChart3, label: t('analytics') },
     { id: 'inventory', icon: Package, label: t('inventory') },
-    { id: 'products', icon: Package2, label: t('products') },
+    { id: 'products', icon: List, label: t('products') },
+    { id: 'orders', icon: ClipboardList, label: t('orders') || 'Orders' },
     { id: 'historique', icon: History, label: t('historique') },
     { id: 'notification', icon: Bell, label: t('notification') },
     { id: 'cashier', icon: CreditCard, label: t('cashier') },
@@ -234,6 +307,11 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     ? bizzProducts 
     : bizzProducts.filter(product => product.category === selectedCategory);
 
+  const filteredOrders = orders.filter(order => 
+    order.id.toLowerCase().includes(orderSearchTerm.toLowerCase()) ||
+    order.supplierName.toLowerCase().includes(orderSearchTerm.toLowerCase())
+  );
+
   const addToCart = (product: any, quantity: number, seller: any) => {
     const cartItem = {
       id: Date.now(),
@@ -264,6 +342,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     } else {
       setCurrentSection(id);
       setSelectedProduct(null);
+      setSelectedSupplier(null);
     }
   };
 
@@ -353,12 +432,44 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     ));
   };
 
+  const handleOrderStatusChange = (orderId: string, newStatus: 'confirmed' | 'on-hold' | 'canceled' | 'delivered') => {
+    setOrders(prev => prev.map(order => 
+      order.id === orderId ? { ...order, status: newStatus } : order
+    ));
+  };
+
+  const handleDownloadBill = (orderId: string) => {
+    // Simulate bill download
+    console.log(`Downloading bill for order ${orderId}`);
+  };
+
+  const handleViewSupplier = (supplierId: number) => {
+    const supplier = suppliers.find(s => s.id === supplierId);
+    if (supplier) {
+      setSelectedSupplier(supplier);
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Rapid': return 'bg-red-500';
       case 'Normal': return 'bg-blue-500';
       case 'Slow': return 'bg-gray-500';
+      case 'confirmed': return 'bg-green-500';
+      case 'on-hold': return 'bg-yellow-500';
+      case 'canceled': return 'bg-red-500';
+      case 'delivered': return 'bg-blue-500';
       default: return 'bg-gray-500';
+    }
+  };
+
+  const getStatusTextColor = (status: string) => {
+    switch (status) {
+      case 'confirmed': return 'text-green-600';
+      case 'on-hold': return 'text-yellow-600';
+      case 'canceled': return 'text-red-600';
+      case 'delivered': return 'text-blue-600';
+      default: return 'text-gray-600';
     }
   };
 
@@ -932,6 +1043,239 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     </div>
   );
 
+  const renderOrdersSection = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-800">{t('orders') || 'Orders'}</h2>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Input
+            placeholder={t('search_order_id_supplier') || 'Search by order ID or supplier name'}
+            className="pl-10 w-80"
+            value={orderSearchTerm}
+            onChange={(e) => setOrderSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-sm border">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-[#0794FE] text-white">
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-medium">{t('order_id') || 'Order ID'}</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">{t('supplier') || 'Supplier'}</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">{t('date') || 'Date'}</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">{t('amount') || 'Amount'}</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">{t('status') || 'Status'}</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">{t('actions') || 'Actions'}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredOrders.map((order) => (
+                <tr key={order.id} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-3 text-sm font-medium">{order.id}</td>
+                  <td className="px-4 py-3 text-sm">
+                    <button 
+                      className="text-[#0794FE] hover:underline"
+                      onClick={() => handleViewSupplier(order.supplierId)}
+                    >
+                      {order.supplierName}
+                    </button>
+                  </td>
+                  <td className="px-4 py-3 text-sm">{order.date}</td>
+                  <td className="px-4 py-3 text-sm font-medium">{order.amount.toFixed(2)} DZD</td>
+                  <td className="px-4 py-3 text-sm">
+                    <Select 
+                      value={order.status} 
+                      onValueChange={(value: 'confirmed' | 'on-hold' | 'canceled' | 'delivered') => 
+                        handleOrderStatusChange(order.id, value)
+                      }
+                    >
+                      <SelectTrigger className="w-32">
+                        <div className="flex items-center gap-2">
+                          <span className={`w-2 h-2 rounded-full ${getStatusColor(order.status)}`}></span>
+                          <SelectValue />
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="confirmed">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                            {t('confirmed') || 'Confirmed'}
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="on-hold">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
+                            {t('on_hold') || 'On Hold'}
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="canceled">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                            {t('canceled') || 'Canceled'}
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="delivered">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                            {t('delivered') || 'Delivered'}
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </td>
+                  <td className="px-4 py-3 text-sm">
+                    <div className="flex gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handleDownloadBill(order.id)}
+                        className="text-[#0794FE]"
+                      >
+                        <Download className="w-3 h-3 mr-1" />
+                        {t('download_bill') || 'Download Bill'}
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        className="bg-[#0794FE] hover:bg-[#0670CC] text-white"
+                      >
+                        {t('learn_more') || 'En savoir plus'}
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderSupplierProfile = () => {
+    if (!selectedSupplier) return null;
+
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4 mb-6">
+          <Button 
+            variant="outline" 
+            onClick={() => setSelectedSupplier(null)}
+            className="flex items-center gap-2"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            {t('back') || 'Back'}
+          </Button>
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+              <span className="text-white text-xl font-bold">
+                {selectedSupplier.name.charAt(0).toUpperCase()}
+              </span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">{selectedSupplier.name}</h1>
+              <div className="flex items-center gap-4 mt-1">
+                <Badge className="bg-blue-100 text-blue-800">EXCELLENT SELLER</Badge>
+                <span className="text-sm text-gray-600">
+                  {selectedSupplier.rating} Positive feedback | {selectedSupplier.reviews.toLocaleString()} reviews
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="lg:col-span-1">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Categories</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {selectedSupplier.categories.map((category, index) => (
+                  <div key={index} className="flex justify-between items-center">
+                    <span className="text-sm text-gray-700">{category.name}</span>
+                    <Badge variant="secondary" className="text-xs">
+                      {category.count.toLocaleString()}
+                    </Badge>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="lg:col-span-3">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">
+                Seller's items ({selectedSupplier.items.toLocaleString()} items)
+              </h2>
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Input placeholder="Search" className="pl-10 w-64" />
+                </div>
+                <Select defaultValue="best-match">
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="best-match">Best match</SelectItem>
+                    <SelectItem value="price-low">Price: Low to High</SelectItem>
+                    <SelectItem value="price-high">Price: High to Low</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {selectedSupplier.products.map((product) => (
+                <Card key={product.id} className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <img 
+                        src={product.image} 
+                        alt={product.name}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                      <div className="flex-1">
+                        <h3 className="font-medium text-sm mb-1">{product.name}</h3>
+                        <div className="text-xs text-gray-600 space-y-1">
+                          <div>Platform: {product.platform}</div>
+                          <div>Type: {product.type}</div>
+                          <div>Region: {product.region}</div>
+                          {product.canActivateInAlgeria && (
+                            <div className="text-green-600 flex items-center gap-1">
+                              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                              Can activate in: Algeria
+                            </div>
+                          )}
+                        </div>
+                        <div className="mt-2 flex items-center gap-2">
+                          <span className="font-bold text-lg">{product.price} USD</span>
+                          {product.originalPrice && (
+                            <>
+                              <span className="text-sm text-gray-500 line-through">
+                                {product.originalPrice} USD
+                              </span>
+                              <Badge className="bg-red-100 text-red-800 text-xs">
+                                -{product.discount}%
+                              </Badge>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Dynamic Sidebar - Always Visible */}
@@ -1018,7 +1362,9 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 
         {/* Content */}
         <main className="flex-1 p-6">
-          {selectedProduct ? (
+          {selectedSupplier ? (
+            renderSupplierProfile()
+          ) : selectedProduct ? (
             <ProductDetail 
               product={selectedProduct} 
               onBack={() => setSelectedProduct(null)}
@@ -1034,6 +1380,8 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
             renderBoutiqueSection()
           ) : currentSection === 'products' ? (
             renderProductsSection()
+          ) : currentSection === 'orders' ? (
+            renderOrdersSection()
           ) : currentSection === 'bizz' ? (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
