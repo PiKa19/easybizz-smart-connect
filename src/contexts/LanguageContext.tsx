@@ -1,508 +1,180 @@
+import React, { createContext, useState, useEffect } from 'react';
+import i18next from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
 
-import React, { createContext, useState, ReactNode } from 'react';
-
-interface LanguageContextType {
-  language: 'en' | 'fr';
-  setLanguage: (lang: 'en' | 'fr') => void;
-  t: (key: string) => string;
+interface LanguageContextProps {
+  language: string;
+  setLanguage: (lang: string) => void;
+  t: i18next.TFunction;
 }
 
 const translations = {
   en: {
-    // Navigation
     home: "Home",
     bizz: "Bizz",
-    analytics: "Analytics", 
+    analytics: "Analytics",
     inventory: "Inventory",
     products: "Products",
+    orders: "Orders",
+    suppliers: "Suppliers",
     historique: "History",
     notification: "Notification",
     cashier: "Cashier",
+    messages: "Messages",
     settings: "Settings",
     logout: "Logout",
-    faq: "FAQ",
-    boutique: "Boutique",
-    suppliers: "Suppliers",
-    orders: "Orders",
-    
-    // Home page
     welcome: "Welcome",
-    dashboard_greeting: "bonjour, supérette elbaraka",
-    dashboard_subtitle: "Start managing your supermarket",
-    buy_products: "Buy products",
-    buy_products_desc: "browse and order directly from suppliers",
-    view_analytics: "view analytics",
-    view_analytics_desc: "browse and order directly from suppliers",
-    inventory_management: "Inventory management",
-    inventory_management_desc: "browse and order directly from suppliers",
-    manage_product_inventory: "Manage your product inventory",
+    dashboard_greeting: "Here's what's happening with your supermarket today.",
+    dashboard_subtitle: "Stay up to date and manage your business effectively.",
+    buy_products: "Buy Products",
+    buy_products_desc: "Explore and purchase new products for your supermarket.",
+    view_analytics: "View Analytics",
+    view_analytics_desc: "Analyze your supermarket's performance and trends.",
+    inventory_management: "Inventory Management",
+    inventory_management_desc: "Manage your stock levels and track product availability.",
+    section: "Section under development",
+    section_under_development: "This section is currently under development. Please check back later.",
+    search_product: "Search for a product...",
     
-    // Boutique Management
+    // New translations for restored sections
     boutique_management: "Boutique Management",
+    select_boutique: "Select boutique",
     add_boutique: "Add Boutique",
-    add_new_boutique: "Add New Boutique",
-    create_new_boutique_desc: "Create a new boutique to manage your business locations.",
-    boutique_name: "Boutique Name",
-    enter_boutique_name: "Enter boutique name",
-    address: "Address",
-    enter_boutique_address: "Enter boutique address",
-    active: "Active",
-    inactive: "Inactive",
     edit: "Edit",
-    cancel: "Cancel",
+    previous_page: "Previous Page",
     
-    // Product Management
-    add_product: "Add a product",
-    add_new_product: "Add New Product",
-    add_product_desc: "Add a new product to your inventory.",
-    edit_product: "Edit Product",
-    edit_product_desc: "Update product information.",
-    update_product: "Update Product",
-    product_name: "Product Name",
-    enter_product_name: "Enter product name",
-    reference: "Reference",
-    enter_reference: "Enter reference",
-    barcode: "Barcode",
-    enter_barcode: "Enter barcode",
-    quantity_in_stock: "Quantity in Stock",
-    enter_quantity_stock: "Enter quantity in stock",
-    quantity_sold: "Quantity Sold",
-    enter_quantity_sold: "Enter quantity sold",
-    alert_level: "Alert Level",
-    enter_alert_level: "Enter alert level",
-    buying_price_inc_vat: "Buying Price (Inc. VAT)",
-    enter_buying_price_inc: "Enter buying price inc. VAT",
-    selling_price_exc_vat: "Selling Price (Exc. VAT)",
-    enter_selling_price_exc: "Enter selling price exc. VAT",
-    selling_price_inc_vat: "Selling Price (Inc. VAT)",
-    enter_selling_price_inc: "Enter selling price inc. VAT",
-    
-    // Table Headers
+    // Products section
     product: "Product",
+    reference: "Reference", 
+    barcode: "Barcode",
     qty_stock: "Qty Stock",
     qty_sold: "Qty Sold",
     alert: "Alert",
-    buy_price_inc: "Buy Price (Inc)",
-    sell_price_exc: "Sell Price (Exc)",
-    sell_price_inc: "Sell Price (Inc)",
+    buy_price: "Buy Price",
+    sell_price_ht: "Sell Price (HT)",
+    sell_price_ttc: "Sell Price (TTC)",
     rotation_status: "Rotation Status",
-    action: "Action",
-    
-    // Status
-    rapid: "Rapid",
-    normal: "Normal",
-    slow: "Slow",
-    
-    // General
-    search: "Search",
-    search_product: "Search a product",
-    hello: "bonjour",
-    start_managing_supermarket: "Start managing your supermarket",
+    add_product: "Add Product",
     rows_per_page: "Rows per page",
-    of: "of",
-    section: "Section",
-    section_under_development: "This section is under development",
-    cart: "Cart",
-    filter_by_category: "Filter by category",
-    products_available: "Products Available",
-    all_products: "All Products",
-    beverages: "Beverages",
-    snacks: "Snacks",
-    cleaning: "Cleaning",
-    meat_poultry: "Meat & Poultry",
-    seafood: "Seafood",
-    dairy: "Dairy Products",
-    frozen: "Frozen Foods",
-    canned: "Canned Foods",
     
-    // Suppliers
-    supplier_management: "Supplier Management",
-    add_supplier: "Add Supplier",
-    find_suppliers: "Find Suppliers",
-    my_suppliers: "My Suppliers",
-    search_supplier: "Search a supplier",
-    supplier_name: "Supplier Name",
-    supplier_category: "Category",
-    supplier_location: "Location",
-    supplier_rating: "Rating",
-    supplier_contact: "Contact",
-    view_profile: "View Profile",
-    message_supplier: "Message Supplier",
-    add_to_contacts: "Add to Contacts",
-    remove_from_contacts: "Remove from Contacts",
-    supplier_profile: "Supplier Profile",
-    supplier_products: "Supplier Products",
-    supplier_info: "Supplier Information",
-    company_name: "Company Name",
-    phone: "Phone",
-    email: "Email",
-    website: "Website",
-    description: "Description",
-    years_experience: "Years of Experience",
-    minimum_order: "Minimum Order",
-    delivery_time: "Delivery Time",
-    payment_terms: "Payment Terms",
-    
-    // Messages
-    messages: "Messages",
-    conversations: "Conversations",
-    new_message: "New Message",
-    send_message: "Send Message",
-    type_message: "Type your message...",
-    online: "Online",
-    offline: "Offline",
-    last_seen: "Last seen",
-    today: "Today",
-    yesterday: "Yesterday",
-    select_conversation: "Select a conversation to start messaging",
-    no_messages: "No messages yet",
-    start_conversation: "Start a conversation",
-    
-    // Orders
-    order_management: "Order Management",
+    // Orders section
     order_id: "Order ID",
-    supplier: "Supplier",
-    order_date: "Order Date",
-    total_amount: "Total Amount",
-    status: "Status",
-    confirmed: "Confirmed",
-    on_hold: "On Hold",
-    canceled: "Canceled",
-    delivered: "Delivered",
-    download_bill: "Download Bill",
-    view_details: "View Details",
-    learn_more: "Learn More",
-    search_by_id: "Search by ID",
-    search_by_supplier: "Search by supplier",
-    filter_by_status: "Filter by status",
-    
-    // Cashier
-    cashier_management: "Cashier Management",
-    add_cashier: "Add Cashier",
-    cashier_id: "Cashier ID",
-    pin_code: "PIN Code",
-    manage_cashier: "Manage Cashier",
-    personnel_management: "Personnel Management",
-    add_personnel: "Add Personnel",
-    personnel_name: "Personnel Name",
-    personnel_id: "Personnel ID",
-    assigned_cashier: "Assigned Cashier",
-    manage_personnel: "Manage Personnel",
-    selling_operations: "Selling Operations",
-    operation_date: "Operation Date",
-    client_name: "Client Name",
+    date: "Date",
     amount: "Amount",
-    payment_method: "Payment Method",
-    cash: "Cash",
-    card: "Card",
-    filter_by_client: "Filter by client",
-    filter_by_date: "Filter by date",
-    download_report: "Download Report",
-    generate_report: "Generate Report",
-    
-    // Profile
-    my_profile: "My Profile",
-    profile: "Profile",
-    company_profile_settings: "Company Profile Settings",
-    authentication_details: "Authentication Details",
-    user_name: "User Name",
-    id_card_number: "ID Card Number",
-    registre_commerce: "Registre de Commerce",
-    last_login: "Last Login",
-    first_login: "First Login",
-    registered: "Registered",
-    save: "Save",
-    
-    // Auth
-    welcome_back: "Welcome Back",
-    login_subtitle: "Fill in the information below in order to access your account.",
-    password: "Password",
-    login: "Login",
-    register: "Register",
-    email_placeholder: "Enter your email",
-    password_placeholder: "Enter your password",
-    no_account: "Don't have an account?",
-    have_account: "Already have an account?",
-    supplier_space: "Supplier Space",
-    forgot_password: "Forgot Password?",
-    back_to_home: "Back to Home",
-    
-    // Landing page
-    smart_business_management: "Your Smart Business Management Starts Here",
-    landing_subtitle: "EasyBizz connects suppliers and entrepreneurs, automates inventory and order management, and helps you grow your business efficiently",
-    get_started: "Get Started",
-    sign_in: "Sign In",
-    key_features: "Key Features",
-    smart_supplier_matching: "Smart Supplier Matching",
-    smart_supplier_desc: "Connect with the right suppliers using advanced algorithms to find the perfect business partners for your needs",
-    automated_inventory: "Automated Inventory",
-    automated_inventory_desc: "Track and manage your stock in real time with smart automation and alerts",
-    insightful_analytics: "Insightful Analytics", 
-    insightful_analytics_desc: "Make informed decisions with powerful business analytics and real-time insights",
-    about_easybizz: "About EasyBizz",
-    about_desc: "EasyBizz is a smart platform designed for entrepreneurs and merchants to streamline their business operations. We help reduce costs, connect with trusted partners, and make data-driven decisions effortlessly",
-    what_users_say: "What Our Users Say",
-    contact_us: "Contact Us",
-    features: "features",
-    about: "about", 
-    contact: "contact"
+    status: "Status",
+    actions: "Actions",
+    download_bill: "Download Bill",
+    learn_more: "Learn More",
+    search_order: "Search order ID, supplier",
   },
   fr: {
-    // Navigation
     home: "Accueil",
-    bizz: "Bizz", 
-    analytics: "Analytiques",
+    bizz: "Bizz",
+    analytics: "Analytique",
     inventory: "Inventaire",
     products: "Produits",
+    orders: "Commandes",
+    suppliers: "Fournisseurs",
     historique: "Historique",
     notification: "Notification",
     cashier: "Caissier",
+    messages: "Messages",
     settings: "Paramètres",
     logout: "Déconnexion",
-    faq: "FAQ",
-    boutique: "Boutique",
-    suppliers: "Fournisseurs",
-    orders: "Commandes",
-    
-    // Home page
     welcome: "Bienvenue",
-    dashboard_greeting: "bonjour, supérette elbaraka",
-    dashboard_subtitle: "Commencez à gérer votre supermarché",
-    buy_products: "Acheter des produits",
-    buy_products_desc: "parcourir et commander directement auprès des fournisseurs",
-    view_analytics: "voir les analyses",
-    view_analytics_desc: "parcourir et commander directement auprès des fournisseurs",
-    inventory_management: "Gestion des stocks",
-    inventory_management_desc: "parcourir et commander directement auprès des fournisseurs",
-    manage_product_inventory: "Gérer votre inventaire de produits",
+    dashboard_greeting: "Voici ce qui se passe dans votre supermarché aujourd'hui.",
+    dashboard_subtitle: "Restez à jour et gérez votre entreprise efficacement.",
+    buy_products: "Acheter des Produits",
+    buy_products_desc: "Explorez et achetez de nouveaux produits pour votre supermarché.",
+    view_analytics: "Voir les Analytiques",
+    view_analytics_desc: "Analysez les performances et les tendances de votre supermarché.",
+    inventory_management: "Gestion des Stocks",
+    inventory_management_desc: "Gérez vos niveaux de stock et suivez la disponibilité des produits.",
+    section: "Section en développement",
+    section_under_development: "Cette section est actuellement en développement. Veuillez revenir plus tard.",
+    search_product: "Rechercher un produit...",
     
-    // Boutique Management
+    // New translations for restored sections
     boutique_management: "Gestion des Boutiques",
+    select_boutique: "Sélectionner boutique",
     add_boutique: "Ajouter Boutique",
-    add_new_boutique: "Ajouter Nouvelle Boutique",
-    create_new_boutique_desc: "Créer une nouvelle boutique pour gérer vos emplacements commerciaux.",
-    boutique_name: "Nom de la Boutique",
-    enter_boutique_name: "Entrez le nom de la boutique",
-    address: "Adresse",
-    enter_boutique_address: "Entrez l'adresse de la boutique",
-    active: "Actif",
-    inactive: "Inactif",
     edit: "Modifier",
-    cancel: "Annuler",
+    previous_page: "Page Précédente",
     
-    // Product Management
-    add_product: "Ajouter un produit",
-    add_new_product: "Ajouter Nouveau Produit",
-    add_product_desc: "Ajouter un nouveau produit à votre inventaire.",
-    edit_product: "Modifier Produit",
-    edit_product_desc: "Mettre à jour les informations du produit.",
-    update_product: "Mettre à jour Produit",
-    product_name: "Nom du Produit",
-    enter_product_name: "Entrez le nom du produit",
-    reference: "Référence",
-    enter_reference: "Entrez la référence",
-    barcode: "Code-barres",
-    enter_barcode: "Entrez le code-barres",
-    quantity_in_stock: "Quantité en Stock",
-    enter_quantity_stock: "Entrez la quantité en stock",
-    quantity_sold: "Quantité Vendue",
-    enter_quantity_sold: "Entrez la quantité vendue",
-    alert_level: "Niveau d'Alerte",
-    enter_alert_level: "Entrez le niveau d'alerte",
-    buying_price_inc_vat: "Prix d'Achat (TTC)",
-    enter_buying_price_inc: "Entrez le prix d'achat TTC",
-    selling_price_exc_vat: "Prix de Vente (HT)",
-    enter_selling_price_exc: "Entrez le prix de vente HT",
-    selling_price_inc_vat: "Prix de Vente (TTC)",
-    enter_selling_price_inc: "Entrez le prix de vente TTC",
-    
-    // Table Headers
+    // Products section
     product: "Produit",
+    reference: "Référence",
+    barcode: "Code-barres",
     qty_stock: "Qté Stock",
-    qty_sold: "Qté Vendue",
+    qty_sold: "Qté Vendu",
     alert: "Alerte",
-    buy_price_inc: "Prix Achat (TTC)",
-    sell_price_exc: "Prix Vente (HT)",
-    sell_price_inc: "Prix Vente (TTC)",
+    buy_price: "Prix Achat",
+    sell_price_ht: "Prix Vente HT",
+    sell_price_ttc: "Prix Vente TTC",
     rotation_status: "Statut Rotation",
-    action: "Action",
-    
-    // Status
-    rapid: "Rapide",
-    normal: "Normal",
-    slow: "Lent",
-    
-    // General
-    search: "Rechercher",
-    search_product: "Rechercher un produit",
-    hello: "bonjour",
-    start_managing_supermarket: "Commencez à gérer votre supermarché",
+    add_product: "Ajouter Produit",
     rows_per_page: "Lignes par page",
-    of: "de",
-    section: "Section",
-    section_under_development: "Cette section est en développement",
-    cart: "Panier",
-    filter_by_category: "Filtrer par catégorie",
-    products_available: "Produits Disponibles",
-    all_products: "Tous les Produits",
-    beverages: "Boissons",
-    snacks: "Collations",
-    cleaning: "Nettoyage",
-    meat_poultry: "Viande et Volaille",
-    seafood: "Fruits de Mer",
-    dairy: "Produits Laitiers",
-    frozen: "Produits Surgelés",
-    canned: "Conserves",
     
-    // Suppliers
-    supplier_management: "Gestion des Fournisseurs",
-    add_supplier: "Ajouter Fournisseur",
-    find_suppliers: "Trouver des Fournisseurs",
-    my_suppliers: "Mes Fournisseurs",
-    search_supplier: "Rechercher un fournisseur",
-    supplier_name: "Nom du Fournisseur",
-    supplier_category: "Catégorie",
-    supplier_location: "Localisation",
-    supplier_rating: "Évaluation",
-    supplier_contact: "Contact",
-    view_profile: "Voir le Profil",
-    message_supplier: "Envoyer un Message",
-    add_to_contacts: "Ajouter aux Contacts",
-    remove_from_contacts: "Retirer des Contacts",
-    supplier_profile: "Profil du Fournisseur",
-    supplier_products: "Produits du Fournisseur",
-    supplier_info: "Informations du Fournisseur",
-    company_name: "Nom de l'Entreprise",
-    phone: "Téléphone",
-    email: "Email",
-    website: "Site Web",
-    description: "Description",
-    years_experience: "Années d'Expérience",
-    minimum_order: "Commande Minimale",
-    delivery_time: "Délai de Livraison",
-    payment_terms: "Conditions de Paiement",
-    
-    // Messages
-    messages: "Messages",
-    conversations: "Conversations",
-    new_message: "Nouveau Message",
-    send_message: "Envoyer Message",
-    type_message: "Tapez votre message...",
-    online: "En ligne",
-    offline: "Hors ligne",
-    last_seen: "Vu pour la dernière fois",
-    today: "Aujourd'hui",
-    yesterday: "Hier",
-    select_conversation: "Sélectionnez une conversation pour commencer à envoyer des messages",
-    no_messages: "Aucun message pour le moment",
-    start_conversation: "Démarrer une conversation",
-    
-    // Orders
-    order_management: "Gestion des Commandes",
+    // Orders section
     order_id: "ID Commande",
-    supplier: "Fournisseur",
-    order_date: "Date de Commande",
-    total_amount: "Montant Total",
-    status: "Statut",
-    confirmed: "Confirmé",
-    on_hold: "En Attente",
-    canceled: "Annulé",
-    delivered: "Livré",
-    download_bill: "Télécharger Facture",
-    view_details: "Voir Détails",
-    learn_more: "En Savoir Plus",
-    search_by_id: "Rechercher par ID",
-    search_by_supplier: "Rechercher par fournisseur",
-    filter_by_status: "Filtrer par statut",
-    
-    // Cashier
-    cashier_management: "Gestion des Caisses",
-    add_cashier: "Ajouter Caisse",
-    cashier_id: "ID Caisse",
-    pin_code: "Code PIN",
-    manage_cashier: "Gérer Caisse",
-    personnel_management: "Gestion du Personnel",
-    add_personnel: "Ajouter Personnel",
-    personnel_name: "Nom du Personnel",
-    personnel_id: "ID Personnel",
-    assigned_cashier: "Caisse Assignée",
-    manage_personnel: "Gérer Personnel",
-    selling_operations: "Opérations de Vente",
-    operation_date: "Date d'Opération",
-    client_name: "Nom du Client",
+    date: "Date",
     amount: "Montant",
-    payment_method: "Méthode de Paiement",
-    cash: "Espèces",
-    card: "Carte",
-    filter_by_client: "Filtrer par client",
-    filter_by_date: "Filtrer par date",
-    download_report: "Télécharger Rapport",
-    generate_report: "Générer Rapport",
-    
-    // Profile
-    my_profile: "Mon Profil",
-    profile: "Profil",
-    company_profile_settings: "Paramètres du Profil d'Entreprise",
-    authentication_details: "Détails d'Authentification",
-    user_name: "Nom d'Utilisateur",
-    id_card_number: "Numéro de Carte d'Identité",
-    registre_commerce: "Registre de Commerce",
-    last_login: "Dernière Connexion",
-    first_login: "Première Connexion",
-    registered: "Inscrit",
-    save: "Sauvegarder",
-    
-    // Auth
-    welcome_back: "Bon Retour",
-    login_subtitle: "Remplissez les informations ci-dessous pour accéder à votre compte.",
-    password: "Mot de passe",
-    login: "Connexion",
-    register: "S'inscrire",
-    email_placeholder: "Entrez votre email",
-    password_placeholder: "Entrez votre mot de passe",
-    no_account: "Vous n'avez pas de compte ?",
-    have_account: "Vous avez déjà un compte ?",
-    supplier_space: "Espace Fournisseur",
-    forgot_password: "Mot de passe oublié ?",
-    back_to_home: "Retour à l'accueil",
-    
-    // Landing page
-    smart_business_management: "Votre Gestion d'Entreprise Intelligente Commence Ici",
-    landing_subtitle: "EasyBizz connecte les fournisseurs et les entrepreneurs, automatise la gestion des stocks et des commandes, et vous aide à développer votre entreprise efficacement",
-    get_started: "Commencer",
-    sign_in: "Se Connecter",
-    key_features: "Fonctionnalités Clés",
-    smart_supplier_matching: "Correspondance Intelligente des Fournisseurs",
-    smart_supplier_desc: "Connectez-vous avec les bons fournisseurs en utilisant des algorithmes avancés pour trouver les partenaires commerciaux parfaits pour vos besoins",
-    automated_inventory: "Inventaire Automatisé",
-    automated_inventory_desc: "Suivez et gérez votre stock en temps réel avec une automatisation intelligente et des alertes",
-    insightful_analytics: "Analyses Perspicaces",
-    insightful_analytics_desc: "Prenez des décisions éclairées avec des analyses commerciales puissantes et des insights en temps réel",
-    about_easybizz: "À Propos d'EasyBizz",
-    about_desc: "EasyBizz est une plateforme intelligente conçue pour les entrepreneurs et les commerçants afin de rationaliser leurs opérations commerciales. Nous aidons à réduire les coûts, à se connecter avec des partenaires de confiance et à prendre des décisions basées sur les données sans effort",
-    what_users_say: "Ce Que Disent Nos Utilisateurs",
-    contact_us: "Nous Contacter",
-    features: "fonctionnalités",
-    about: "à propos",
-    contact: "contact"
+    status: "Statut",
+    actions: "Actions",
+    download_bill: "Télécharger Facture",
+    learn_more: "En Savoir Plus",
+    search_order: "Rechercher ID commande, fournisseur",
   }
 };
 
-export const LanguageContext = createContext<LanguageContextType>({
-  language: 'en',
+i18next
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    resources: {
+      en: { translation: translations.en },
+      fr: { translation: translations.fr },
+    },
+    fallbackLng: 'fr',
+    detection: {
+      order: ['localStorage', 'navigator'],
+      caches: ['localStorage'],
+    },
+    interpolation: {
+      escapeValue: false,
+    },
+  });
+
+export const LanguageContext = createContext<LanguageContextProps>({
+  language: 'fr',
   setLanguage: () => {},
-  t: () => ''
+  t: (key: string) => key,
 });
 
-export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [language, setLanguage] = useState<'en' | 'fr'>('en');
+export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [language, setLanguage] = useState(i18next.language);
 
-  const t = (key: string): string => {
-    return translations[language][key as keyof typeof translations['en']] || key;
+  useEffect(() => {
+    i18next.on('languageChanged', (lng) => {
+      setLanguage(lng);
+    });
+
+    return () => {
+      i18next.off('languageChanged');
+    };
+  }, []);
+
+  const value: LanguageContextProps = {
+    language,
+    setLanguage: (lang: string) => {
+      i18next.changeLanguage(lang);
+    },
+    t: i18next.t,
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   );

@@ -24,6 +24,9 @@ import UserProfile from './UserProfile';
 import SupplierSection from "./SupplierSection";
 import MessagingSection from "./MessagingSection";
 import CashierSection from "./CashierSection";
+import BoutiqueSection from "./BoutiqueSection";
+import ProductsSection from "./ProductsSection";
+import OrdersSection from "./OrdersSection";
 
 interface DashboardProps {
   onLogout: () => void;
@@ -36,6 +39,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 
   const menuItems = [
     { id: 'home', label: t('home'), icon: Home },
+    { id: 'boutique', label: t('boutique'), icon: ShoppingCart },
     { id: 'bizz', label: t('bizz'), icon: ShoppingCart },
     { id: 'analytics', label: t('analytics'), icon: BarChart3 },
     { id: 'inventory', label: t('inventory'), icon: Package },
@@ -106,6 +110,15 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
           </div>
         );
 
+      case 'boutique':
+        return <BoutiqueSection onBack={() => setActiveSection('home')} />;
+
+      case 'products':
+        return <ProductsSection onBack={() => setActiveSection('home')} />;
+
+      case 'orders':
+        return <OrdersSection onBack={() => setActiveSection('home')} />;
+
       case 'suppliers':
         return <SupplierSection />;
 
@@ -115,28 +128,10 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
       case 'cashier':
         return <CashierSection onBack={() => setActiveSection('home')} />;
 
-      case 'products':
-        return (
-          <div className="text-center py-12">
-            <PackageOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('section')}</h3>
-            <p className="text-gray-500">{t('section_under_development')}</p>
-          </div>
-        );
-
       case 'inventory':
         return (
           <div className="text-center py-12">
             <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('section')}</h3>
-            <p className="text-gray-500">{t('section_under_development')}</p>
-          </div>
-        );
-
-      case 'orders':
-        return (
-          <div className="text-center py-12">
-            <ClipboardList className="w-12 h-12 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">{t('section')}</h3>
             <p className="text-gray-500">{t('section_under_development')}</p>
           </div>
