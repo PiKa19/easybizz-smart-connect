@@ -1,3 +1,4 @@
+
 import React, { useState, useContext } from 'react';
 import {
   Home,
@@ -12,7 +13,8 @@ import {
   Settings,
   LogOut,
   PackageOpen,
-  MessageSquare
+  MessageSquare,
+  Search
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
