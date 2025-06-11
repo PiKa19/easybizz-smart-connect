@@ -1,16 +1,8 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronLeft, Search, Download } from "lucide-react";
-
 interface Personnel {
   id: number;
   name: string;
@@ -18,7 +10,6 @@ interface Personnel {
   pinCode: string;
   image: string;
 }
-
 interface Operation {
   id: string;
   clientName: string;
@@ -36,56 +27,44 @@ interface Operation {
   rotationStatus: string;
   score: number;
 }
-
 interface SellingOperationsProps {
   personnel: Personnel;
   onBack: () => void;
 }
-
-const SellingOperations = ({ personnel, onBack }: SellingOperationsProps) => {
+const SellingOperations = ({
+  personnel,
+  onBack
+}: SellingOperationsProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBy, setFilterBy] = useState('all');
   const [rowsPerPage, setRowsPerPage] = useState('5');
-
-  const [operations] = useState<Operation[]>([
-    {
-      id: "125478",
-      clientName: "adlene yahlaoui",
-      date: "13/04/2025",
-      time: "",
-      product: "huile-5l",
-      barcode: "huile-105",
-      quantity: 1,
-      stockQuantity: 0,
-      alertLevel: 650,
-      buyingPrice: 550,
-      sellingPrice: 100,
-      vat: 650,
-      sellingPriceWithVat: 0,
-      rotationStatus: "",
-      score: 0
-    }
-  ]);
-
+  const [operations] = useState<Operation[]>([{
+    id: "125478",
+    clientName: "adlene yahlaoui",
+    date: "13/04/2025",
+    time: "",
+    product: "huile-5l",
+    barcode: "huile-105",
+    quantity: 1,
+    stockQuantity: 0,
+    alertLevel: 650,
+    buyingPrice: 550,
+    sellingPrice: 100,
+    vat: 650,
+    sellingPriceWithVat: 0,
+    rotationStatus: "",
+    score: 0
+  }]);
   const filteredOperations = operations.filter(operation => {
-    const matchesSearch = operation.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         operation.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         operation.product.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = operation.clientName.toLowerCase().includes(searchTerm.toLowerCase()) || operation.id.toLowerCase().includes(searchTerm.toLowerCase()) || operation.product.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
-
   const handleDownloadResume = () => {
     console.log('Downloading resume for', personnel.name);
   };
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <div className="flex items-center gap-4 mb-6">
-        <Button 
-          variant="outline" 
-          onClick={onBack}
-          className="flex items-center gap-2"
-        >
+        <Button variant="outline" onClick={onBack} className="flex items-center gap-2">
           <ChevronLeft className="w-4 h-4" />
           Previous Page
         </Button>
@@ -99,12 +78,7 @@ const SellingOperations = ({ personnel, onBack }: SellingOperationsProps) => {
       <div className="flex items-center gap-4 mb-6">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <Input
-            placeholder="search"
-            className="pl-10"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+          <Input placeholder="search" className="pl-10" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
         </div>
         <Select value={filterBy} onValueChange={setFilterBy}>
           <SelectTrigger className="w-32">
@@ -131,18 +105,17 @@ const SellingOperations = ({ personnel, onBack }: SellingOperationsProps) => {
                 <th className="px-4 py-3 text-left text-sm font-medium">PRODUIT</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">QUANTITY VENDU</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">QUANTITY EN STOCK</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">ALERTE</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">PRIX ACHAT TTC</th>
+                
+                <th className="px-4 py-3 text-left text-sm font-medium">PRIX ACHAT</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">PRIX VENTE HT</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">TVA</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">PRIX VENTE TTC</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">ROTATION</th>
+                
                 <th className="px-4 py-3 text-left text-sm font-medium">SCORE</th>
               </tr>
             </thead>
             <tbody>
-              {filteredOperations.map((operation) => (
-                <tr key={operation.id} className="border-b hover:bg-gray-50">
+              {filteredOperations.map(operation => <tr key={operation.id} className="border-b hover:bg-gray-50">
                   <td className="px-4 py-3 text-sm">{operation.id}</td>
                   <td className="px-4 py-3 text-sm">{operation.clientName}</td>
                   <td className="px-4 py-3 text-sm">{operation.date}</td>
@@ -155,9 +128,8 @@ const SellingOperations = ({ personnel, onBack }: SellingOperationsProps) => {
                   <td className="px-4 py-3 text-sm">{operation.vat}</td>
                   <td className="px-4 py-3 text-sm">{operation.sellingPriceWithVat}</td>
                   <td className="px-4 py-3 text-sm">{operation.rotationStatus}</td>
-                  <td className="px-4 py-3 text-sm">{operation.score}</td>
-                </tr>
-              ))}
+                  
+                </tr>)}
             </tbody>
           </table>
         </div>
@@ -185,16 +157,11 @@ const SellingOperations = ({ personnel, onBack }: SellingOperationsProps) => {
 
       {/* Download Resume Button */}
       <div className="flex justify-start mt-6">
-        <Button 
-          onClick={handleDownloadResume}
-          className="bg-[#0794FE] hover:bg-[#0670CC] text-white flex items-center gap-2"
-        >
+        <Button onClick={handleDownloadResume} className="bg-[#0794FE] hover:bg-[#0670CC] text-white flex items-center gap-2">
           <Download className="w-4 h-4" />
           Download resume
         </Button>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default SellingOperations;
