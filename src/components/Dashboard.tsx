@@ -12,7 +12,6 @@ import {
   Settings,
   LogOut,
   PackageOpen,
-  MessageSquare,
   Search
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -49,7 +48,6 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     { id: 'historique', label: t('historique'), icon: History },
     { id: 'notification', label: t('notification'), icon: Bell },
     { id: 'cashier', label: t('cashier'), icon: Calculator },
-    { id: 'messages', label: t('messages'), icon: MessageSquare },
     { id: 'settings', label: t('settings'), icon: Settings },
   ];
 

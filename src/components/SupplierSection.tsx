@@ -1,4 +1,3 @@
-
 import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Users, Plus, Search, Star, MapPin, Phone, Mail, Globe, MessageSquare, UserPlus, UserMinus } from "lucide-react";
 import { LanguageContext } from "@/contexts/LanguageContext";
+import MessagingSection from "./MessagingSection";
 
 interface Supplier {
   id: string;
@@ -37,7 +37,7 @@ interface Product {
 
 const SupplierSection = () => {
   const { t } = useContext(LanguageContext);
-  const [activeTab, setActiveTab] = useState<'my-suppliers' | 'find-suppliers'>('my-suppliers');
+  const [activeTab, setActiveTab] = useState<'my-suppliers' | 'find-suppliers' | 'messages'>('my-suppliers');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
@@ -140,6 +140,10 @@ const SupplierSection = () => {
   const sendMessage = (supplier: Supplier) => {
     console.log(`Opening message window for ${supplier.name}`);
   };
+
+  if (activeTab === 'messages') {
+    return <MessagingSection />;
+  }
 
   if (selectedSupplier) {
     return (
@@ -282,6 +286,16 @@ const SupplierSection = () => {
           }`}
         >
           {t('find_suppliers')}
+        </button>
+        <button
+          onClick={() => setActiveTab('messages')}
+          className={`pb-2 px-1 font-medium ${
+            activeTab === 'messages' 
+              ? 'border-b-2 border-[#0794FE] text-[#0794FE]' 
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          {t('messages')}
         </button>
       </div>
 
