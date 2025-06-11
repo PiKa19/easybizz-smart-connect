@@ -46,6 +46,7 @@ import { Label } from "@/components/ui/label";
 import ProductCard from "./ProductCard";
 import ProductDetail from "./ProductDetail";
 import CartPage from "./CartPage";
+import CashierSection from "./CashierSection";
 import { LanguageContext } from "@/contexts/LanguageContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 
@@ -194,12 +195,20 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     }
   ];
 
+  const BoutiqueIcon = () => (
+    <div className="w-5 h-5 bg-black rounded-sm flex items-center justify-center">
+      <div className="w-3 h-3 bg-white rounded-sm flex items-center justify-center">
+        <div className="w-1.5 h-1.5 bg-black rounded-full"></div>
+      </div>
+    </div>
+  );
+
   const BizzIcon = () => (
     <img src="/lovable-uploads/b7b53d1c-2060-4de4-931d-52706bd84107.png" alt="Bizz" className="w-5 h-5" />
   );
 
   const navigationItems = [
-    { id: 'boutique', icon: Store, label: t('boutique') || 'Boutique' },
+    { id: 'boutique', icon: BoutiqueIcon, label: t('boutique') || 'Boutique' },
     { id: 'home', icon: Home, label: t('home') },
     { id: 'bizz', icon: BizzIcon, label: t('bizz') },
     { id: 'analytics', icon: BarChart3, label: t('analytics') },
@@ -605,6 +614,22 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
             </div>
           </DialogContent>
         </Dialog>
+      </div>
+
+      {/* Boutique Selection */}
+      <div className="mb-6">
+        <Select value={selectedBoutique.toString()} onValueChange={(value) => handleSelectBoutique(parseInt(value))}>
+          <SelectTrigger className="w-64">
+            <SelectValue placeholder="Select a boutique" />
+          </SelectTrigger>
+          <SelectContent>
+            {boutiques.map((boutique) => (
+              <SelectItem key={boutique.id} value={boutique.id.toString()}>
+                {boutique.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Edit Boutique Dialog */}
@@ -1382,6 +1407,8 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
             renderProductsSection()
           ) : currentSection === 'orders' ? (
             renderOrdersSection()
+          ) : currentSection === 'cashier' ? (
+            <CashierSection onBack={() => setCurrentSection('home')} />
           ) : currentSection === 'bizz' ? (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
