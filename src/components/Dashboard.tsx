@@ -1,4 +1,3 @@
-
 import React, { useState, useContext } from 'react';
 import {
   Home,
@@ -24,6 +23,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 import UserProfile from './UserProfile';
 import SupplierSection from "./SupplierSection";
 import MessagingSection from "./MessagingSection";
+import CashierSection from "./CashierSection";
 
 interface DashboardProps {
   onLogout: () => void;
@@ -112,6 +112,9 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
       case 'messages':
         return <MessagingSection />;
 
+      case 'cashier':
+        return <CashierSection onBack={() => setActiveSection('home')} />;
+
       case 'products':
         return (
           <div className="text-center py-12">
@@ -134,15 +137,6 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
         return (
           <div className="text-center py-12">
             <ClipboardList className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('section')}</h3>
-            <p className="text-gray-500">{t('section_under_development')}</p>
-          </div>
-        );
-
-      case 'cashier':
-        return (
-          <div className="text-center py-12">
-            <Calculator className="w-12 h-12 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">{t('section')}</h3>
             <p className="text-gray-500">{t('section_under_development')}</p>
           </div>
