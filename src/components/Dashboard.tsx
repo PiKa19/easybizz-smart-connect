@@ -49,6 +49,7 @@ import CartPage from "./CartPage";
 import CashierSection from "./CashierSection";
 import { LanguageContext } from "@/contexts/LanguageContext";
 import LanguageSwitcher from "./LanguageSwitcher";
+import UserProfile from "./UserProfile";
 
 interface DashboardProps {
   onLogout: () => void;
@@ -122,6 +123,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     sellingPriceExcVat: 0,
     sellingPriceIncVat: 0
   });
+  const [isUserProfileOpen, setIsUserProfileOpen] = useState(false);
   
   const { t } = useContext(LanguageContext);
 
@@ -1372,7 +1374,10 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                 />
               </div>
               <LanguageSwitcher />
-              <div className="flex items-center gap-3">
+              <button
+                onClick={() => setIsUserProfileOpen(true)}
+                className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors"
+              >
                 <div className="w-8 h-8 bg-[#0794FE] rounded-full flex items-center justify-center text-white text-sm font-medium">
                   B
                 </div>
@@ -1380,7 +1385,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                   <div className="font-medium text-gray-800">Baraka</div>
                   <div className="text-gray-500">baraka@gmail.com</div>
                 </div>
-              </div>
+              </button>
             </div>
           </div>
         </header>
@@ -1491,6 +1496,12 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
           )}
         </main>
       </div>
+
+      {/* User Profile Modal */}
+      <UserProfile 
+        isOpen={isUserProfileOpen}
+        onClose={() => setIsUserProfileOpen(false)}
+      />
     </div>
   );
 };
