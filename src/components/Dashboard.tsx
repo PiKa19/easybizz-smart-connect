@@ -26,6 +26,7 @@ import CashierSection from "./CashierSection";
 import BoutiqueSection from "./BoutiqueSection";
 import ProductsSection from "./ProductsSection";
 import OrdersSection from "./OrdersSection";
+import BizzSection from "./BizzSection";
 
 interface DashboardProps {
   onLogout: () => void;
@@ -110,6 +111,9 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 
       case 'boutique':
         return <BoutiqueSection onBack={() => setActiveSection('home')} />;
+
+      case 'bizz':
+        return <BizzSection onBack={() => setActiveSection('home')} />;
 
       case 'products':
         return <ProductsSection onBack={() => setActiveSection('home')} />;
