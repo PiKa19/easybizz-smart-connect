@@ -35,7 +35,12 @@ interface Product {
   inStock: boolean;
 }
 
-const SupplierSection = () => {
+interface SupplierSectionProps {
+  selectedSupplierId?: string;
+  onBack?: () => void;
+}
+
+const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) => {
   const { t } = useContext(LanguageContext);
   const [activeTab, setActiveTab] = useState<'my-suppliers' | 'find-suppliers' | 'messages'>('my-suppliers');
   const [searchTerm, setSearchTerm] = useState('');
