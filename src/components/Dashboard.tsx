@@ -1,3 +1,4 @@
+
 import React, { useState, useContext } from 'react';
 import {
   Home,
@@ -188,6 +189,16 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
               </div>
               <span className="hidden md:inline">Baraka</span>
             </Button>
+
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={onLogout}
+              className="flex items-center gap-2"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden md:inline">{t('logout')}</span>
+            </Button>
           </div>
         </div>
       </header>
@@ -211,17 +222,6 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
               </button>
             ))}
           </nav>
-          
-          <div className="absolute bottom-4 left-4 right-4">
-            <Button 
-              variant="outline" 
-              className="w-full"
-              onClick={onLogout}
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              {t('logout')}
-            </Button>
-          </div>
         </aside>
 
         {/* Main Content */}

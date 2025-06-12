@@ -1,4 +1,3 @@
-
 import React, { useState, useContext } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +8,7 @@ import { LanguageContext } from '@/contexts/LanguageContext';
 import ProductCard from './ProductCard';
 import ProductDetail from './ProductDetail';
 import CartPage from './CartPage';
+import SupplierSection from './SupplierSection';
 
 interface Seller {
   id: number;
@@ -48,8 +48,9 @@ interface BizzSectionProps {
 
 const BizzSection = ({ onBack }: BizzSectionProps) => {
   const { t } = useContext(LanguageContext);
-  const [currentView, setCurrentView] = useState<'products' | 'detail' | 'cart'>('products');
+  const [currentView, setCurrentView] = useState<'products' | 'detail' | 'cart' | 'supplier'>('products');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedSupplierId, setSelectedSupplierId] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('All Products');
   const [searchTerm, setSearchTerm] = useState('');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -117,7 +118,13 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
     };
 
     setCartItems(prev => [...prev, newCartItem]);
-    setCurrentView('cart');
+    console.log('Added to cart:', newCartItem);
+    console.log('Updated cart items:', [...cartItems, newCartItem]);
+  };
+
+  const handleBuyMoreFromSupplier = (sellerId: number) => {
+    setSelectedSupplierId(sellerId);
+    setCurrentView('supplier');
   };
 
   const handleRemoveFromCart = (itemId: number) => {
@@ -220,6 +227,7 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
             product={selectedProduct}
             onBack={() => setCurrentView('products')}
             onAddToCart={handleAddToCart}
+            onBuyMoreFromSupplier={handleBuyMoreFromSupplier}
           />
         ) : null;
       case 'cart':
@@ -230,6 +238,8 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
             onUpdateQuantity={handleUpdateQuantity}
           />
         );
+      case 'supplier':
+        return <SupplierSection />;
       default:
         return renderProductsView();
     }
@@ -247,7 +257,18 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
           {t('previous_page')}
         </Button>
         
-        {currentView !== 'products' && (
+        {currentView !== 'products' && currentView !== 'supplier' && (
+          <Button 
+            variant="ghost" 
+            onClick={() => setCurrentView('products')}
+            className="flex items-center gap-2 text-gray-600"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to products
+          </Button>
+        )}
+
+        {currentView === 'supplier' && (
           <Button 
             variant="ghost" 
             onClick={() => setCurrentView('products')}

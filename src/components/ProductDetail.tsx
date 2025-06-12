@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -38,9 +39,10 @@ interface ProductDetailProps {
   product: Product;
   onBack: () => void;
   onAddToCart: (product: Product, quantity: number, seller: Seller) => void;
+  onBuyMoreFromSupplier?: (sellerId: number) => void;
 }
 
-const ProductDetail = ({ product, onBack, onAddToCart }: ProductDetailProps) => {
+const ProductDetail = ({ product, onBack, onAddToCart, onBuyMoreFromSupplier }: ProductDetailProps) => {
   const [quantity, setQuantity] = useState(150);
   const [selectedSeller, setSelectedSeller] = useState(
     product.sellers?.find(seller => seller.isDefault) || product.sellers?.[0]
@@ -56,7 +58,12 @@ const ProductDetail = ({ product, onBack, onAddToCart }: ProductDetailProps) => 
   const handleAddToCart = () => {
     if (selectedSeller) {
       onAddToCart(product, quantity, selectedSeller);
-      // You could add a toast notification here
+    }
+  };
+
+  const handleBuyMoreFromSupplier = (sellerId: number) => {
+    if (onBuyMoreFromSupplier) {
+      onBuyMoreFromSupplier(sellerId);
     }
   };
 
@@ -216,6 +223,17 @@ const ProductDetail = ({ product, onBack, onAddToCart }: ProductDetailProps) => 
                         <div className="text-sm text-blue-600">
                           ❤️ {seller.rating} 🛒 {seller.reviews}
                         </div>
+                        <Button 
+                          variant="link" 
+                          size="sm" 
+                          className="p-0 h-auto text-blue-600"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleBuyMoreFromSupplier(seller.id);
+                          }}
+                        >
+                          Buy more from this supplier
+                        </Button>
                       </div>
                     </div>
                     <div className="text-right">
