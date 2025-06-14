@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useMemo } from 'react';
 import {
   Home,
   ShoppingCart,
@@ -36,6 +36,9 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   const { t } = useContext(LanguageContext);
   const [activeSection, setActiveSection] = useState('home');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  // Add random days left calculation (between 2 and 19 for demo)
+  const daysLeft = useMemo(() => Math.floor(Math.random() * 18) + 2, []);
 
   const menuItems = [
     { id: 'home', label: t('home'), icon: Home },
@@ -164,8 +167,16 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
             />
           </div>
           <div className="flex items-center gap-4">
+            {/* --- Subscription Days Left Section (Pink) --- */}
+            <div
+              className="relative flex items-center rounded-lg px-3 py-1 bg-[#E1275C] text-white font-semibold text-sm shadow hover:bg-[#C91F4F] transition-colors"
+              title="Your subscription days left"
+            >
+              {daysLeft} days left
+            </div>
+            {/* --- End Subscription Section --- */}
+
             <LanguageSwitcher />
-            
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input 
@@ -173,11 +184,9 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                 className="w-64 pl-10"
               />
             </div>
-            
             <Button variant="ghost" size="sm">
               <Bell className="w-5 h-5" />
             </Button>
-            
             <Button 
               variant="ghost" 
               size="sm"
@@ -189,7 +198,6 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
               </div>
               <span className="hidden md:inline">Baraka</span>
             </Button>
-
             <Button 
               variant="outline" 
               size="sm"
