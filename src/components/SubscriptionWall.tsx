@@ -62,48 +62,54 @@ const SubscriptionWall: React.FC<SubscriptionWallProps> = ({ open, onClose, onPl
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg p-0 overflow-visible">
+      <DialogContent className="max-w-3xl p-0 overflow-visible">
         <DialogHeader>
           <DialogTitle className="text-center mt-2">Renew Your Subscription</DialogTitle>
           <DialogDescription className="text-center">Choose a plan below or borrow 3 extra days</DialogDescription>
         </DialogHeader>
-        <div className="px-6 pb-6">
-          <RadioGroup value={selectedPlan} onValueChange={setSelectedPlan} className="space-y-4">
-            {plans.map((plan) => (
-              <Card key={plan.id} className={`cursor-pointer transition-colors ${
-                selectedPlan === plan.id ? 'ring-2 ring-[#0794FE] bg-blue-50' : 'hover:bg-gray-50'
-              }`}>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center space-x-3">
-                    <RadioGroupItem value={plan.id} id={plan.id} />
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg">{plan.duration}</CardTitle>
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-[#E1275C]">{plan.price} DA</div>
-                          {plan.originalPrice && (
-                            <div className="text-sm text-gray-500 line-through">{plan.originalPrice} DA</div>
-                          )}
+        <div className="px-4 pb-4">
+          <RadioGroup value={selectedPlan} onValueChange={setSelectedPlan}>
+            <div className="flex flex-col gap-4 md:flex-row md:gap-4 justify-center items-start w-full">
+              {plans.map((plan) => (
+                <Card
+                  key={plan.id}
+                  className={`flex-1 min-w-[230px] max-w-xs cursor-pointer h-full transition-colors ${
+                    selectedPlan === plan.id ? 'ring-2 ring-[#0794FE] bg-blue-50' : 'hover:bg-gray-50'
+                  }`}
+                  onClick={() => setSelectedPlan(plan.id)}
+                >
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center space-x-3">
+                      <RadioGroupItem value={plan.id} id={plan.id} />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-lg">{plan.duration}</CardTitle>
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-[#E1275C]">{plan.price} DA</div>
+                            {plan.originalPrice && (
+                              <div className="text-sm text-gray-500 line-through">{plan.originalPrice} DA</div>
+                            )}
+                          </div>
                         </div>
+                        <CardDescription className="mt-1">{plan.description}</CardDescription>
                       </div>
-                      <CardDescription className="mt-1">{plan.description}</CardDescription>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <ul className="space-y-2">
-                    {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-center space-x-2 text-sm">
-                        <Check className="w-4 h-4 text-green-500" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <ul className="space-y-2">
+                      {plan.features.map((feature, index) => (
+                        <li key={index} className="flex items-center space-x-2 text-sm">
+                          <Check className="w-4 h-4 text-green-500" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </RadioGroup>
-          <div className="flex flex-col gap-3 pt-6">
+          <div className="flex flex-col gap-3 pt-6 max-w-lg mx-auto">
             <Button 
               onClick={handleSelect}
               disabled={!selectedPlan}
@@ -135,3 +141,4 @@ const SubscriptionWall: React.FC<SubscriptionWallProps> = ({ open, onClose, onPl
 };
 
 export default SubscriptionWall;
+
