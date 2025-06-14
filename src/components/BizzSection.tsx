@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Search, ShoppingCart } from "lucide-react";
+import { ArrowLeft, Search, ShoppingCart, ShoppingBag } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { LanguageContext } from '@/contexts/LanguageContext';
 import ProductCard from './ProductCard';
 import ProductDetail from './ProductDetail';
@@ -56,6 +57,7 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
   const [selectedCategory, setSelectedCategory] = useState('All Products');
   const [searchTerm, setSearchTerm] = useState('');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartPopoverOpen, setCartPopoverOpen] = useState(false);
 
   // Hydrate cartItems from localStorage on mount
   useEffect(() => {
@@ -174,14 +176,46 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
           <Badge className="bg-blue-100 text-[#0794FE]">
             {filteredProducts.length} {t('products')} Available
           </Badge>
-          <Button 
-            variant="outline" 
-            onClick={() => setCurrentView('cart')}
-            className="flex items-center gap-2"
-          >
-            <ShoppingCart className="w-4 h-4" />
-            {t('cart')} ({cartItems.length})
-          </Button>
+          {/* Red animated cart popover if items exist */}
+          {cartItems.length > 0 ? (
+            <Popover open={cartPopoverOpen} onOpenChange={setCartPopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  className="relative flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white animate-bounce"
+                  onClick={() => setCartPopoverOpen(true)}
+                >
+                  <ShoppingCart className="w-4 h-4" />
+                  {t('cart')}
+                  <span className="absolute -top-2 -right-2 text-xs font-semibold bg-white text-red-600 rounded-full px-2 py-0.5 shadow">{cartItems.length}</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="p-4 max-w-xs text-center bg-red-50 border-red-300">
+                <div className="font-semibold text-red-600 mb-2 flex items-center justify-center gap-2">
+                  <ShoppingCart className="w-5 h-5" />
+                  {t('cart')} ({cartItems.length})
+                </div>
+                <div className="mb-2 text-sm text-gray-700">
+                  {t('you_have')} {cartItems.length} {t('products')} {t('in_cart')}
+                </div>
+                <Button
+                  className="w-full bg-red-600 hover:bg-red-700 text-white mt-2"
+                  onClick={() => { setCurrentView('cart'); setCartPopoverOpen(false); }}
+                >
+                  {t('go_to_cart')}
+                </Button>
+              </PopoverContent>
+            </Popover>
+          ) : (
+            <Button 
+              variant="outline" 
+              onClick={() => setCurrentView('cart')}
+              className="flex items-center gap-2"
+            >
+              <ShoppingCart className="w-4 h-4" />
+              {t('cart')} ({cartItems.length})
+            </Button>
+          )}
         </div>
       </div>
 

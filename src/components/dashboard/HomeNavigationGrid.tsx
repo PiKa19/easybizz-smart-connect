@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
+import { ShoppingBag } from "lucide-react";
 
 interface HomeNavigationGridProps {
   menuItems: Array<{ id: string; label: string; icon: React.ComponentType<{ className?: string }> }>;
@@ -24,36 +24,44 @@ const gradientMap: Record<string, string> = {
   settings: "from-[#e9ecef] to-[#f7f8fa]",
 };
 
-const HomeNavigationGrid: React.FC<HomeNavigationGridProps> = ({
+const HomeNavigationGrid = ({
   menuItems,
   activeSection,
   setActiveSection,
   menuDescriptions
 }) => (
   <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
-    {menuItems.map((item) => (
-      <Card
-        key={item.id}
-        className={`transition duration-200 hover:scale-[1.025] hover:shadow-xl cursor-pointer shadow-md border-0 h-48 flex flex-col justify-between 
-          ${activeSection === item.id ? 'ring-2 ring-[#0794FE]' : 'ring-0'} 
-          bg-gradient-to-br ${gradientMap[item.id] || 'from-[#f5faff] to-[#e5eeff]'}`}
-        onClick={() => setActiveSection(item.id)}
-        style={{
-          minHeight: "184px",
-          backgroundBlendMode: "lighten"
-        }}
-      >
-        <CardContent className="flex flex-col items-center justify-center h-full p-8 relative">
-          <div className="w-14 h-14 rounded-lg flex items-center justify-center mb-3 bg-white bg-opacity-80 shadow-md">
-            <item.icon className="w-8 h-8 text-[#0794FE]" />
-          </div>
-          <h3 className="font-semibold text-gray-800 mb-1 text-lg">{item.label}</h3>
-          <p className="text-xs text-gray-500">{menuDescriptions[item.id]}</p>
-        </CardContent>
-      </Card>
-    ))}
+    {menuItems.map((item) => {
+      // If the item is the boutique, use custom icon and accent
+      const isBoutique = item.id === "boutique";
+      return (
+        <Card
+          key={item.id}
+          className={`transition duration-200 hover:scale-[1.025] hover:shadow-xl cursor-pointer shadow-md border-0 h-48 flex flex-col justify-between 
+            ${activeSection === item.id ? 'ring-2 ring-[#0794FE]' : 'ring-0'} 
+            bg-gradient-to-br ${gradientMap[item.id] || 'from-[#f5faff] to-[#e5eeff]'}`}
+          onClick={() => setActiveSection(item.id)}
+          style={{
+            minHeight: "184px",
+            backgroundBlendMode: "lighten"
+          }}
+        >
+          <CardContent className="flex flex-col items-center justify-center h-full p-8 relative">
+
+            <div className="w-14 h-14 rounded-lg flex items-center justify-center mb-3 bg-white bg-opacity-80 shadow-md">
+              {isBoutique ? (
+                <ShoppingBag className="w-8 h-8 text-pink-500" strokeWidth={2.2} />
+              ) : (
+                <item.icon className="w-8 h-8 text-[#0794FE]" />
+              )}
+            </div>
+            <h3 className="font-semibold text-gray-800 mb-1 text-lg">{item.label}</h3>
+            <p className="text-xs text-gray-500">{menuDescriptions[item.id]}</p>
+          </CardContent>
+        </Card>
+      )
+    })}
   </div>
 );
 
 export default HomeNavigationGrid;
-
