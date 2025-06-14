@@ -1,4 +1,3 @@
-
 import React, { useState, useContext } from 'react';
 import {
   Home,
@@ -7,7 +6,8 @@ import {
   Settings,
   LogOut,
   Search,
-  MessageSquare
+  MessageSquare,
+  Users
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -25,6 +25,7 @@ const SupplierDashboard = () => {
     { id: 'home', label: 'Home', icon: Home },
     { id: 'bizz', label: 'Bizz', icon: ShoppingCart },
     { id: 'orders', label: 'Orders', icon: ShoppingCart },
+    { id: 'clients', label: 'Clients', icon: Users },
     { id: 'messages', label: 'Messages', icon: MessageSquare },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
@@ -108,6 +109,14 @@ const SupplierDashboard = () => {
 
       case 'messages':
         return <SupplierMessagingSection />;
+
+      case 'clients':
+        return (
+          <div className="text-center py-12">
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">Clients</h3>
+            <p className="text-gray-500">Manage your retailer clients here. (Coming soon)</p>
+          </div>
+        );
 
       default:
         return (
