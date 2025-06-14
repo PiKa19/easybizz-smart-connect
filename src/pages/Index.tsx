@@ -1,4 +1,3 @@
-
 import { useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -128,6 +127,71 @@ const Index = () => {
               <CardContent>
                 <CardDescription className="text-gray-600 text-center">
                   Make informed decisions with powerful business analytics and real-time insights
+                </CardDescription>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Supplier Benefits Section */}
+      <section id="supplier-benefits" className="py-16 px-6 bg-white">
+        <div className="container mx-auto">
+          <h2 className="text-3xl font-bold text-center text-blue-900 mb-12">Supplier Benefits</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {/* Benefit 1 */}
+            <Card className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6">
+              <CardHeader className="text-center pb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  {/* Storefront Icon */}
+                  <Package className="w-6 h-6 text-[#0794FE]" />
+                </div>
+                <CardTitle className="text-blue-900 text-xl">
+                  Direct Access to Boutiques and Retailers
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-gray-600 text-center">
+                  <span className="font-semibold">No middlemen:</span> Sell directly to store owners and boutiques who are actively seeking products.<br /><br />
+                  <span className="font-semibold">Wider reach:</span> Instantly showcase your catalog to a network of verified businesses using the platform.
+                </CardDescription>
+              </CardContent>
+            </Card>
+
+            {/* Benefit 2 */}
+            <Card className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6">
+              <CardHeader className="text-center pb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  {/* Clipboard List Icon (order management) */}
+                  <BarChart3 className="w-6 h-6 text-[#0794FE]" />
+                </div>
+                <CardTitle className="text-blue-900 text-xl">
+                  Smart Order Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-gray-600 text-center">
+                  Centralized dashboard to receive, confirm, and track orders in real time.<br /><br />
+                  Notifications for new orders, delivery deadlines, and payment statuses.
+                </CardDescription>
+              </CardContent>
+            </Card>
+
+            {/* Benefit 3 */}
+            <Card className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6">
+              <CardHeader className="text-center pb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  {/* Tag Icon for promotions */}
+                  <Users className="w-6 h-6 text-[#0794FE]" />
+                </div>
+                <CardTitle className="text-blue-900 text-xl">
+                  Promotional Tools
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-gray-600 text-center">
+                  Ability to run limited-time discounts, bundle offers, and highlighted listings.<br /><br />
+                  Feature products on the homepage or in recommended sections to boutiques.
                 </CardDescription>
               </CardContent>
             </Card>
