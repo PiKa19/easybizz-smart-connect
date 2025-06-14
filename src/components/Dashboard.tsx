@@ -1,3 +1,4 @@
+
 import React, { useState, useContext } from 'react';
 import {
   Home,
@@ -31,6 +32,9 @@ import HomeNavigationGrid from './dashboard/HomeNavigationGrid';
 interface DashboardProps {
   onLogout: () => void;
 }
+
+const SIDEBAR_WIDTH = 256; // 64 * 4 = 256px (w-64)
+const HEADER_HEIGHT = 73;  // px-6 py-4, h-16~h-20 (estimated/padded below)
 
 const Dashboard = ({ onLogout }: DashboardProps) => {
   const { t } = useContext(LanguageContext);
@@ -144,24 +148,43 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <DashboardHeader
-        daysLeft={daysLeft}
-        onSubscriptionClick={() => setShowSubscriptionWall(true)}
-        onProfileOpen={() => setIsProfileOpen(true)}
-        onLogout={onLogout}
-        t={t}
-      />
-      <div className="flex">
+    <div className="min-h-screen bg-gray-50 relative">
+      {/* Fixed Top Header */}
+      <div
+        className="fixed top-0 left-0 right-0 z-40"
+        style={{ height: HEADER_HEIGHT }}
+      >
+        <DashboardHeader
+          daysLeft={daysLeft}
+          onSubscriptionClick={() => setShowSubscriptionWall(true)}
+          onProfileOpen={() => setIsProfileOpen(true)}
+          onLogout={onLogout}
+          t={t}
+        />
+      </div>
+      {/* Fixed Left Sidebar */}
+      <div
+        className="fixed top-[73px] left-0 z-30 h-[calc(100vh-73px)]"
+        style={{ width: SIDEBAR_WIDTH }}
+      >
         <DashboardSidebar
           menuItems={menuItems}
           activeSection={activeSection}
           setActiveSection={setActiveSection}
         />
-        <main className="flex-1 p-6">
-          {renderContent()}
-        </main>
       </div>
+      {/* Main Content */}
+      <main
+        className="flex-1 p-6"
+        style={{
+          marginLeft: SIDEBAR_WIDTH,
+          marginTop: HEADER_HEIGHT,
+          minHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,
+          background: "inherit"
+        }}
+      >
+        {renderContent()}
+      </main>
       <UserProfile isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
       <SubscriptionWall
         open={showSubscriptionWall}
@@ -175,3 +198,4 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 };
 
 export default Dashboard;
+
