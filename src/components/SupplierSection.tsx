@@ -334,7 +334,7 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
         </Select>
       </div>
 
-      {/* Only show Suppliers Grid on my-suppliers or find-suppliers tab */}
+      {/* Only show Suppliers Grid and no-results on my-suppliers or find-suppliers tab */}
       {(activeTab === 'my-suppliers' || activeTab === 'find-suppliers') && (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
