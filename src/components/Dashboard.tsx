@@ -87,6 +87,24 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
               <p className="text-sm text-gray-500">{t('dashboard_subtitle')}</p>
             </div>
 
+            {/* --- New Navigation Buttons --- */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {menuItems.map((item) => (
+                <Button
+                  key={item.id}
+                  variant={activeSection === item.id ? "default" : "secondary"}
+                  className="flex flex-col items-center justify-center py-6 gap-2 shadow-sm h-32"
+                  onClick={() => setActiveSection(item.id)}
+                >
+                  <item.icon className="w-7 h-7 mb-1" />
+                  <span className="text-base font-medium">{item.label}</span>
+                </Button>
+              ))}
+            </div>
+            {/* --- End Navigation Buttons --- */}
+
+            {/* Optionally, keep the original 3 cards below or remove if you want only the navigation buttons */}
+            {/* 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('bizz')}>
                 <CardContent className="p-6">
@@ -130,6 +148,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                 </CardContent>
               </Card>
             </div>
+            */}
           </div>
         );
 
