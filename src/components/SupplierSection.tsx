@@ -1,3 +1,4 @@
+
 import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,6 +43,7 @@ interface SupplierSectionProps {
 
 const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) => {
   const { t } = useContext(LanguageContext);
+  // FIXED: Add 'messages' to the union type
   const [activeTab, setActiveTab] = useState<'my-suppliers' | 'find-suppliers' | 'messages'>('my-suppliers');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -404,5 +406,4 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
     </div>
   );
 };
-
 export default SupplierSection;
