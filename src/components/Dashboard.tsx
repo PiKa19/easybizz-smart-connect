@@ -1,4 +1,3 @@
-
 import React, { useState, useContext } from 'react';
 import {
   Home,
@@ -157,12 +156,13 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
       <header className="bg-white shadow-sm border-b">
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
-            <div className="w-8 h-8 bg-[#0794FE] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">E</span>
-            </div>
-            <span className="font-bold text-xl text-gray-800">EasyBizz</span>
+            {/* Logo replaces 'EasyBizz' text */}
+            <img
+              src="/lovable-uploads/5142faa5-d964-4021-b411-2ea1ad268901.png"
+              alt="EasyBizz Logo"
+              className="h-8 w-auto"
+            />
           </div>
-          
           <div className="flex items-center gap-4">
             <LanguageSwitcher />
             
