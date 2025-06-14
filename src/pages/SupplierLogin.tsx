@@ -1,5 +1,5 @@
 
-import { useState, useContext } from "react";
+import { useState, useContext, ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,28 +8,73 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link, useNavigate } from "react-router-dom";
 import { LanguageContext } from "@/contexts/LanguageContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { Upload, FileText } from "lucide-react";
 
 const SupplierLogin = () => {
   const { t } = useContext(LanguageContext);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
+  // State for supplier registration form
+  const [registerForm, setRegisterForm] = useState({
+    company: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+    agree: false,
+    commerceRegister: null as File | null,
+  });
+
+  const [registerErrors, setRegisterErrors] = useState<{ [key: string]: string }>({});
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate login process
     setTimeout(() => {
       setIsLoading(false);
       navigate('/supplier-dashboard');
     }, 1000);
   };
 
+  const handleRegisterInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value, type, checked } = e.target;
+    setRegisterForm(prev => ({
+      ...prev,
+      [id === "reg-email" ? "email" : id === "confirm-password" ? "confirmPassword" : id === "reg-password" ? "password" : id]:
+        type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0] ? e.target.files[0] : null;
+    setRegisterForm(prev => ({
+      ...prev,
+      commerceRegister: file,
+    }));
+  };
+
+  const validateRegisterForm = () => {
+    const errors: { [key: string]: string } = {};
+    if (!registerForm.company.trim()) errors.company = "Company Name is required";
+    if (!registerForm.email.trim()) errors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(registerForm.email)) errors.email = "Email is invalid";
+    if (!registerForm.phone.trim()) errors.phone = "Phone Number is required";
+    if (!registerForm.password) errors.password = "Password is required";
+    else if (registerForm.password.length < 6) errors.password = "Password must be at least 6 characters";
+    if (!registerForm.confirmPassword) errors.confirmPassword = "Please confirm your password";
+    else if (registerForm.confirmPassword !== registerForm.password) errors.confirmPassword = "Passwords do not match";
+    if (!registerForm.commerceRegister) errors.commerceRegister = "Registre de Commerce PDF is required";
+    else if (registerForm.commerceRegister.type !== "application/pdf") errors.commerceRegister = "File must be a PDF";
+    if (!registerForm.agree) errors.agree = "You must agree to the platform rules and guidelines";
+    setRegisterErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateRegisterForm()) return;
     setIsLoading(true);
-    
-    // Simulate registration process
     setTimeout(() => {
       setIsLoading(false);
       navigate('/supplier-dashboard');
@@ -44,7 +89,7 @@ const SupplierLogin = () => {
           <Link to="/" className="flex items-center gap-2">
             <img 
               src="/lovable-uploads/5142faa5-d964-4021-b411-2ea1ad268901.png" 
-              alt="EasyBizz Logo" 
+              alt="EasyBizz Logo"
               className="h-8 w-auto"
             />
           </Link>
@@ -128,8 +173,14 @@ const SupplierLogin = () => {
                         id="company"
                         type="text"
                         placeholder="Your Company Name"
+                        value={registerForm.company}
+                        onChange={handleRegisterInputChange}
                         required
+                        className={registerErrors.company ? "border border-red-500" : ""}
                       />
+                      {registerErrors.company && (
+                        <p className="text-xs text-red-500">{registerErrors.company}</p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="reg-email">Email</Label>
@@ -137,8 +188,14 @@ const SupplierLogin = () => {
                         id="reg-email"
                         type="email"
                         placeholder="supplier@company.com"
+                        value={registerForm.email}
+                        onChange={handleRegisterInputChange}
                         required
+                        className={registerErrors.email ? "border border-red-500" : ""}
                       />
+                      {registerErrors.email && (
+                        <p className="text-xs text-red-500">{registerErrors.email}</p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone Number</Label>
@@ -146,25 +203,84 @@ const SupplierLogin = () => {
                         id="phone"
                         type="tel"
                         placeholder="+213 XXX XXX XXX"
+                        value={registerForm.phone}
+                        onChange={handleRegisterInputChange}
                         required
+                        className={registerErrors.phone ? "border border-red-500" : ""}
                       />
+                      {registerErrors.phone && (
+                        <p className="text-xs text-red-500">{registerErrors.phone}</p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="reg-password">Password</Label>
                       <Input
                         id="reg-password"
                         type="password"
+                        value={registerForm.password}
+                        onChange={handleRegisterInputChange}
                         required
+                        className={registerErrors.password ? "border border-red-500" : ""}
                       />
+                      {registerErrors.password && (
+                        <p className="text-xs text-red-500">{registerErrors.password}</p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="confirm-password">Confirm Password</Label>
                       <Input
                         id="confirm-password"
                         type="password"
+                        value={registerForm.confirmPassword}
+                        onChange={handleRegisterInputChange}
                         required
+                        className={registerErrors.confirmPassword ? "border border-red-500" : ""}
                       />
+                      {registerErrors.confirmPassword && (
+                        <p className="text-xs text-red-500">{registerErrors.confirmPassword}</p>
+                      )}
                     </div>
+                    
+                    {/* Registre de Commerce PDF upload */}
+                    <div className="space-y-2">
+                      <Label>Registre de Commerce (PDF)</Label>
+                      <div className={`border-2 border-dashed rounded-lg p-4 ${registerErrors.commerceRegister ? 'border-red-500' : 'border-gray-300'}`}>
+                        <input
+                          type="file"
+                          accept=".pdf"
+                          onChange={handleFileChange}
+                          className="hidden"
+                          id="commerceRegister"
+                        />
+                        <label htmlFor="commerceRegister" className="cursor-pointer flex flex-col items-center space-y-2">
+                          <FileText className="w-8 h-8 text-gray-400" />
+                          <span className="text-sm text-gray-600">
+                            {registerForm.commerceRegister ? registerForm.commerceRegister.name : "Click to upload Registre de Commerce (PDF)"}
+                          </span>
+                        </label>
+                      </div>
+                      {registerErrors.commerceRegister && (
+                        <p className="text-xs text-red-500">{registerErrors.commerceRegister}</p>
+                      )}
+                    </div>
+
+                    {/* Confirmation Checkbox */}
+                    <div className="flex items-start gap-2">
+                      <input
+                        id="agree"
+                        type="checkbox"
+                        checked={registerForm.agree}
+                        onChange={handleRegisterInputChange}
+                        className="mt-1"
+                      />
+                      <label htmlFor="agree" className="text-sm text-gray-700 cursor-pointer">
+                        I confirm that I will use the platform while following its rules and guidelines.
+                      </label>
+                    </div>
+                    {registerErrors.agree && (
+                      <p className="text-xs text-red-500">{registerErrors.agree}</p>
+                    )}
+
                     <Button 
                       type="submit" 
                       className="w-full bg-[#E1275C] hover:bg-[#C91F4F]"
@@ -184,3 +300,4 @@ const SupplierLogin = () => {
 };
 
 export default SupplierLogin;
+
