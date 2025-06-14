@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,7 +23,21 @@ const SupplierBizzSection = ({ onBack }: SupplierBizzSectionProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [activeTab, setActiveTab] = useState<'listings' | 'add-listing'>('listings');
 
-  // Mock data for supplier's products
+  // Add more realistic/random categories
+  const categories = [
+    "Beverages",
+    "Conserves",
+    "Dairy",
+    "Cleaning",
+    "Canned Foods",
+    "Frozen Foods",
+    "Snacks",
+    "Bakery",
+    "Personal Care",
+    "Meat & Poultry"
+  ];
+
+  // Mock data for supplier's products (unchanged)
   const [products, setProducts] = useState<Product[]>([
     {
       id: 1,
@@ -146,13 +159,14 @@ const SupplierBizzSection = ({ onBack }: SupplierBizzSectionProps) => {
         </Button>
       </div>
 
-      {/* Category filters */}
-      <div className="flex gap-2">
-        <Button variant="outline" size="sm">Beverages</Button>
-        <Button variant="outline" size="sm">conserves</Button>
+      {/* Category filters: now more categories */}
+      <div className="flex gap-2 flex-wrap">
+        {categories.map((category) => (
+          <Button key={category} variant="outline" size="sm">{category}</Button>
+        ))}
       </div>
 
-      {/* Products Grid */}
+      {/* Products Grid (NO Buy now button) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         {products.map(product => (
           <Card key={product.id} className="hover:shadow-lg transition-shadow">
@@ -184,9 +198,7 @@ const SupplierBizzSection = ({ onBack }: SupplierBizzSectionProps) => {
               </div>
               <h4 className="font-semibold">{product.name}</h4>
               <p className="text-sm text-gray-600">{product.description}</p>
-              <Button className="w-full mt-3 bg-[#E1275C] hover:bg-[#C91F4F] text-white">
-                Buy now
-              </Button>
+              {/* Removed Buy now button */}
             </CardContent>
           </Card>
         ))}
