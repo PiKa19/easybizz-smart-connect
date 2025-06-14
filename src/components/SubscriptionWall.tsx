@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -13,6 +12,7 @@ interface SubscriptionWallProps {
   onClose: () => void;
   onPlanSelect?: (plan: { duration: string; price: number; planType: string }) => void;
   onBorrow3Days?: () => void;
+  onSubscriptionRenewed?: () => void;
 }
 
 const plans = [
@@ -41,7 +41,13 @@ const plans = [
   }
 ];
 
-const SubscriptionWall: React.FC<SubscriptionWallProps> = ({ open, onClose, onPlanSelect, onBorrow3Days }) => {
+const SubscriptionWall: React.FC<SubscriptionWallProps> = ({
+  open,
+  onClose,
+  onPlanSelect,
+  onBorrow3Days,
+  onSubscriptionRenewed
+}) => {
   const [selectedPlan, setSelectedPlan] = useState<string>("");
   const [showPayment, setShowPayment] = useState(false);
   const [planForPayment, setPlanForPayment] = useState<{ duration: string; price: number; planType: string } | null>(null);
@@ -65,6 +71,8 @@ const SubscriptionWall: React.FC<SubscriptionWallProps> = ({ open, onClose, onPl
     if (onPlanSelect && planForPayment) {
       onPlanSelect(planForPayment);
     }
+    // Call hook to update days left counter in dashboard
+    if (onSubscriptionRenewed) onSubscriptionRenewed();
     onClose();
     // Optionally show a toast here for successful payment
   };

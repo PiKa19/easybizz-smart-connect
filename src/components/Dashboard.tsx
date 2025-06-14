@@ -1,4 +1,4 @@
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   Home,
   ShoppingCart,
@@ -39,8 +39,8 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [showSubscriptionWall, setShowSubscriptionWall] = useState(false);
 
-  // Add random days left calculation (between 2 and 19 for demo)
-  const daysLeft = useMemo(() => Math.floor(Math.random() * 18) + 2, []);
+  // Move daysLeft to state so it can be updated after payment
+  const [daysLeft, setDaysLeft] = useState(() => Math.floor(Math.random() * 18) + 2);
 
   const menuItems = [
     { id: 'home', label: t('home'), icon: Home },
@@ -69,6 +69,11 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     console.log("User borrowed 3 days of access");
     setShowSubscriptionWall(false);
     // You could add logic here for actual access extension
+  };
+
+  const handleSubscriptionRenewed = () => {
+    // For demo, reset to a new random value between 29 and 31 (simulates a full new period)
+    setDaysLeft(Math.floor(Math.random() * 3) + 29);
   };
 
   const renderContent = () => {
@@ -265,6 +270,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
         onClose={() => setShowSubscriptionWall(false)}
         onPlanSelect={handlePlanSelect}
         onBorrow3Days={handleBorrow}
+        onSubscriptionRenewed={handleSubscriptionRenewed}
       />
     </div>
   );
