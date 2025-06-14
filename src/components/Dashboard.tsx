@@ -76,6 +76,22 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     setDaysLeft(Math.floor(Math.random() * 3) + 29);
   };
 
+  // --- Add descriptions for home cards ---
+  const menuDescriptions: Record<string, string> = {
+    home: t('dashboard_greeting'),
+    boutique: t('buy_products_desc'),
+    bizz: t('buy_products_desc'),
+    analytics: t('view_analytics_desc'),
+    inventory: t('inventory_management_desc'),
+    products: t('manage_products') || 'Manage your listed products',
+    orders: t('manage_orders') || 'View and manage your orders',
+    suppliers: t('manage_suppliers') || 'View your suppliers and contacts',
+    historique: t('section_under_development'),
+    notification: t('section_under_development'),
+    cashier: t('section_under_development'),
+    settings: t('section_under_development'),
+  };
+
   const renderContent = () => {
     switch (activeSection) {
       case 'home':
@@ -87,68 +103,25 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
               <p className="text-sm text-gray-500">{t('dashboard_subtitle')}</p>
             </div>
 
-            {/* --- New Navigation Buttons --- */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {/* --- Navigation Cards --- */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {menuItems.map((item) => (
-                <Button
+                <Card
                   key={item.id}
-                  variant={activeSection === item.id ? "default" : "secondary"}
-                  className="flex flex-col items-center justify-center py-6 gap-2 shadow-sm h-32"
+                  className={`hover:shadow-lg cursor-pointer transition-shadow h-44 flex flex-col justify-between ${activeSection === item.id ? 'ring-2 ring-[#0794FE]' : ''}`}
                   onClick={() => setActiveSection(item.id)}
                 >
-                  <item.icon className="w-7 h-7 mb-1" />
-                  <span className="text-base font-medium">{item.label}</span>
-                </Button>
+                  <CardContent className="flex flex-col items-center text-center justify-center h-full p-6">
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-2" style={{ backgroundColor: "#F3F6FB" }}>
+                      <item.icon className="w-7 h-7 text-[#0794FE]" />
+                    </div>
+                    <h3 className="font-semibold text-gray-800 mb-1">{item.label}</h3>
+                    <p className="text-xs text-gray-500">{menuDescriptions[item.id] || t('section_under_development')}</p>
+                  </CardContent>
+                </Card>
               ))}
             </div>
-            {/* --- End Navigation Buttons --- */}
-
-            {/* Optionally, keep the original 3 cards below or remove if you want only the navigation buttons */}
-            {/* 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('bizz')}>
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <ShoppingCart className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-800">{t('buy_products')}</h3>
-                      <p className="text-sm text-gray-600">{t('buy_products_desc')}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('analytics')}>
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                      <BarChart3 className="w-6 h-6 text-green-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-800">{t('view_analytics')}</h3>
-                      <p className="text-sm text-gray-600">{t('view_analytics_desc')}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('inventory')}>
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <Package className="w-6 h-6 text-purple-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-800">{t('inventory_management')}</h3>
-                      <p className="text-sm text-gray-600">{t('inventory_management_desc')}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            */}
+            {/* --- End Navigation Cards --- */}
           </div>
         );
 
