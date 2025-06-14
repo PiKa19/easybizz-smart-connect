@@ -18,7 +18,8 @@ export default {
 			}
 		},
 		extend: {
-			colors: {
+			fontFamily: {
+        playfair: ['"Playfair Display"', 'serif'],
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
