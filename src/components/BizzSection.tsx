@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -46,6 +46,8 @@ interface BizzSectionProps {
   onBack: () => void;
 }
 
+const CART_STORAGE_KEY = "bizz_section_cart";
+
 const BizzSection = ({ onBack }: BizzSectionProps) => {
   const { t } = useContext(LanguageContext);
   const [currentView, setCurrentView] = useState<'products' | 'detail' | 'cart' | 'supplier'>('products');
@@ -54,6 +56,23 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
   const [selectedCategory, setSelectedCategory] = useState('All Products');
   const [searchTerm, setSearchTerm] = useState('');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+  // Hydrate cartItems from localStorage on mount
+  useEffect(() => {
+    const storedCart = localStorage.getItem(CART_STORAGE_KEY);
+    if (storedCart) {
+      try {
+        setCartItems(JSON.parse(storedCart));
+      } catch (e) {
+        setCartItems([]);
+      }
+    }
+  }, []);
+
+  // Persist cartItems to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
+  }, [cartItems]);
 
   const products: Product[] = [
     {
