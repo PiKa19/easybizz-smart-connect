@@ -140,13 +140,11 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
           : supplier
       )
     );
-    // Optionally show a toast or console.log for user feedback
   };
 
   // --- Fix 2: sendMessage function (stub) ---
   const sendMessage = (supplier: Supplier) => {
-    // Replace this with navigation or a modal later
-    alert(`Contacting ${supplier.name}...`);
+    setActiveTab('messages');
   };
 
   if (activeTab === 'messages') {
@@ -260,7 +258,7 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
     );
   }
 
-  // --- Fix 3: Move suppliers/filtering/rendering inside relevant tabs ---
+  // --- Restore TABS: my_suppliers, find_suppliers, messages ---
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -274,14 +272,41 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
         </Button>
       </div>
 
-      {/* Tabs */}
+      {/* TABS */}
       <div className="flex gap-4 border-b">
-        {/* ... keep existing code (tabs) the same ... */}
+        <button
+          className={`px-4 py-2 -mb-px border-b-2 transition-all ${activeTab === 'my-suppliers'
+            ? 'border-[#0794FE] text-[#0794FE] font-semibold bg-blue-50'
+            : 'border-transparent text-gray-600 hover:text-[#0794FE]'
+          }`}
+          onClick={() => setActiveTab('my-suppliers')}
+        >
+          {t('my_suppliers')} ({mySuppliers.length})
+        </button>
+        <button
+          className={`px-4 py-2 -mb-px border-b-2 transition-all ${activeTab === 'find-suppliers'
+            ? 'border-[#0794FE] text-[#0794FE] font-semibold bg-blue-50'
+            : 'border-transparent text-gray-600 hover:text-[#0794FE]'
+          }`}
+          onClick={() => setActiveTab('find-suppliers')}
+        >
+          {t('find_suppliers')}
+        </button>
+        <button
+          className={`px-4 py-2 -mb-px border-b-2 transition-all ${activeTab === 'messages'
+            ? 'border-[#0794FE] text-[#0794FE] font-semibold bg-blue-50'
+            : 'border-transparent text-gray-600 hover:text-[#0794FE]'
+          }`}
+          onClick={() => setActiveTab('messages')}
+        >
+          {t('messages')}
+        </button>
       </div>
 
-      {/* Search and Filters */}
+      {/* TAB CONTENTS */}
       {(activeTab === 'my-suppliers' || activeTab === 'find-suppliers') && (
         <>
+          {/* Search and Filters */}
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -307,7 +332,7 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
           </div>
           {/* Supplier cards */}
           {(() => {
-            // Calculate filtered suppliers here so types line up with tab
+            // Use right supplier source based on tab
             const suppliersSource: Supplier[] = activeTab === 'my-suppliers' ? mySuppliers : allSuppliers;
             const filteredSuppliers: Supplier[] = suppliersSource.filter(supplier => {
               const matchesSearch =
@@ -349,9 +374,7 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
                             <span>{supplier.phone}</span>
                           </div>
                         </div>
-                        
                         <p className="text-sm text-gray-600 line-clamp-2">{supplier.description}</p>
-                        
                         <div className="flex gap-2">
                           <Button 
                             variant="outline" 
@@ -363,10 +386,10 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
                           </Button>
                           <Button 
                             size="sm" 
-                            className="flex-1"
+                            className="flex-1 bg-black text-white flex items-center gap-2"
                             onClick={() => sendMessage(supplier)}
                           >
-                            <MessageSquare className="w-4 h-4 mr-1" />
+                            <MessageSquare className="w-4 h-4" />
                             {t('message_supplier')}
                           </Button>
                         </div>
@@ -394,7 +417,11 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
         </>
       )}
 
-      {/* There is no supplier grid/message search UI for the 'messages' tab; returned early above */}
+      {activeTab === 'messages' && (
+        <div>
+          <MessagingSection />
+        </div>
+      )}
     </div>
   );
 };
