@@ -1,3 +1,4 @@
+
 import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -68,7 +69,7 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
         { id: '1', name: 'Orange Juice', price: 150, unit: 'bottle', image: '/placeholder.svg', inStock: true },
         { id: '2', name: 'Apple Juice', price: 180, unit: 'bottle', image: '/placeholder.svg', inStock: true },
         { id: '3', name: 'Water Bottles', price: 25, unit: 'bottle', image: '/placeholder.svg', inStock: true },
-      ]
+      ],
     },
     {
       id: '2',
@@ -87,7 +88,7 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
       products: [
         { id: '4', name: 'Potato Chips', price: 120, unit: 'pack', image: '/placeholder.svg', inStock: true },
         { id: '5', name: 'Chocolate Bars', price: 200, unit: 'piece', image: '/placeholder.svg', inStock: false },
-      ]
+      ],
     },
     {
       id: '3',
@@ -106,7 +107,7 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
       products: [
         { id: '6', name: 'Fresh Milk', price: 80, unit: 'liter', image: '/placeholder.svg', inStock: true },
         { id: '7', name: 'Cheese', price: 350, unit: 'kg', image: '/placeholder.svg', inStock: true },
-      ]
+      ],
     },
     {
       id: '4',
@@ -125,193 +126,208 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
       products: [
         { id: '8', name: 'Dish Soap', price: 250, unit: 'bottle', image: '/placeholder.svg', inStock: true },
         { id: '9', name: 'Floor Cleaner', price: 300, unit: 'bottle', image: '/placeholder.svg', inStock: true },
-      ]
-    }
+      ],
+    },
   ]);
 
-  const mySuppliers = allSuppliers.filter(supplier => supplier.isContact);
+  const mySuppliers = allSuppliers.filter((supplier) => supplier.isContact);
 
-  // --- Fix 1: toggleContact function ---
+  // Toggle supplier contact status
   const toggleContact = (supplierId: string) => {
     setAllSuppliers((prev) =>
       prev.map((supplier) =>
-        supplier.id === supplierId
-          ? { ...supplier, isContact: !supplier.isContact }
-          : supplier
+        supplier.id === supplierId ? { ...supplier, isContact: !supplier.isContact } : supplier
       )
     );
   };
 
-  // --- Fix 2: sendMessage function (stub) ---
+  // Navigate to messages tab
   const sendMessage = (supplier: Supplier) => {
-    setActiveTab('messages');
+    setActiveTab("messages");
   };
 
-  if (activeTab === 'messages') {
-    return <MessagingSection />;
-  }
-
-  if (selectedSupplier) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <Button variant="outline" onClick={() => setSelectedSupplier(null)}>
-            ← {t('back')}
-          </Button>
-          <h2 className="text-2xl font-bold text-gray-800">{t('supplier_profile')}</h2>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Supplier Info */}
-          <div className="lg:col-span-1">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>{selectedSupplier.name}</CardTitle>
-                  <div className="flex gap-2">
-                    <Button 
-                      size="sm" 
-                      variant={selectedSupplier.isContact ? "destructive" : "default"}
-                      onClick={() => toggleContact(selectedSupplier.id)}
-                    >
-                      {selectedSupplier.isContact ? <UserMinus className="w-4 h-4 mr-1" /> : <UserPlus className="w-4 h-4 mr-1" />}
-                      {selectedSupplier.isContact ? t('remove_from_contacts') : t('add_to_contacts')}
-                    </Button>
-                    <Button size="sm" onClick={() => sendMessage(selectedSupplier)}>
-                      <MessageSquare className="w-4 h-4 mr-1" />
-                      {t('message_supplier')}
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  <span>{selectedSupplier.rating}/5</span>
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm">
-                    <MapPin className="w-4 h-4 text-gray-500" />
-                    <span>{selectedSupplier.location}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Phone className="w-4 h-4 text-gray-500" />
-                    <span>{selectedSupplier.phone}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Mail className="w-4 h-4 text-gray-500" />
-                    <span>{selectedSupplier.email}</span>
-                  </div>
-                  {selectedSupplier.website && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Globe className="w-4 h-4 text-gray-500" />
-                      <span>{selectedSupplier.website}</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="pt-4 border-t">
-                  <h4 className="font-semibold mb-2">{t('supplier_info')}</h4>
-                  <div className="space-y-2 text-sm">
-                    <div><strong>{t('description')}:</strong> {selectedSupplier.description}</div>
-                    <div><strong>{t('years_experience')}:</strong> {selectedSupplier.yearsExperience} {t('years_experience').toLowerCase()}</div>
-                    <div><strong>{t('minimum_order')}:</strong> {selectedSupplier.minimumOrder}</div>
-                    <div><strong>{t('delivery_time')}:</strong> {selectedSupplier.deliveryTime}</div>
-                    <div><strong>{t('payment_terms')}:</strong> {selectedSupplier.paymentTerms}</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Supplier Products */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('supplier_products')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                  {selectedSupplier.products.map((product) => (
-                    <Card key={product.id} className="border">
-                      <CardContent className="p-4">
-                        <img 
-                          src={product.image} 
-                          alt={product.name}
-                          className="w-full h-32 object-cover rounded mb-3"
-                        />
-                        <h4 className="font-semibold">{product.name}</h4>
-                        <p className="text-sm text-gray-600">{product.price} DZD/{product.unit}</p>
-                        <Badge variant={product.inStock ? "default" : "destructive"} className="mt-2">
-                          {product.inStock ? "In Stock" : "Out of Stock"}
-                        </Badge>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // --- Restore TABS: my_suppliers, find_suppliers, messages ---
   return (
     <div className="space-y-6">
+      {/* Top Bar */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Users className="w-8 h-8 text-[#0794FE]" />
-          <h2 className="text-2xl font-bold text-gray-800">{t('supplier_management')}</h2>
+          <h2 className="text-2xl font-bold text-gray-800">{t("supplier_management")}</h2>
         </div>
         <Button>
           <Plus className="w-4 h-4 mr-2" />
-          {t('add_supplier')}
+          {t("add_supplier")}
         </Button>
       </div>
-
-      {/* TABS */}
+      {/* Tabs */}
       <div className="flex gap-4 border-b">
         <button
-          className={`px-4 py-2 -mb-px border-b-2 transition-all ${activeTab === 'my-suppliers'
-            ? 'border-[#0794FE] text-[#0794FE] font-semibold bg-blue-50'
-            : 'border-transparent text-gray-600 hover:text-[#0794FE]'
+          className={`px-4 py-2 -mb-px border-b-2 transition-all ${
+            activeTab === "my-suppliers"
+              ? "border-[#0794FE] text-[#0794FE] font-semibold bg-blue-50"
+              : "border-transparent text-gray-600 hover:text-[#0794FE]"
           }`}
-          onClick={() => setActiveTab('my-suppliers')}
+          onClick={() => setActiveTab("my-suppliers")}
         >
-          {t('my_suppliers')} ({mySuppliers.length})
+          {t("my_suppliers")} ({mySuppliers.length})
         </button>
         <button
-          className={`px-4 py-2 -mb-px border-b-2 transition-all ${activeTab === 'find-suppliers'
-            ? 'border-[#0794FE] text-[#0794FE] font-semibold bg-blue-50'
-            : 'border-transparent text-gray-600 hover:text-[#0794FE]'
+          className={`px-4 py-2 -mb-px border-b-2 transition-all ${
+            activeTab === "find-suppliers"
+              ? "border-[#0794FE] text-[#0794FE] font-semibold bg-blue-50"
+              : "border-transparent text-gray-600 hover:text-[#0794FE]"
           }`}
-          onClick={() => setActiveTab('find-suppliers')}
+          onClick={() => setActiveTab("find-suppliers")}
         >
-          {t('find_suppliers')}
+          {t("find_suppliers")}
         </button>
         <button
-          className={`px-4 py-2 -mb-px border-b-2 transition-all ${activeTab === 'messages'
-            ? 'border-[#0794FE] text-[#0794FE] font-semibold bg-blue-50'
-            : 'border-transparent text-gray-600 hover:text-[#0794FE]'
+          className={`px-4 py-2 -mb-px border-b-2 transition-all ${
+            activeTab === "messages"
+              ? "border-[#0794FE] text-[#0794FE] font-semibold bg-blue-50"
+              : "border-transparent text-gray-600 hover:text-[#0794FE]"
           }`}
-          onClick={() => setActiveTab('messages')}
+          onClick={() => setActiveTab("messages")}
         >
-          {t('messages')}
+          {t("messages")}
         </button>
       </div>
-
-      {/* TAB CONTENTS */}
-      {(activeTab === 'my-suppliers' || activeTab === 'find-suppliers') && (
+      {/* Content Area */}
+      {/* Show supplier profile if selected */}
+      {selectedSupplier ? (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <Button variant="outline" onClick={() => setSelectedSupplier(null)}>
+              ← {t("back")}
+            </Button>
+            <h2 className="text-2xl font-bold text-gray-800">{t("supplier_profile")}</h2>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Supplier Info */}
+            <div className="lg:col-span-1">
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>{selectedSupplier.name}</CardTitle>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant={selectedSupplier.isContact ? "destructive" : "default"}
+                        onClick={() => toggleContact(selectedSupplier.id)}
+                      >
+                        {selectedSupplier.isContact ? (
+                          <UserMinus className="w-4 h-4 mr-1" />
+                        ) : (
+                          <UserPlus className="w-4 h-4 mr-1" />
+                        )}
+                        {selectedSupplier.isContact
+                          ? t("remove_from_contacts")
+                          : t("add_to_contacts")}
+                      </Button>
+                      <Button size="sm" onClick={() => sendMessage(selectedSupplier)}>
+                        <MessageSquare className="w-4 h-4 mr-1" />
+                        {t("message_supplier")}
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    <span>{selectedSupplier.rating}/5</span>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-sm">
+                      <MapPin className="w-4 h-4 text-gray-500" />
+                      <span>{selectedSupplier.location}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Phone className="w-4 h-4 text-gray-500" />
+                      <span>{selectedSupplier.phone}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Mail className="w-4 h-4 text-gray-500" />
+                      <span>{selectedSupplier.email}</span>
+                    </div>
+                    {selectedSupplier.website && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Globe className="w-4 h-4 text-gray-500" />
+                        <span>{selectedSupplier.website}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="pt-4 border-t">
+                    <h4 className="font-semibold mb-2">{t("supplier_info")}</h4>
+                    <div className="space-y-2 text-sm">
+                      <div>
+                        <strong>{t("description")}:</strong> {selectedSupplier.description}
+                      </div>
+                      <div>
+                        <strong>{t("years_experience")}:</strong> {selectedSupplier.yearsExperience}{" "}
+                        {t("years_experience").toLowerCase()}
+                      </div>
+                      <div>
+                        <strong>{t("minimum_order")}:</strong> {selectedSupplier.minimumOrder}
+                      </div>
+                      <div>
+                        <strong>{t("delivery_time")}:</strong> {selectedSupplier.deliveryTime}
+                      </div>
+                      <div>
+                        <strong>{t("payment_terms")}:</strong> {selectedSupplier.paymentTerms}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            {/* Supplier Products */}
+            <div className="lg:col-span-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("supplier_products")}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {selectedSupplier.products.map((product) => (
+                      <Card key={product.id} className="border">
+                        <CardContent className="p-4">
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="w-full h-32 object-cover rounded mb-3"
+                          />
+                          <h4 className="font-semibold">{product.name}</h4>
+                          <p className="text-sm text-gray-600">
+                            {product.price} DZD/{product.unit}
+                          </p>
+                          <Badge
+                            variant={product.inStock ? "default" : "destructive"}
+                            className="mt-2"
+                          >
+                            {product.inStock ? "In Stock" : "Out of Stock"}
+                          </Badge>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      ) : activeTab === "messages" ? (
+        <div>
+          <MessagingSection />
+        </div>
+      ) : (
+        // "my-suppliers" or "find-suppliers"
         <>
-          {/* Search and Filters */}
+          {/* Search/filter row */}
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
-                placeholder={t('search_supplier')}
+                placeholder={t("search_supplier")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -319,26 +335,27 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
             </div>
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
               <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder={t('filter_by_category')} />
+                <SelectValue placeholder={t("filter_by_category")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t('all_products')}</SelectItem>
-                <SelectItem value="beverages">{t('beverages')}</SelectItem>
-                <SelectItem value="snacks">{t('snacks')}</SelectItem>
-                <SelectItem value="dairy">{t('dairy')}</SelectItem>
-                <SelectItem value="cleaning">{t('cleaning')}</SelectItem>
+                <SelectItem value="all">{t("all_products")}</SelectItem>
+                <SelectItem value="beverages">{t("beverages")}</SelectItem>
+                <SelectItem value="snacks">{t("snacks")}</SelectItem>
+                <SelectItem value="dairy">{t("dairy")}</SelectItem>
+                <SelectItem value="cleaning">{t("cleaning")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          {/* Supplier cards */}
+          {/* Supplier cards grid */}
           {(() => {
-            // Use right supplier source based on tab
-            const suppliersSource: Supplier[] = activeTab === 'my-suppliers' ? mySuppliers : allSuppliers;
-            const filteredSuppliers: Supplier[] = suppliersSource.filter(supplier => {
+            const suppliersSource: Supplier[] =
+              activeTab === "my-suppliers" ? mySuppliers : allSuppliers;
+            const filteredSuppliers: Supplier[] = suppliersSource.filter((supplier) => {
               const matchesSearch =
                 supplier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 supplier.location.toLowerCase().includes(searchTerm.toLowerCase());
-              const matchesCategory = selectedCategory === 'all' || supplier.category === selectedCategory;
+              const matchesCategory =
+                selectedCategory === "all" || supplier.category === selectedCategory;
               return matchesSearch && matchesCategory;
             });
             return (
@@ -359,7 +376,9 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
                             </div>
                           </div>
                           {supplier.isContact && (
-                            <Badge className="bg-green-100 text-green-800">{t('supplier_contact')}</Badge>
+                            <Badge className="bg-green-100 text-green-800">
+                              {t("supplier_contact")}
+                            </Badge>
                           )}
                         </div>
                       </CardHeader>
@@ -376,21 +395,21 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
                         </div>
                         <p className="text-sm text-gray-600 line-clamp-2">{supplier.description}</p>
                         <div className="flex gap-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
+                          <Button
+                            variant="outline"
+                            size="sm"
                             className="flex-1"
                             onClick={() => setSelectedSupplier(supplier)}
                           >
-                            {t('view_profile')}
+                            {t("view_profile")}
                           </Button>
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             className="flex-1 bg-black text-white flex items-center gap-2"
                             onClick={() => sendMessage(supplier)}
                           >
                             <MessageSquare className="w-4 h-4" />
-                            {t('message_supplier')}
+                            {t("message_supplier")}
                           </Button>
                         </div>
                       </CardContent>
@@ -401,13 +420,14 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
                   <div className="text-center py-12">
                     <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">
-                      {activeTab === 'my-suppliers' ? t('no_suppliers_yet') : t('no_suppliers_found')}
+                      {activeTab === "my-suppliers"
+                        ? t("no_suppliers_yet")
+                        : t("no_suppliers_found")}
                     </h3>
                     <p className="text-gray-500">
-                      {activeTab === 'my-suppliers'
-                        ? t('add_suppliers_to_get_started')
-                        : t('try_different_search_terms')
-                      }
+                      {activeTab === "my-suppliers"
+                        ? t("add_suppliers_to_get_started")
+                        : t("try_different_search_terms")}
                     </p>
                   </div>
                 )}
@@ -416,14 +436,9 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
           })()}
         </>
       )}
-
-      {activeTab === 'messages' && (
-        <div>
-          <MessagingSection />
-        </div>
-      )}
     </div>
   );
 };
 
 export default SupplierSection;
+
