@@ -42,7 +42,6 @@ interface SupplierSectionProps {
 
 const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) => {
   const { t } = useContext(LanguageContext);
-  // FIXED: Add 'messages' to the union type
   const [activeTab, setActiveTab] = useState<'my-suppliers' | 'find-suppliers' | 'messages'>('my-suppliers');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -132,7 +131,7 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
 
   const mySuppliers = allSuppliers.filter(supplier => supplier.isContact);
 
-  // Only calculate filteredSuppliers for relevant tabs to avoid TS error
+  // Only calculate filteredSuppliers when relevant
   let filteredSuppliers: Supplier[] = [];
   if (activeTab === 'my-suppliers' || activeTab === 'find-suppliers') {
     filteredSuppliers = (activeTab === 'my-suppliers' ? mySuppliers : allSuppliers).filter(supplier => {
