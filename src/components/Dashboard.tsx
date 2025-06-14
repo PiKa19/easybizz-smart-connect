@@ -27,6 +27,7 @@ import BoutiqueSection from "./BoutiqueSection";
 import ProductsSection from "./ProductsSection";
 import OrdersSection from "./OrdersSection";
 import BizzSection from "./BizzSection";
+import SubscriptionWall from './SubscriptionWall';
 
 interface DashboardProps {
   onLogout: () => void;
@@ -36,6 +37,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   const { t } = useContext(LanguageContext);
   const [activeSection, setActiveSection] = useState('home');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [showSubscriptionWall, setShowSubscriptionWall] = useState(false);
 
   // Add random days left calculation (between 2 and 19 for demo)
   const daysLeft = useMemo(() => Math.floor(Math.random() * 18) + 2, []);
@@ -54,6 +56,20 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     { id: 'cashier', label: t('cashier'), icon: Calculator },
     { id: 'settings', label: t('settings'), icon: Settings },
   ];
+
+  const handlePlanSelect = (plan: { duration: string; price: number; planType: string }) => {
+    // For now just log the selected plan
+    console.log("Plan selected:", plan);
+    setShowSubscriptionWall(false);
+    // Here you could proceed to payment
+  };
+
+  const handleBorrow = () => {
+    // For this demo, just log and close modal, then maybe show a toast or notification
+    console.log("User borrowed 3 days of access");
+    setShowSubscriptionWall(false);
+    // You could add logic here for actual access extension
+  };
 
   const renderContent = () => {
     switch (activeSection) {
@@ -168,12 +184,14 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
           </div>
           <div className="flex items-center gap-4">
             {/* --- Subscription Days Left Section (Pink) --- */}
-            <div
-              className="relative flex items-center rounded-lg px-3 py-1 bg-[#E1275C] text-white font-semibold text-sm shadow hover:bg-[#C91F4F] transition-colors"
+            <button
+              className="relative flex items-center rounded-lg px-3 py-1 bg-[#E1275C] text-white font-semibold text-sm shadow hover:bg-[#C91F4F] transition-colors focus:outline-none focus:ring-2 focus:ring-[#E1275C]"
               title="Your subscription days left"
+              onClick={() => setShowSubscriptionWall(true)}
+              type="button"
             >
               {daysLeft} days left
-            </div>
+            </button>
             {/* --- End Subscription Section --- */}
 
             <LanguageSwitcher />
@@ -240,6 +258,14 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 
       {/* User Profile Modal */}
       <UserProfile isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
+
+      {/* Subscription Wall Modal */}
+      <SubscriptionWall
+        open={showSubscriptionWall}
+        onClose={() => setShowSubscriptionWall(false)}
+        onPlanSelect={handlePlanSelect}
+        onBorrow3Days={handleBorrow}
+      />
     </div>
   );
 };

@@ -1,0 +1,137 @@
+
+import React, { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Check } from "lucide-react";
+
+interface SubscriptionWallProps {
+  open: boolean;
+  onClose: () => void;
+  onPlanSelect?: (plan: { duration: string; price: number; planType: string }) => void;
+  onBorrow3Days?: () => void;
+}
+
+const plans = [
+  {
+    id: "1month",
+    duration: "1 Month",
+    price: 1000,
+    description: "Perfect for getting started",
+    features: ["Full access to all features", "Customer support", "Analytics dashboard"]
+  },
+  {
+    id: "6months",
+    duration: "6 Months",
+    price: 5000,
+    originalPrice: 6000,
+    description: "Most popular choice",
+    features: ["Full access to all features", "Priority customer support", "Advanced analytics", "Save 17%"]
+  },
+  {
+    id: "1year",
+    duration: "1 Year",
+    price: 9000,
+    originalPrice: 12000,
+    description: "Best value for committed businesses",
+    features: ["Full access to all features", "Priority customer support", "Advanced analytics", "Save 25%", "Free training sessions"]
+  }
+];
+
+const SubscriptionWall: React.FC<SubscriptionWallProps> = ({ open, onClose, onPlanSelect, onBorrow3Days }) => {
+  const [selectedPlan, setSelectedPlan] = useState<string>("");
+
+  const handleSelect = () => {
+    const plan = plans.find(p => p.id === selectedPlan);
+    if (plan && onPlanSelect) {
+      onPlanSelect({
+        duration: plan.duration,
+        price: plan.price,
+        planType: selectedPlan
+      });
+      onClose();
+    }
+  };
+
+  const handleBorrow = () => {
+    if (onBorrow3Days) onBorrow3Days();
+    onClose();
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-lg p-0 overflow-visible">
+        <DialogHeader>
+          <DialogTitle className="text-center mt-2">Renew Your Subscription</DialogTitle>
+          <DialogDescription className="text-center">Choose a plan below or borrow 3 extra days</DialogDescription>
+        </DialogHeader>
+        <div className="px-6 pb-6">
+          <RadioGroup value={selectedPlan} onValueChange={setSelectedPlan} className="space-y-4">
+            {plans.map((plan) => (
+              <Card key={plan.id} className={`cursor-pointer transition-colors ${
+                selectedPlan === plan.id ? 'ring-2 ring-[#0794FE] bg-blue-50' : 'hover:bg-gray-50'
+              }`}>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center space-x-3">
+                    <RadioGroupItem value={plan.id} id={plan.id} />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg">{plan.duration}</CardTitle>
+                        <div className="text-right">
+                          <div className="text-2xl font-bold text-[#E1275C]">{plan.price} DA</div>
+                          {plan.originalPrice && (
+                            <div className="text-sm text-gray-500 line-through">{plan.originalPrice} DA</div>
+                          )}
+                        </div>
+                      </div>
+                      <CardDescription className="mt-1">{plan.description}</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <ul className="space-y-2">
+                    {plan.features.map((feature, index) => (
+                      <li key={index} className="flex items-center space-x-2 text-sm">
+                        <Check className="w-4 h-4 text-green-500" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            ))}
+          </RadioGroup>
+          <div className="flex flex-col gap-3 pt-6">
+            <Button 
+              onClick={handleSelect}
+              disabled={!selectedPlan}
+              className="w-full bg-[#E1275C] hover:bg-[#C91F4F] text-white"
+            >
+              Continue to Payment
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full border-gray-300 text-[#E1275C] font-semibold hover:bg-pink-50"
+              onClick={handleBorrow}
+              type="button"
+            >
+              Borrow 3 days (temporary access)
+            </Button>
+          </div>
+        </div>
+        <DialogClose asChild>
+          <button
+            className="absolute top-3 right-4 text-gray-400 hover:text-gray-700 text-xl"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </DialogClose>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default SubscriptionWall;
