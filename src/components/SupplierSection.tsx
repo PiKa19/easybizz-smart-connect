@@ -1,4 +1,3 @@
-
 import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -133,12 +132,16 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
 
   const mySuppliers = allSuppliers.filter(supplier => supplier.isContact);
 
-  const filteredSuppliers = (activeTab === 'my-suppliers' ? mySuppliers : allSuppliers).filter(supplier => {
-    const matchesSearch = supplier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         supplier.location.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || supplier.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  // Only calculate filteredSuppliers for relevant tabs to avoid TS error
+  let filteredSuppliers: Supplier[] = [];
+  if (activeTab === 'my-suppliers' || activeTab === 'find-suppliers') {
+    filteredSuppliers = (activeTab === 'my-suppliers' ? mySuppliers : allSuppliers).filter(supplier => {
+      const matchesSearch = supplier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            supplier.location.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = selectedCategory === 'all' || supplier.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }
 
   const toggleContact = (supplierId: string) => {
     console.log(`Toggling contact status for supplier ${supplierId}`);
@@ -331,79 +334,83 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
         </Select>
       </div>
 
-      {/* Suppliers Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredSuppliers.map((supplier) => (
-          <Card key={supplier.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-lg">{supplier.name}</CardTitle>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="secondary">{t(supplier.category)}</Badge>
-                    <div className="flex items-center gap-1">
-                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm">{supplier.rating}</span>
+      {/* Only show Suppliers Grid on my-suppliers or find-suppliers tab */}
+      {(activeTab === 'my-suppliers' || activeTab === 'find-suppliers') && (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredSuppliers.map((supplier) => (
+              <Card key={supplier.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <CardTitle className="text-lg">{supplier.name}</CardTitle>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="secondary">{t(supplier.category)}</Badge>
+                        <div className="flex items-center gap-1">
+                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                          <span className="text-sm">{supplier.rating}</span>
+                        </div>
+                      </div>
+                    </div>
+                    {supplier.isContact && (
+                      <Badge className="bg-green-100 text-green-800">{t('supplier_contact')}</Badge>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-gray-500" />
+                      <span>{supplier.location}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-gray-500" />
+                      <span>{supplier.phone}</span>
                     </div>
                   </div>
-                </div>
-                {supplier.isContact && (
-                  <Badge className="bg-green-100 text-green-800">{t('supplier_contact')}</Badge>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-gray-500" />
-                  <span>{supplier.location}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-gray-500" />
-                  <span>{supplier.phone}</span>
-                </div>
-              </div>
-              
-              <p className="text-sm text-gray-600 line-clamp-2">{supplier.description}</p>
-              
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="flex-1"
-                  onClick={() => setSelectedSupplier(supplier)}
-                >
-                  {t('view_profile')}
-                </Button>
-                <Button 
-                  size="sm" 
-                  className="flex-1"
-                  onClick={() => sendMessage(supplier)}
-                >
-                  <MessageSquare className="w-4 h-4 mr-1" />
-                  {t('message_supplier')}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {filteredSuppliers.length === 0 && (
-        <div className="text-center py-12">
-          <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            {activeTab === 'my-suppliers' ? t('no_suppliers_yet') : t('no_suppliers_found')}
-          </h3>
-          <p className="text-gray-500">
-            {activeTab === 'my-suppliers' 
-              ? t('add_suppliers_to_get_started') 
-              : t('try_different_search_terms')
-            }
-          </p>
-        </div>
+                  
+                  <p className="text-sm text-gray-600 line-clamp-2">{supplier.description}</p>
+                  
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => setSelectedSupplier(supplier)}
+                    >
+                      {t('view_profile')}
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => sendMessage(supplier)}
+                    >
+                      <MessageSquare className="w-4 h-4 mr-1" />
+                      {t('message_supplier')}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          {filteredSuppliers.length === 0 && (
+            <div className="text-center py-12">
+              <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                {activeTab === 'my-suppliers' ? t('no_suppliers_yet') : t('no_suppliers_found')}
+              </h3>
+              <p className="text-gray-500">
+                {activeTab === 'my-suppliers' 
+                  ? t('add_suppliers_to_get_started') 
+                  : t('try_different_search_terms')
+                }
+              </p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
 };
+
 export default SupplierSection;
