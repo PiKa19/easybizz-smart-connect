@@ -1,3 +1,4 @@
+
 import React, { useState, useContext } from 'react';
 import {
   Home,
@@ -11,14 +12,9 @@ import {
   Calculator,
   Settings,
   LogOut,
-  PackageOpen,
   Search
 } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { LanguageContext } from '@/contexts/LanguageContext';
-import LanguageSwitcher from './LanguageSwitcher';
 import UserProfile from './UserProfile';
 import SupplierSection from "./SupplierSection";
 import MessagingSection from "./MessagingSection";
@@ -28,6 +24,10 @@ import ProductsSection from "./ProductsSection";
 import OrdersSection from "./OrdersSection";
 import BizzSection from "./BizzSection";
 import SubscriptionWall from './SubscriptionWall';
+// Extracted components:
+import DashboardHeader from './dashboard/DashboardHeader';
+import DashboardSidebar from './dashboard/DashboardSidebar';
+import HomeNavigationGrid from './dashboard/HomeNavigationGrid';
 
 interface DashboardProps {
   onLogout: () => void;
@@ -38,8 +38,6 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   const [activeSection, setActiveSection] = useState('home');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [showSubscriptionWall, setShowSubscriptionWall] = useState(false);
-
-  // Move daysLeft to state so it can be updated after payment
   const [daysLeft, setDaysLeft] = useState(() => Math.floor(Math.random() * 18) + 2);
 
   const menuItems = [
@@ -57,26 +55,6 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     { id: 'settings', label: t('settings'), icon: Settings },
   ];
 
-  const handlePlanSelect = (plan: { duration: string; price: number; planType: string }) => {
-    // For now just log the selected plan
-    console.log("Plan selected:", plan);
-    setShowSubscriptionWall(false);
-    // Here you could proceed to payment
-  };
-
-  const handleBorrow = () => {
-    // For this demo, just log and close modal, then maybe show a toast or notification
-    console.log("User borrowed 3 days of access");
-    setShowSubscriptionWall(false);
-    // You could add logic here for actual access extension
-  };
-
-  const handleSubscriptionRenewed = () => {
-    // For demo, reset to a new random value between 29 and 31 (simulates a full new period)
-    setDaysLeft(Math.floor(Math.random() * 3) + 29);
-  };
-
-  // --- Add descriptions for home cards ---
   const menuDescriptions: Record<string, string> = {
     home: t('dashboard_greeting'),
     boutique: t('buy_products_desc'),
@@ -92,6 +70,20 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     settings: t('section_under_development'),
   };
 
+  const handlePlanSelect = (plan: { duration: string; price: number; planType: string }) => {
+    console.log("Plan selected:", plan);
+    setShowSubscriptionWall(false);
+  };
+
+  const handleBorrow = () => {
+    console.log("User borrowed 3 days of access");
+    setShowSubscriptionWall(false);
+  };
+
+  const handleSubscriptionRenewed = () => {
+    setDaysLeft(Math.floor(Math.random() * 3) + 29);
+  };
+
   const renderContent = () => {
     switch (activeSection) {
       case 'home':
@@ -102,26 +94,12 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
               <p className="text-gray-600">{t('dashboard_greeting')}</p>
               <p className="text-sm text-gray-500">{t('dashboard_subtitle')}</p>
             </div>
-
-            {/* --- Navigation Cards --- */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {menuItems.map((item) => (
-                <Card
-                  key={item.id}
-                  className={`hover:shadow-lg cursor-pointer transition-shadow h-44 flex flex-col justify-between ${activeSection === item.id ? 'ring-2 ring-[#0794FE]' : ''}`}
-                  onClick={() => setActiveSection(item.id)}
-                >
-                  <CardContent className="flex flex-col items-center text-center justify-center h-full p-6">
-                    <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-2" style={{ backgroundColor: "#F3F6FB" }}>
-                      <item.icon className="w-7 h-7 text-[#0794FE]" />
-                    </div>
-                    <h3 className="font-semibold text-gray-800 mb-1">{item.label}</h3>
-                    <p className="text-xs text-gray-500">{menuDescriptions[item.id] || t('section_under_development')}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-            {/* --- End Navigation Cards --- */}
+            <HomeNavigationGrid
+              menuItems={menuItems}
+              activeSection={activeSection}
+              setActiveSection={setActiveSection}
+              menuDescriptions={menuDescriptions}
+            />
           </div>
         );
 
@@ -168,95 +146,24 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-4">
-            {/* Logo replaces 'EasyBizz' text */}
-            <img
-              src="/lovable-uploads/5142faa5-d964-4021-b411-2ea1ad268901.png"
-              alt="EasyBizz Logo"
-              className="h-8 w-auto"
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            {/* --- Subscription Days Left Section (Pink) --- */}
-            <button
-              className="relative flex items-center rounded-lg px-3 py-1 bg-[#E1275C] text-white font-semibold text-sm shadow hover:bg-[#C91F4F] transition-colors focus:outline-none focus:ring-2 focus:ring-[#E1275C]"
-              title="Your subscription days left"
-              onClick={() => setShowSubscriptionWall(true)}
-              type="button"
-            >
-              {daysLeft} days left
-            </button>
-            {/* --- End Subscription Section --- */}
-
-            <LanguageSwitcher />
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input 
-                placeholder={t('search_product')}
-                className="w-64 pl-10"
-              />
-            </div>
-            <Button variant="ghost" size="sm">
-              <Bell className="w-5 h-5" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => setIsProfileOpen(true)}
-              className="flex items-center gap-2"
-            >
-              <div className="w-8 h-8 bg-[#0794FE] rounded-lg flex items-center justify-center text-white font-bold">
-                B
-              </div>
-              <span className="hidden md:inline">Baraka</span>
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={onLogout}
-              className="flex items-center gap-2"
-            >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden md:inline">{t('logout')}</span>
-            </Button>
-          </div>
-        </div>
-      </header>
-
+      <DashboardHeader
+        daysLeft={daysLeft}
+        onSubscriptionClick={() => setShowSubscriptionWall(true)}
+        onProfileOpen={() => setIsProfileOpen(true)}
+        onLogout={onLogout}
+        t={t}
+      />
       <div className="flex">
-        {/* Sidebar */}
-        <aside className="w-64 bg-white h-[calc(100vh-73px)] shadow-sm">
-          <nav className="p-4 space-y-2">
-            {menuItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setActiveSection(item.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors ${
-                  activeSection === item.id
-                    ? 'bg-[#0794FE] text-white'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                <item.icon className="w-5 h-5" />
-                <span>{item.label}</span>
-              </button>
-            ))}
-          </nav>
-        </aside>
-
-        {/* Main Content */}
+        <DashboardSidebar
+          menuItems={menuItems}
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
+        />
         <main className="flex-1 p-6">
           {renderContent()}
         </main>
       </div>
-
-      {/* User Profile Modal */}
       <UserProfile isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
-
-      {/* Subscription Wall Modal */}
       <SubscriptionWall
         open={showSubscriptionWall}
         onClose={() => setShowSubscriptionWall(false)}
