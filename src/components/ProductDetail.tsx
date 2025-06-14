@@ -1,9 +1,8 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Heart, Star, ShoppingCart } from "lucide-react";
+import { ArrowLeft, Heart, Star, ShoppingCart, MessageSquare } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -40,9 +39,16 @@ interface ProductDetailProps {
   onBack: () => void;
   onAddToCart: (product: Product, quantity: number, seller: Seller) => void;
   onBuyMoreFromSupplier?: (sellerId: number) => void;
+  onContactSeller?: (sellerId: number) => void;
 }
 
-const ProductDetail = ({ product, onBack, onAddToCart, onBuyMoreFromSupplier }: ProductDetailProps) => {
+const ProductDetail = ({
+  product,
+  onBack,
+  onAddToCart,
+  onBuyMoreFromSupplier,
+  onContactSeller
+}: ProductDetailProps) => {
   const [quantity, setQuantity] = useState(150);
   const [selectedSeller, setSelectedSeller] = useState(
     product.sellers?.find(seller => seller.isDefault) || product.sellers?.[0]
@@ -63,6 +69,14 @@ const ProductDetail = ({ product, onBack, onAddToCart, onBuyMoreFromSupplier }: 
 
   const handleBuyMoreFromSupplier = (sellerId: number) => {
     if (onBuyMoreFromSupplier) {
+      onBuyMoreFromSupplier(sellerId);
+    }
+  };
+
+  const handleContactSeller = (sellerId: number) => {
+    if (onContactSeller) {
+      onContactSeller(sellerId);
+    } else if (onBuyMoreFromSupplier) {
       onBuyMoreFromSupplier(sellerId);
     }
   };
@@ -169,9 +183,9 @@ const ProductDetail = ({ product, onBack, onAddToCart, onBuyMoreFromSupplier }: 
               </div>
             </div>
 
-            {/* Current Seller Display */}
+            {/* Current Seller Display + Contact Seller Button */}
             {selectedSeller && (
-              <div className="bg-blue-50 rounded-lg p-4">
+              <div className="bg-blue-50 rounded-lg p-4 flex flex-col gap-3">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm text-gray-600">You are buying from</span>
                   <span className="text-lg font-bold text-gray-800">{selectedSeller.price}</span>
@@ -185,6 +199,14 @@ const ProductDetail = ({ product, onBack, onAddToCart, onBuyMoreFromSupplier }: 
                     </div>
                   </div>
                 </div>
+                {/* Contact Seller Button */}
+                <Button
+                  className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium flex items-center justify-center gap-2 text-base rounded-xl shadow transition-all"
+                  onClick={() => handleContactSeller(selectedSeller.id)}
+                  type="button"
+                >
+                  <MessageSquare className="w-5 h-5" /> Contact seller
+                </Button>
               </div>
             )}
           </div>
