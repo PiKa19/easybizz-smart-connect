@@ -189,7 +189,8 @@ const RegistrationForm = ({ onSuccess, onBackToLogin }: RegistrationFormProps) =
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="single">Single Boutique</SelectItem>
-              <SelectItem value="multiple">Multiple Boutiques</SelectItem>
+              <SelectItem value="two">Two Boutiques</SelectItem>
+              <SelectItem value="three_or_more">Three or More Boutiques</SelectItem>
             </SelectContent>
           </Select>
           {errors.numberOfBoutiques && <p className="text-red-500 text-xs">{errors.numberOfBoutiques}</p>}
