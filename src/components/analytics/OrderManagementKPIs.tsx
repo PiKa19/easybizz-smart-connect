@@ -6,7 +6,7 @@ export default function OrderManagementKPIs() {
   return (
     <section>
       <h2 className="flex gap-2 text-lg font-bold mb-4">
-        <span role="img" aria-label="orders">🧾</span> Order Management KPIs
+        Order Management KPIs
       </h2>
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         <div className="bg-white/80 rounded-xl shadow p-4">
