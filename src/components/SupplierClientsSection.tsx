@@ -140,4 +140,3 @@ const SupplierClientsSection: React.FC = () => {
 };
 
 export default SupplierClientsSection;
-
