@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import ClientFilterBar from "./ClientFilterBar";
 import ClientTable from "./ClientTable";
@@ -83,7 +82,6 @@ const SupplierClientsSection: React.FC = () => {
       <div className="bg-white rounded-2xl shadow-xl border border-blue-100 overflow-hidden animate-fade-in mt-4">
         <ClientTable
           clients={getFilteredClients().slice(0, rowsPerPage)}
-          cardized
         />
         <div className="flex items-center justify-between px-6 py-4 border-t bg-gray-50 rounded-b-2xl text-xs text-blue-600 font-semibold tracking-wide">
           <div>
