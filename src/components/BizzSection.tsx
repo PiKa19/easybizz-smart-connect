@@ -51,13 +51,14 @@ const CART_STORAGE_KEY = "bizz_section_cart";
 
 const BizzSection = ({ onBack }: BizzSectionProps) => {
   const { t } = useContext(LanguageContext);
-  const [currentView, setCurrentView] = useState<'products' | 'detail' | 'cart' | 'supplier'>('products');
+  const [currentView, setCurrentView] = useState<'products' | 'detail' | 'cart' | 'supplier' | 'messages'>('products');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedSupplierId, setSelectedSupplierId] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('All Products');
   const [searchTerm, setSearchTerm] = useState('');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartPopoverOpen, setCartPopoverOpen] = useState(false);
+  const [messageSeller, setMessageSeller] = useState<Seller | null>(null);
 
   // Hydrate cartItems from localStorage on mount
   useEffect(() => {
@@ -163,6 +164,11 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
       }
       return item;
     }));
+  };
+
+  const handleContactSeller = (seller: Seller) => {
+    setMessageSeller(seller);
+    setCurrentView('messages');
   };
 
   const renderProductsView = () => (
@@ -281,6 +287,7 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
             onBack={() => setCurrentView('products')}
             onAddToCart={handleAddToCart}
             onBuyMoreFromSupplier={handleBuyMoreFromSupplier}
+            onContactSeller={handleContactSeller}
           />
         ) : null;
       case 'cart':
@@ -293,6 +300,9 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
         );
       case 'supplier':
         return <SupplierSection />;
+      case 'messages':
+        // Forward seller to SupplierSection so its message tab can be auto-opened for this seller
+        return <SupplierSection initialMessageSupplier={messageSeller} />;
       default:
         return renderProductsView();
     }
@@ -332,7 +342,6 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
           </Button>
         )}
       </div>
-
       {renderContent()}
     </div>
   );

@@ -1,5 +1,4 @@
-
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -39,9 +38,10 @@ interface Product {
 interface SupplierSectionProps {
   selectedSupplierId?: string;
   onBack?: () => void;
+  initialMessageSupplier?: any; // NEW: pass which supplier you want to preselect in the messages tab
 }
 
-const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) => {
+const SupplierSection = ({ selectedSupplierId, onBack, initialMessageSupplier }: SupplierSectionProps) => {
   const { t } = useContext(LanguageContext);
   const [activeTab, setActiveTab] = useState<'my-suppliers' | 'find-suppliers' | 'messages'>('my-suppliers');
   const [searchTerm, setSearchTerm] = useState('');
@@ -146,6 +146,12 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
     setActiveTab("messages");
   };
 
+  useEffect(() => {
+    if (initialMessageSupplier) {
+      setActiveTab('messages');
+    }
+  }, [initialMessageSupplier]);
+
   return (
     <div className="space-y-6">
       {/* Top Bar */}
@@ -192,253 +198,253 @@ const SupplierSection = ({ selectedSupplierId, onBack }: SupplierSectionProps) =
           {t("messages")}
         </button>
       </div>
-      {/* Content Area */}
-      {/* Show supplier profile if selected */}
-      {selectedSupplier ? (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <Button variant="outline" onClick={() => setSelectedSupplier(null)}>
-              ← {t("back")}
-            </Button>
-            <h2 className="text-2xl font-bold text-gray-800">{t("supplier_profile")}</h2>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Supplier Info */}
-            <div className="lg:col-span-1">
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>{selectedSupplier.name}</CardTitle>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant={selectedSupplier.isContact ? "destructive" : "default"}
-                        onClick={() => toggleContact(selectedSupplier.id)}
-                      >
-                        {selectedSupplier.isContact ? (
-                          <UserMinus className="w-4 h-4 mr-1" />
-                        ) : (
-                          <UserPlus className="w-4 h-4 mr-1" />
-                        )}
-                        {selectedSupplier.isContact
-                          ? t("remove_from_contacts")
-                          : t("add_to_contacts")}
-                      </Button>
-                      <Button size="sm" onClick={() => sendMessage(selectedSupplier)}>
-                        <MessageSquare className="w-4 h-4 mr-1" />
-                        {t("message_supplier")}
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    <span>{selectedSupplier.rating}/5</span>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-sm">
-                      <MapPin className="w-4 h-4 text-gray-500" />
-                      <span>{selectedSupplier.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Phone className="w-4 h-4 text-gray-500" />
-                      <span>{selectedSupplier.phone}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Mail className="w-4 h-4 text-gray-500" />
-                      <span>{selectedSupplier.email}</span>
-                    </div>
-                    {selectedSupplier.website && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <Globe className="w-4 h-4 text-gray-500" />
-                        <span>{selectedSupplier.website}</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="pt-4 border-t">
-                    <h4 className="font-semibold mb-2">{t("supplier_info")}</h4>
-                    <div className="space-y-2 text-sm">
-                      <div>
-                        <strong>{t("description")}:</strong> {selectedSupplier.description}
-                      </div>
-                      <div>
-                        <strong>{t("years_experience")}:</strong> {selectedSupplier.yearsExperience}{" "}
-                        {t("years_experience").toLowerCase()}
-                      </div>
-                      <div>
-                        <strong>{t("minimum_order")}:</strong> {selectedSupplier.minimumOrder}
-                      </div>
-                      <div>
-                        <strong>{t("delivery_time")}:</strong> {selectedSupplier.deliveryTime}
-                      </div>
-                      <div>
-                        <strong>{t("payment_terms")}:</strong> {selectedSupplier.paymentTerms}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+      {/* Always show content below the tabbar */}
+      <div>
+        {selectedSupplier ? (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <Button variant="outline" onClick={() => setSelectedSupplier(null)}>
+                ← {t("back")}
+              </Button>
+              <h2 className="text-2xl font-bold text-gray-800">{t("supplier_profile")}</h2>
             </div>
-            {/* Supplier Products */}
-            <div className="lg:col-span-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t("supplier_products")}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {selectedSupplier.products.map((product) => (
-                      <Card key={product.id} className="border">
-                        <CardContent className="p-4">
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            className="w-full h-32 object-cover rounded mb-3"
-                          />
-                          <h4 className="font-semibold">{product.name}</h4>
-                          <p className="text-sm text-gray-600">
-                            {product.price} DZD/{product.unit}
-                          </p>
-                          <Badge
-                            variant={product.inStock ? "default" : "destructive"}
-                            className="mt-2"
-                          >
-                            {product.inStock ? "In Stock" : "Out of Stock"}
-                          </Badge>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Supplier Info */}
+              <div className="lg:col-span-1">
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle>{selectedSupplier.name}</CardTitle>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant={selectedSupplier.isContact ? "destructive" : "default"}
+                          onClick={() => toggleContact(selectedSupplier.id)}
+                        >
+                          {selectedSupplier.isContact ? (
+                            <UserMinus className="w-4 h-4 mr-1" />
+                          ) : (
+                            <UserPlus className="w-4 h-4 mr-1" />
+                          )}
+                          {selectedSupplier.isContact
+                            ? t("remove_from_contacts")
+                            : t("add_to_contacts")}
+                        </Button>
+                        <Button size="sm" onClick={() => sendMessage(selectedSupplier)}>
+                          <MessageSquare className="w-4 h-4 mr-1" />
+                          {t("message_supplier")}
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      <span>{selectedSupplier.rating}/5</span>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <MapPin className="w-4 h-4 text-gray-500" />
+                        <span>{selectedSupplier.location}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Phone className="w-4 h-4 text-gray-500" />
+                        <span>{selectedSupplier.phone}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Mail className="w-4 h-4 text-gray-500" />
+                        <span>{selectedSupplier.email}</span>
+                      </div>
+                      {selectedSupplier.website && (
+                        <div className="flex items-center gap-2 text-sm">
+                          <Globe className="w-4 h-4 text-gray-500" />
+                          <span>{selectedSupplier.website}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="pt-4 border-t">
+                      <h4 className="font-semibold mb-2">{t("supplier_info")}</h4>
+                      <div className="space-y-2 text-sm">
+                        <div>
+                          <strong>{t("description")}:</strong> {selectedSupplier.description}
+                        </div>
+                        <div>
+                          <strong>{t("years_experience")}:</strong> {selectedSupplier.yearsExperience}{" "}
+                          {t("years_experience").toLowerCase()}
+                        </div>
+                        <div>
+                          <strong>{t("minimum_order")}:</strong> {selectedSupplier.minimumOrder}
+                        </div>
+                        <div>
+                          <strong>{t("delivery_time")}:</strong> {selectedSupplier.deliveryTime}
+                        </div>
+                        <div>
+                          <strong>{t("payment_terms")}:</strong> {selectedSupplier.paymentTerms}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              {/* Supplier Products */}
+              <div className="lg:col-span-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t("supplier_products")}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                      {selectedSupplier.products.map((product) => (
+                        <Card key={product.id} className="border">
+                          <CardContent className="p-4">
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className="w-full h-32 object-cover rounded mb-3"
+                            />
+                            <h4 className="font-semibold">{product.name}</h4>
+                            <p className="text-sm text-gray-600">
+                              {product.price} DZD/{product.unit}
+                            </p>
+                            <Badge
+                              variant={product.inStock ? "default" : "destructive"}
+                              className="mt-2"
+                            >
+                              {product.inStock ? "In Stock" : "Out of Stock"}
+                            </Badge>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
+        ) : activeTab === "messages" ? (
+          <div>
+            <MessagingSection supplier={initialMessageSupplier || undefined} />
+          </div>
+        ) : (
+          // "my-suppliers" or "find-suppliers"
+          <>
+            {/* Search/filter row */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  placeholder={t("search_supplier")}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger className="w-full sm:w-48">
+                  <SelectValue placeholder={t("filter_by_category")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t("all_products")}</SelectItem>
+                  <SelectItem value="beverages">{t("beverages")}</SelectItem>
+                  <SelectItem value="snacks">{t("snacks")}</SelectItem>
+                  <SelectItem value="dairy">{t("dairy")}</SelectItem>
+                  <SelectItem value="cleaning">{t("cleaning")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {/* Supplier cards grid */}
+            {(() => {
+              const suppliersSource: Supplier[] =
+                activeTab === "my-suppliers" ? mySuppliers : allSuppliers;
+              const filteredSuppliers: Supplier[] = suppliersSource.filter((supplier) => {
+                const matchesSearch =
+                  supplier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  supplier.location.toLowerCase().includes(searchTerm.toLowerCase());
+                const matchesCategory =
+                  selectedCategory === "all" || supplier.category === selectedCategory;
+                return matchesSearch && matchesCategory;
+              });
+              return (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredSuppliers.map((supplier) => (
+                      <Card key={supplier.id} className="hover:shadow-lg transition-shadow">
+                        <CardHeader>
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <CardTitle className="text-lg">{supplier.name}</CardTitle>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Badge variant="secondary">{t(supplier.category)}</Badge>
+                                <div className="flex items-center gap-1">
+                                  <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                  <span className="text-sm">{supplier.rating}</span>
+                                </div>
+                              </div>
+                            </div>
+                            {supplier.isContact && (
+                              <Badge className="bg-green-100 text-green-800">
+                                {t("supplier_contact")}
+                              </Badge>
+                            )}
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="space-y-2 text-sm">
+                            <div className="flex items-center gap-2">
+                              <MapPin className="w-4 h-4 text-gray-500" />
+                              <span>{supplier.location}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Phone className="w-4 h-4 text-gray-500" />
+                              <span>{supplier.phone}</span>
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-600 line-clamp-2">{supplier.description}</p>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex-1"
+                              onClick={() => setSelectedSupplier(supplier)}
+                            >
+                              {t("view_profile")}
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="flex-1 bg-black text-white flex items-center gap-2"
+                              onClick={() => sendMessage(supplier)}
+                            >
+                              <MessageSquare className="w-4 h-4" />
+                              {t("message_supplier")}
+                            </Button>
+                          </div>
                         </CardContent>
                       </Card>
                     ))}
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-      ) : activeTab === "messages" ? (
-        <div>
-          <MessagingSection />
-        </div>
-      ) : (
-        // "my-suppliers" or "find-suppliers"
-        <>
-          {/* Search/filter row */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder={t("search_supplier")}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder={t("filter_by_category")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("all_products")}</SelectItem>
-                <SelectItem value="beverages">{t("beverages")}</SelectItem>
-                <SelectItem value="snacks">{t("snacks")}</SelectItem>
-                <SelectItem value="dairy">{t("dairy")}</SelectItem>
-                <SelectItem value="cleaning">{t("cleaning")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          {/* Supplier cards grid */}
-          {(() => {
-            const suppliersSource: Supplier[] =
-              activeTab === "my-suppliers" ? mySuppliers : allSuppliers;
-            const filteredSuppliers: Supplier[] = suppliersSource.filter((supplier) => {
-              const matchesSearch =
-                supplier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                supplier.location.toLowerCase().includes(searchTerm.toLowerCase());
-              const matchesCategory =
-                selectedCategory === "all" || supplier.category === selectedCategory;
-              return matchesSearch && matchesCategory;
-            });
-            return (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredSuppliers.map((supplier) => (
-                    <Card key={supplier.id} className="hover:shadow-lg transition-shadow">
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <CardTitle className="text-lg">{supplier.name}</CardTitle>
-                            <div className="flex items-center gap-2 mt-1">
-                              <Badge variant="secondary">{t(supplier.category)}</Badge>
-                              <div className="flex items-center gap-1">
-                                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                                <span className="text-sm">{supplier.rating}</span>
-                              </div>
-                            </div>
-                          </div>
-                          {supplier.isContact && (
-                            <Badge className="bg-green-100 text-green-800">
-                              {t("supplier_contact")}
-                            </Badge>
-                          )}
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="space-y-2 text-sm">
-                          <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4 text-gray-500" />
-                            <span>{supplier.location}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Phone className="w-4 h-4 text-gray-500" />
-                            <span>{supplier.phone}</span>
-                          </div>
-                        </div>
-                        <p className="text-sm text-gray-600 line-clamp-2">{supplier.description}</p>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex-1"
-                            onClick={() => setSelectedSupplier(supplier)}
-                          >
-                            {t("view_profile")}
-                          </Button>
-                          <Button
-                            size="sm"
-                            className="flex-1 bg-black text-white flex items-center gap-2"
-                            onClick={() => sendMessage(supplier)}
-                          >
-                            <MessageSquare className="w-4 h-4" />
-                            {t("message_supplier")}
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-                {filteredSuppliers.length === 0 && (
-                  <div className="text-center py-12">
-                    <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
-                      {activeTab === "my-suppliers"
-                        ? t("no_suppliers_yet")
-                        : t("no_suppliers_found")}
-                    </h3>
-                    <p className="text-gray-500">
-                      {activeTab === "my-suppliers"
-                        ? t("add_suppliers_to_get_started")
-                        : t("try_different_search_terms")}
-                    </p>
-                  </div>
-                )}
-              </>
-            );
-          })()}
-        </>
-      )}
+                  {filteredSuppliers.length === 0 && (
+                    <div className="text-center py-12">
+                      <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">
+                        {activeTab === "my-suppliers"
+                          ? t("no_suppliers_yet")
+                          : t("no_suppliers_found")}
+                      </h3>
+                      <p className="text-gray-500">
+                        {activeTab === "my-suppliers"
+                          ? t("add_suppliers_to_get_started")
+                          : t("try_different_search_terms")}
+                      </p>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
+          </>
+        )}
+      </div>
     </div>
   );
 };
 
 export default SupplierSection;
-

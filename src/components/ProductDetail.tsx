@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -73,11 +74,12 @@ const ProductDetail = ({
     }
   };
 
-  const handleContactSeller = (sellerId: number) => {
+  // Modified: onContactSeller triggers the parent callback with the seller object
+  const handleContactSeller = (seller: Seller) => {
     if (onContactSeller) {
-      onContactSeller(sellerId);
+      onContactSeller(seller);
     } else if (onBuyMoreFromSupplier) {
-      onBuyMoreFromSupplier(sellerId);
+      onBuyMoreFromSupplier(seller.id);
     }
   };
 
@@ -174,21 +176,22 @@ const ProductDetail = ({
                   type="number"
                   value={quantity}
                   onChange={(e) => setQuantity(Number(e.target.value))}
-                  className="w-full border-2 border-[#0794FE] rounded-lg px-4 py-3 pr-16 text-lg font-semibold"
+                  className="w-full border-2 border-[#0794FE] rounded-lg px-4 py-3 text-lg font-semibold"
                 />
-                <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-lg font-semibold text-[#0794FE]">
-                  DZD
-                </span>
-                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 w-3 h-3 bg-[#0794FE] rounded-full"></div>
+                {/* Removed DZD label here */}
               </div>
             </div>
 
             {/* Current Seller Display + Contact Seller Button */}
             {selectedSeller && (
-              <div className="bg-blue-50 rounded-lg p-4 flex flex-col gap-3">
+              <div className="bg-blue-50 rounded-lg p-4 flex flex-col gap-3 relative">
+                {/* Price in top right, big and red, as in the screenshot */}
+                <div className="absolute top-2 right-2">
+                  <span className="text-2xl font-bold text-red-600">{selectedSeller.price}</span>
+                </div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm text-gray-600">You are buying from</span>
-                  <span className="text-lg font-bold text-gray-800">{selectedSeller.price}</span>
+                  {/* Removed price from this line */}
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
@@ -202,7 +205,7 @@ const ProductDetail = ({
                 {/* Contact Seller Button */}
                 <Button
                   className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium flex items-center justify-center gap-2 text-base rounded-xl shadow transition-all"
-                  onClick={() => handleContactSeller(selectedSeller.id)}
+                  onClick={() => handleContactSeller(selectedSeller)}
                   type="button"
                 >
                   <MessageSquare className="w-5 h-5" /> Contact seller
