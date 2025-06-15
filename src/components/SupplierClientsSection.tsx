@@ -63,47 +63,35 @@ const SupplierClientsSection: React.FC = () => {
 
   return (
     <div className="p-6 md:p-8 w-full">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-5">
-        <h1 className="font-bold text-2xl mb-1 sm:mb-0">Clients</h1>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center w-full sm:w-auto">
-          <Input
-            type="text"
-            placeholder="Search clients"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="sm:min-w-[210px] sm:max-w-full"
-          />
-          <Button className="ml-0 sm:ml-3" variant="default">
-            <Plus className="w-4 h-4 mr-1" /> Add Client
-          </Button>
-          <div className="flex gap-1 ml-0 sm:ml-3 mt-2 sm:mt-0">
-            <Button
-              variant={sortType === "latest" ? "default" : "outline"}
-              className={
-                sortType === "latest"
-                  ? "font-semibold"
-                  : "font-semibold bg-white text-black"
-              }
-              onClick={() => handleSort("latest")}
-            >
-              Latest Orders
-            </Button>
-            <Button
-              variant={sortType === "mostSales" ? "default" : "outline"}
-              className={
-                sortType === "mostSales"
-                  ? "font-semibold"
-                  : "font-semibold bg-white text-black"
-              }
-              onClick={() => handleSort("mostSales")}
-            >
-              Most Sales
-            </Button>
-          </div>
-        </div>
+      <h1 className="font-bold text-2xl mb-6">Clients</h1>
+      <div className="flex flex-col gap-3 md:flex-row md:items-center mb-6">
+        <Input
+          type="text"
+          placeholder="Search clients"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="max-w-sm md:mr-4"
+        />
+        <Button className="bg-black text-white hover:bg-gray-900 md:mr-4">
+          <Plus className="w-4 h-4 mr-1" /> Add Client
+        </Button>
+        <Button
+          variant={sortType === "latest" ? "default" : "outline"}
+          className={`${sortType === "latest" ? "bg-black text-white" : ""} md:mr-2`}
+          onClick={() => handleSort("latest")}
+        >
+          Latest Orders
+        </Button>
+        <Button
+          variant={sortType === "mostSales" ? "default" : "outline"}
+          className={`${sortType === "mostSales" ? "bg-black text-white" : ""}`}
+          onClick={() => handleSort("mostSales")}
+        >
+          Most Sales
+        </Button>
       </div>
 
-      <div className="bg-white rounded-xl shadow border px-3 sm:px-6 py-2 sm:py-4">
+      <div className="bg-white rounded-xl shadow border px-3 py-4">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[700px]">
             <thead>
@@ -124,15 +112,19 @@ const SupplierClientsSection: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                filteredClients.map((client, idx) => (
-                  <tr key={client.email} className="border-b hover:bg-blue-50 transition">
+                filteredClients.map((client) => (
+                  <tr key={client.email} className="border-b hover:bg-gray-50 transition">
                     <td className="py-2 px-2">{client.name}</td>
                     <td className="py-2 px-2">{client.email}</td>
                     <td className="py-2 px-2">{client.phone}</td>
                     <td className="py-2 px-2">{client.totalOrders}</td>
                     <td className="py-2 px-2">{client.lastOrder}</td>
                     <td className="py-2 px-2">
-                      <Button variant="outline" size="sm">
+                      <Button
+                        className="bg-gray-100 hover:bg-gray-200 text-black border border-gray-300"
+                        size="sm"
+                        variant="outline"
+                      >
                         View
                       </Button>
                     </td>
