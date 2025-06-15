@@ -331,26 +331,26 @@ const ProductsSection = ({ onBack }: ProductsSectionProps) => {
         </Button>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border">
+      <div className="bg-white rounded-2xl shadow-xl border border-blue-100 overflow-hidden animate-fade-in">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-[#0794FE] text-white">
-              <tr>
-                <th className="px-4 py-3 text-left text-sm font-medium">{t('product')}</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">{t('reference')}</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">{t('barcode')}</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">{t('qty_stock')}</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">{t('qty_sold')}</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">{t('alert')}</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">{t('buy_price')}</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">{t('sell_price_ht')}</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">{t('sell_price_ttc')}</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">{t('rotation_status')}</th>
+          <table className="w-full min-w-[1100px] text-sm">
+            <thead>
+              <tr className="bg-[#0794FE] text-white">
+                <th className="px-4 py-3 text-left text-sm font-semibold">{t('product')}</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">{t('reference')}</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">{t('barcode')}</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">{t('qty_stock')}</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">{t('qty_sold')}</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">{t('alert')}</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">{t('buy_price')}</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">{t('sell_price_ht')}</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">{t('sell_price_ttc')}</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">{t('rotation_status')}</th>
               </tr>
             </thead>
             <tbody>
               {filteredProducts.slice(0, Number(rowsPerPage)).map((product) => (
-                <tr key={product.id} className="border-b hover:bg-gray-50">
+                <tr key={product.id} className="border-b last:border-0 hover:bg-blue-50/40 transition-colors">
                   <td className="px-4 py-3 text-sm">{product.name}</td>
                   <td className="px-4 py-3 text-sm">{product.reference}</td>
                   <td className="px-4 py-3 text-sm">{product.barcode}</td>
@@ -369,27 +369,33 @@ const ProductsSection = ({ onBack }: ProductsSectionProps) => {
                   </td>
                 </tr>
               ))}
+              {filteredProducts.length === 0 && (
+                <tr>
+                  <td colSpan={10} className="text-center text-gray-400 py-7 bg-white rounded-b-2xl">
+                    {t('no_products_found') || "No products found."}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
         
-        <div className="flex items-center justify-between px-4 py-3 border-t">
-          <div className="text-sm text-gray-600">
-            {t('rows_per_page')}: 
-            <Select value={rowsPerPage} onValueChange={setRowsPerPage}>
-              <SelectTrigger className="w-16 ml-2 inline-flex">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-              </SelectContent>
-            </Select>
+        <div className="flex items-center justify-between px-6 py-4 border-t bg-gray-50 rounded-b-2xl text-xs text-blue-600 font-semibold tracking-wide">
+          <div>
+            {t('rows_per_page')}:
+            <select
+              className="mx-2 border border-blue-100 rounded py-1 px-2 text-xs bg-white"
+              value={rowsPerPage}
+              onChange={e => setRowsPerPage(e.target.value)}
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+            </select>
           </div>
-          <div className="text-sm text-gray-600">
-            1-{Math.min(filteredProducts.length, Number(rowsPerPage))} of {filteredProducts.length}
-          </div>
+          <span>
+            1–{Math.min(filteredProducts.length, Number(rowsPerPage))} of {filteredProducts.length}
+          </span>
         </div>
       </div>
     </div>
@@ -397,3 +403,4 @@ const ProductsSection = ({ onBack }: ProductsSectionProps) => {
 };
 
 export default ProductsSection;
+

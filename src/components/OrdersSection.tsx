@@ -79,22 +79,22 @@ const OrdersSection = ({ onBack }: OrdersSectionProps) => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border">
+      <div className="bg-white rounded-2xl shadow-xl border border-blue-100 overflow-hidden animate-fade-in">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-[#0794FE] text-white">
-              <tr>
-                <th className="px-4 py-3 text-left text-sm font-medium">{t('order_id')}</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">{t('supplier')}</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">{t('date')}</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">{t('amount')}</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">{t('status')}</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">{t('actions')}</th>
+          <table className="w-full min-w-[900px] text-sm">
+            <thead>
+              <tr className="bg-[#0794FE] text-white">
+                <th className="px-4 py-3 text-left text-sm font-semibold">{t('order_id')}</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">{t('supplier')}</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">{t('date')}</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">{t('amount')}</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">{t('status')}</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">{t('actions')}</th>
               </tr>
             </thead>
             <tbody>
               {filteredOrders.map((order) => (
-                <tr key={order.id} className="border-b hover:bg-gray-50">
+                <tr key={order.id} className="border-b last:border-0 hover:bg-blue-50/40 transition-colors">
                   <td className="px-4 py-3 text-sm">{order.id}</td>
                   <td className="px-4 py-3 text-sm">{order.supplier}</td>
                   <td className="px-4 py-3 text-sm">{order.date}</td>
@@ -121,8 +121,31 @@ const OrdersSection = ({ onBack }: OrdersSectionProps) => {
                   </td>
                 </tr>
               ))}
+              {filteredOrders.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="text-center text-gray-400 py-7 bg-white rounded-b-2xl">
+                    {t('no_orders_found') || "No orders found."}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
+        </div>
+
+        <div className="flex items-center justify-between px-6 py-4 border-t bg-gray-50 rounded-b-2xl text-xs text-blue-600 font-semibold tracking-wide">
+          <div>
+            {t('rows_per_page') || 'Rows per page'}:
+            <select
+              className="mx-2 border border-blue-100 rounded py-1 px-2 text-xs bg-white"
+              value="5"
+              readOnly
+            >
+              <option value="5">5</option>
+            </select>
+          </div>
+          <span>
+            1–{filteredOrders.length} of {filteredOrders.length}
+          </span>
         </div>
       </div>
     </div>
@@ -130,3 +153,4 @@ const OrdersSection = ({ onBack }: OrdersSectionProps) => {
 };
 
 export default OrdersSection;
+
