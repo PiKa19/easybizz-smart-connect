@@ -95,7 +95,7 @@ const ProductDetail = ({
       </Button>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Product Image & (MOVED) MAIN PRICE */}
+        {/* Product Image & (MAIN PRICE) */}
         <div className="space-y-4">
           <Card className="overflow-hidden">
             <CardContent className="p-0">
@@ -105,12 +105,8 @@ const ProductDetail = ({
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
-                {/* MAIN PRODUCT PRICE JUST BELOW IMAGE */}
-                <div className="w-full flex justify-center mt-4">
-                  <span className="text-3xl font-bold text-red-600 bg-white bg-opacity-70 rounded px-4 py-1 shadow">
-                    {product.price} <span className="text-lg font-semibold text-gray-700">DZD</span>
-                  </span>
-                </div>
+                {/* Remove the main product price display here, since the user requested price instead in seller card */}
+                {/* (You may also keep the main price display if you want both, but per instruction we'll focus on the seller box) */}
                 <Button
                   variant="ghost"
                   size="icon"
@@ -191,7 +187,7 @@ const ProductDetail = ({
               <div className="bg-blue-50 rounded-lg p-4 flex flex-col gap-3 relative">
                 {/* Price in top right, big and red, as in the screenshot */}
                 <div className="absolute top-2 right-2">
-                  <span className="text-2xl font-bold text-red-600">{selectedSeller.price}</span>
+                  <span className="text-2xl font-bold text-red-600">{selectedSeller.price} <span className="text-lg text-gray-700 font-semibold">DZD</span></span>
                 </div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm text-gray-600">You are buying from</span>
