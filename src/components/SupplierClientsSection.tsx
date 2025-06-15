@@ -3,14 +3,12 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Download, ChevronDown, ChevronUp } from "lucide-react";
+import OrderStatusSelect from "./OrderStatusSelect";
 
 const mockOrders = [
   {
     id: "ORD-10545",
-    client: {
-      name: "Boutique Lina",
-      contact: "07 10 23 55 90",
-    },
+    client: { name: "Boutique Lina", contact: "07 10 23 55 90" },
     products: [
       { name: "Huile 5L elio", qty: 1 },
       { name: "Biscottes Croquantes", qty: 2 },
@@ -27,10 +25,7 @@ const mockOrders = [
   },
   {
     id: "ORD-10546",
-    client: {
-      name: "Superette Amine",
-      contact: "06 90 17 13 17",
-    },
+    client: { name: "Superette Amine", contact: "06 90 17 13 17" },
     products: [{ name: "Lait 1L Candia", qty: 10 }],
     orderDate: "16/06/2025, 10:50",
     deliveryDate: "18/06/2025",
@@ -57,9 +52,20 @@ const paymentBadgeColors: Record<string, string> = {
   "Cash on Delivery": "bg-gray-50 text-gray-700 border border-gray-200",
 };
 
+const statusOptions = ["Preparing", "Shipped", "Delivered", "Returned"];
+
 const SupplierClientsSection = () => {
   const [search, setSearch] = useState("");
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
+
+  // Use state for delivery statuses per order
+  const [orderStatuses, setOrderStatuses] = useState<Record<string, string>>(
+    Object.fromEntries(mockOrders.map((o) => [o.id, o.deliveryStatus]))
+  );
+
+  const handleStatusChange = (orderId: string, newStatus: string) => {
+    setOrderStatuses((prev) => ({ ...prev, [orderId]: newStatus }));
+  };
 
   const filteredOrders = mockOrders.filter(
     (order) =>
@@ -98,26 +104,22 @@ const SupplierClientsSection = () => {
           <thead>
             <tr className="bg-[#0794FE] text-white text-sm">
               <th className="px-3 py-3 font-semibold whitespace-nowrap text-left">
-                <span className="flex items-center gap-1">Order Reference</span>
+                Order Reference
               </th>
               <th className="px-3 py-3 font-semibold whitespace-nowrap text-left">
-                <span className="flex items-center gap-1">👤 Client</span>
+                Client
               </th>
               <th className="px-3 py-3 font-semibold whitespace-nowrap text-left">
-                <span className="flex items-center gap-1">📅 Order Date</span>
+                Order Date
               </th>
               <th className="px-3 py-3 font-semibold whitespace-nowrap text-left">
-                <span className="flex items-center gap-1">⏳ Delivery Date</span>
+                Delivery Date
               </th>
               <th className="px-3 py-3 font-semibold whitespace-nowrap text-left">
-                <span className="flex items-center gap-1">
-                  🚚 Status
-                </span>
+                Status
               </th>
               <th className="px-3 py-3 font-semibold whitespace-nowrap text-left">
-                <span className="flex items-center gap-1">
-                  💰 Price
-                </span>
+                Price
               </th>
               <th className="px-3 py-3 whitespace-nowrap text-left"></th>
             </tr>
@@ -143,11 +145,10 @@ const SupplierClientsSection = () => {
                     <td className="px-3 py-3">{order.orderDate}</td>
                     <td className="px-3 py-3">{order.deliveryDate}</td>
                     <td className="px-3 py-3">
-                      <span
-                        className={`rounded-full px-3 py-1 text-xs font-semibold inline-flex items-center gap-2 shadow ${deliveryStatusColors[order.deliveryStatus] || "bg-gray-50 text-gray-500 border"}`}
-                      >
-                        {order.deliveryStatus}
-                      </span>
+                      <OrderStatusSelect
+                        value={orderStatuses[order.id]}
+                        onChange={(val) => handleStatusChange(order.id, val)}
+                      />
                     </td>
                     <td className="px-3 py-3 font-medium text-base">
                       {order.totalPrice} DZD
@@ -175,8 +176,6 @@ const SupplierClientsSection = () => {
                       </Button>
                     </td>
                   </tr>
-
-                  {/* Detail row (expand/collapse with animation) */}
                   <tr>
                     <td
                       colSpan={7}
@@ -247,7 +246,6 @@ const SupplierClientsSection = () => {
             )}
           </tbody>
         </table>
-        {/* Pagination (static, not functional) */}
         <div className="flex items-center justify-end p-3 text-xs text-gray-500 bg-white border-t">
           Rows per page:
           <select className="mx-2 border border-gray-200 rounded px-1 py-0.5 shadow-sm focus:ring-2 focus:ring-blue-100">
@@ -262,3 +260,4 @@ const SupplierClientsSection = () => {
 };
 
 export default SupplierClientsSection;
+
