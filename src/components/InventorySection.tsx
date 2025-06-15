@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -286,118 +287,116 @@ const InventorySection = () => {
       {/* Title & Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">{t("inventory") || "Inventory"}</h1>
+          <h1 className="text-3xl font-bold text-[#0794FE] mb-2">{t("inventory") || "Inventory"}</h1>
           <p className="text-gray-600">{t("manage_inventory") || "Start managing your supermarket"}</p>
         </div>
-        {/* Add Product Button */}
         <div>
           <Button
             className="bg-[#16c784] hover:bg-[#149a69] text-white flex items-center gap-2"
             onClick={handleAddProduct}
           >
             <Plus className="w-4 h-4" />
-            {t("add_product") || "Add Product"}
+            {t("add_product")}
           </Button>
         </div>
       </div>
 
-      {/* Filtrage + Quick Filters */}
-      <div className="flex gap-2 items-center mb-4 flex-wrap">
-        {/* Filtrage Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-blue-500" />
-              <span className="font-medium text-gray-600">Filtrage</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent 
-            className="bg-white z-50 p-4 border shadow-md min-w-[320px] grid grid-cols-1 gap-3 max-h-72 overflow-y-auto"
-            align="start"
-          >
-            {columnDefs.map(col => (
-              <div key={col.key} className="flex flex-col gap-1">
-                <label className="text-xs text-gray-500 mb-0.5">{col.label}</label>
-                <Input
-                  type={col.type === "date" ? "date" : (col.type === "number" ? "number" : "text")}
-                  placeholder={col.label}
-                  className="w-full text-xs"
-                  value={filters[col.key] || ""}
-                  onChange={e => setFilters(f => ({
-                    ...f,
-                    [col.key]: e.target.value
-                  }))}
-                  style={{ minWidth: 80 }}
-                />
-              </div>
-            ))}
-            <div className="flex gap-2 mt-2">
-              <Button
-                size="sm"
-                variant="secondary"
-                className="w-full"
-                onClick={() => setFilters({})}
-                type="button"
+      <div className="bg-white rounded-2xl shadow-xl border border-blue-100 px-0 pt-0 pb-0 animate-fade-in">
+        {/* Filters */}
+        <div className="p-6 pb-0">
+          <div className="flex gap-2 items-center mb-4 flex-wrap">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Filter className="w-4 h-4 text-blue-500" />
+                  <span className="font-medium text-gray-600">Filtrage</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent 
+                className="bg-white z-50 p-4 border shadow-md min-w-[320px] grid grid-cols-1 gap-3 max-h-72 overflow-y-auto"
+                align="start"
               >
-                {t("clear_filters") || "Clear filters"}
-              </Button>
-            </div>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        {/* Quick Filter Buttons */}
-        <Button
-          className="bg-[#0794FE] hover:bg-[#0670CC] text-white px-4"
-          onClick={() => handleStatusQuickFilter("Endommagé")}
-        >
-          produit endomagé
-        </Button>
-        <Button
-          className="bg-[#0794FE] hover:bg-[#0670CC] text-white px-4"
-          onClick={() => handleStatusQuickFilter("Disponible")}
-        >
-          produit disponible
-        </Button>
-      </div>
-
-      {/* Table */}
-      <div className="bg-white rounded-lg shadow-sm border overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-[#0794FE] text-white">
-            <tr>
-              {columnDefs.map(col => (
-                <th key={col.key} className="px-3 py-2 text-left text-xs font-medium">
-                  {col.label}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRows.length === 0 ? (
-              <tr>
-                <td colSpan={columnDefs.length} className="p-5 text-center text-gray-400">
-                  {t("no_data") || "No data found"}
-                </td>
+                {columnDefs.map(col => (
+                  <div key={col.key} className="flex flex-col gap-1">
+                    <label className="text-xs text-gray-500 mb-0.5">{col.label}</label>
+                    <Input
+                      type={col.type === "date" ? "date" : (col.type === "number" ? "number" : "text")}
+                      placeholder={col.label}
+                      className="w-full text-xs"
+                      value={filters[col.key] || ""}
+                      onChange={e => setFilters(f => ({
+                        ...f,
+                        [col.key]: e.target.value
+                      }))}
+                      style={{ minWidth: 80 }}
+                    />
+                  </div>
+                ))}
+                <div className="flex gap-2 mt-2">
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="w-full"
+                    onClick={() => setFilters({})}
+                    type="button"
+                  >
+                    {t("clear_filters") || "Clear filters"}
+                  </Button>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button
+              className="bg-[#0794FE] hover:bg-[#0670CC] text-white px-4"
+              onClick={() => handleStatusQuickFilter("Endommagé")}
+            >
+              produit endomagé
+            </Button>
+            <Button
+              className="bg-[#0794FE] hover:bg-[#0670CC] text-white px-4"
+              onClick={() => handleStatusQuickFilter("Disponible")}
+            >
+              produit disponible
+            </Button>
+          </div>
+        </div>
+        {/* Table Wrapper */}
+        <div className="overflow-x-auto mt-2">
+          <table className="w-full min-w-[900px]">
+            <thead>
+              <tr className="bg-[#0794FE] text-white">
+                {columnDefs.map(col => (
+                  <th key={col.key} className="px-4 py-3 text-left text-sm font-medium first:rounded-tl-2xl last:rounded-tr-2xl">{col.label}</th>
+                ))}
               </tr>
-            ) : (
-              filteredRows.slice(0, rowsPerPage).map((row, idx) => (
-                <tr key={idx} className="border-b">
-                  {columnDefs.map(col => (
-                    <td key={col.key} className="px-3 py-2 text-sm whitespace-nowrap">
-                      {row[col.key as keyof InventoryRow]}
-                    </td>
-                  ))}
+            </thead>
+            <tbody>
+              {filteredRows.length === 0 ? (
+                <tr>
+                  <td colSpan={columnDefs.length} className="p-8 text-center text-gray-400 bg-white rounded-b-2xl">
+                    {t("no_data") || "No data found"}
+                  </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-        <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50">
+              ) : (
+                filteredRows.slice(0, rowsPerPage).map((row, idx) => (
+                  <tr key={idx} className={`hover:bg-blue-50/60 transition-colors border-b last:border-b-0`}>
+                    {columnDefs.map(col => (
+                      <td key={col.key} className="px-4 py-4 text-sm whitespace-nowrap">
+                        {row[col.key as keyof InventoryRow]}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+        <div className="flex items-center justify-between px-6 py-4 border-t bg-gray-50 rounded-b-2xl">
           <div className="text-sm text-gray-600 flex items-center gap-2">
             {t("rows_per_page") || "Rows per page"}:
             <select
               value={rowsPerPage}
               onChange={e => setRowsPerPage(Number(e.target.value))}
-              className="border rounded px-2 py-1 text-xs"
+              className="border rounded px-2 py-1 text-xs ml-2"
             >
               {[5, 10, 20, 50].map(n => (
                 <option value={n} key={n}>{n}</option>
@@ -414,3 +413,4 @@ const InventorySection = () => {
 };
 
 export default InventorySection;
+

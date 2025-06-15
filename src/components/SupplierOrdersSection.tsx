@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -87,28 +86,26 @@ const SupplierOrdersSection: React.FC = () => {
   );
 
   return (
-    <div className="p-6 md:p-8 bg-gradient-to-tr from-[#e6f3ff] via-white to-[#f6fbff] min-h-screen transition-colors duration-500">
-      {/* Header */}
-      <div className="mb-8 flex flex-col md:flex-row items-center justify-between gap-3">
+    <div className="space-y-6">
+      <div className="mb-0 flex flex-col md:flex-row items-center justify-between gap-3">
         <div>
-          <h2 className="text-3xl font-bold text-[#065fad] mb-2 tracking-tight">Orders</h2>
-          <p className="text-muted-foreground mb-2 md:mb-0">Manage, track & update your orders—all in one beautiful view.</p>
+          <h2 className="text-3xl font-bold text-[#0794FE] mb-2 tracking-tight">Orders</h2>
+          <p className="text-gray-600 mb-2 md:mb-0">Manage, track & update your orders—all in one beautiful view.</p>
         </div>
         <div className="flex items-center gap-2 w-full md:w-auto">
           <Input
             placeholder="🔍 Search by order ref/client"
-            className="max-w-xs bg-white/80 border border-blue-200 shadow-inner focus:border-primary"
+            className="max-w-xs bg-white border border-blue-200 shadow-inner focus:border-primary"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
         </div>
       </div>
-      {/* Orders Table Card */}
-      <div className="bg-white/80 rounded-2xl shadow-xl border border-blue-50 overflow-hidden animate-fade-in">
+      <div className="bg-white rounded-2xl shadow-xl border border-blue-100 overflow-hidden animate-fade-in">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[900px] text-sm">
             <thead>
-              <tr className="bg-gradient-to-r from-[#0794FE] via-[#43b0f9] to-[#77c7fa] text-white">
+              <tr className="bg-[#0794FE] text-white">
                 <th className="p-4 text-left font-semibold tracking-wide rounded-tl-2xl">Order Ref.</th>
                 <th className="p-4 text-left font-semibold">Client</th>
                 <th className="p-4 text-left font-semibold">Order Date</th>
@@ -219,13 +216,18 @@ const SupplierOrdersSection: React.FC = () => {
             </tbody>
           </table>
         </div>
-        {/* Pagination/rows (static for demo) */}
-        <div className="flex items-center justify-end bg-blue-50 rounded-b-2xl px-6 py-3 border-t border-blue-100 text-xs text-blue-600 font-semibold tracking-wide">
-          Rows per page:
-          <select className="mx-2 border border-blue-100 rounded py-1 px-2 text-xs bg-white">
-            <option>5</option><option>10</option>
-          </select>
-          <span className="ml-2">1–{filteredOrders.length} of {filteredOrders.length}</span>
+        {/* Rows per page panel */}
+        <div className="flex items-center justify-between px-6 py-4 border-t bg-gray-50 rounded-b-2xl text-xs text-blue-600 font-semibold tracking-wide">
+          <div>
+            Rows per page:
+            <select className="mx-2 border border-blue-100 rounded py-1 px-2 text-xs bg-white">
+              <option>5</option>
+              <option>10</option>
+            </select>
+          </div>
+          <span>
+            1–{filteredOrders.length} of {filteredOrders.length}
+          </span>
         </div>
       </div>
     </div>
