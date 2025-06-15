@@ -203,31 +203,33 @@ const ProductDetail = ({
                       <div className="text-sm text-gray-600">
                         ❤️ {selectedSeller.rating} 🛒 {selectedSeller.reviews}
                       </div>
-                      {/* Additional info below seller details */}
-                      <div className="mt-2 space-y-1 text-sm">
-                        {typeof selectedSeller.quantityAvailable !== "undefined" && (
-                          <div>
-                            <span className="font-medium">Quantity available:</span>{" "}
-                            {selectedSeller.quantityAvailable}
-                          </div>
-                        )}
-                        {typeof selectedSeller.deliveryAvailable !== "undefined" && (
-                          <div>
-                            <span className="font-medium">Delivery:</span>{" "}
-                            {selectedSeller.deliveryAvailable ? (
-                              <span className="text-green-600">Available</span>
-                            ) : (
-                              <span className="text-red-600">Not available</span>
-                            )}
-                          </div>
-                        )}
-                        {selectedSeller.paymentMethods && selectedSeller.paymentMethods.length > 0 && (
-                          <div>
-                            <span className="font-medium">Payment Methods:</span>{" "}
-                            {selectedSeller.paymentMethods.join(", ")}
-                          </div>
-                        )}
-                      </div>
+                      {/* --- Updated: Listing info in a row --- */}
+                      {(typeof selectedSeller.quantityAvailable !== "undefined" || typeof selectedSeller.deliveryAvailable !== "undefined" || (selectedSeller.paymentMethods && selectedSeller.paymentMethods.length > 0)) && (
+                        <div className="flex flex-row flex-wrap gap-8 mt-2 text-sm">
+                          {typeof selectedSeller.quantityAvailable !== "undefined" && (
+                            <div>
+                              <span className="font-medium">Quantity available:</span>{" "}
+                              {selectedSeller.quantityAvailable}
+                            </div>
+                          )}
+                          {typeof selectedSeller.deliveryAvailable !== "undefined" && (
+                            <div>
+                              <span className="font-medium">Delivery:</span>{" "}
+                              {selectedSeller.deliveryAvailable ? (
+                                <span className="text-green-600">Available</span>
+                              ) : (
+                                <span className="text-red-600">Not available</span>
+                              )}
+                            </div>
+                          )}
+                          {selectedSeller.paymentMethods && selectedSeller.paymentMethods.length > 0 && (
+                            <div>
+                              <span className="font-medium">Payment Methods:</span>{" "}
+                              {selectedSeller.paymentMethods.join(", ")}
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
