@@ -4,6 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LanguageContext } from "@/contexts/LanguageContext";
 import { Filter } from "lucide-react";
+// shadcn/ui dropdown menu
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+} from "@/components/ui/dropdown-menu";
 
 interface InventoryRow {
   product: string;
@@ -113,26 +119,48 @@ const InventorySection = () => {
         </div>
       </div>
 
-      {/* Filtrage Section */}
+      {/* Filtrage Section as Dropdown */}
       <div className="flex gap-4 items-center mb-4 flex-wrap">
-        <div className="flex gap-2 items-center border py-2 px-3 rounded bg-white">
-          <Filter className="w-4 h-4 text-blue-500" />
-          <span className="font-medium text-gray-600">Filtrage</span>
-          {columnDefs.map(col => (
-            <Input
-              key={col.key}
-              type={col.type === "date" ? "date" : (col.type === "number" ? "number" : "text")}
-              placeholder={col.label}
-              className="w-32 text-xs"
-              value={filters[col.key] || ""}
-              onChange={e => setFilters(f => ({
-                ...f,
-                [col.key]: e.target.value
-              }))}
-              style={{ minWidth: 80 }}
-            />
-          ))}
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-blue-500" />
+              <span className="font-medium text-gray-600">Filtrage</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent 
+            className="bg-white z-50 p-4 border shadow-md min-w-[320px] grid grid-cols-1 gap-3"
+            align="start"
+          >
+            {columnDefs.map(col => (
+              <div key={col.key} className="flex flex-col gap-1">
+                <label className="text-xs text-gray-500 mb-0.5">{col.label}</label>
+                <Input
+                  type={col.type === "date" ? "date" : (col.type === "number" ? "number" : "text")}
+                  placeholder={col.label}
+                  className="w-full text-xs"
+                  value={filters[col.key] || ""}
+                  onChange={e => setFilters(f => ({
+                    ...f,
+                    [col.key]: e.target.value
+                  }))}
+                  style={{ minWidth: 80 }}
+                />
+              </div>
+            ))}
+            <div className="flex gap-2 mt-2">
+              <Button
+                size="sm"
+                variant="secondary"
+                className="w-full"
+                onClick={() => setFilters({})}
+                type="button"
+              >
+                {t("clear_filters") || "Clear filters"}
+              </Button>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Table */}
@@ -190,4 +218,3 @@ const InventorySection = () => {
 };
 
 export default InventorySection;
-
