@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, ChevronDown } from 'lucide-react';
+import { Search, ChevronDown, Download, CreditCard, Truck, Check, XCircle, DollarSign, AlertCircle } from 'lucide-react';
 
 interface Order {
   orderReference: string;
@@ -56,11 +56,24 @@ const initialOrders: Order[] = [
   },
 ];
 
-const DELIVERY_STATUS_COLORS: Record<Order['deliveryStatus'], string> = {
-  Preparing: 'bg-yellow-100 text-yellow-800 border border-yellow-200',
-  Shipped: 'bg-blue-100 text-blue-800 border border-blue-200',
-  Delivered: 'bg-green-100 text-green-800 border border-green-200',
-  Cancelled: 'bg-red-100 text-red-800 border border-red-200',
+const DELIVERY_STATUS_STYLES: Record<Order['deliveryStatus'], string> = {
+  Preparing: 'bg-yellow-50 text-yellow-700 border border-yellow-200',
+  Shipped: 'bg-blue-50 text-blue-700 border border-blue-200',
+  Delivered: 'bg-green-50 text-green-700 border border-green-200',
+  Cancelled: 'bg-red-50 text-red-700 border border-red-200',
+};
+
+const DELIVERY_STATUS_ICON: Record<Order['deliveryStatus'], React.ReactNode> = {
+  Preparing: <AlertCircle size={15} className="text-yellow-500 mr-1.5 inline-block" strokeWidth={2.2}/>,
+  Shipped: <Truck size={15} className="text-blue-500 mr-1.5 inline-block" strokeWidth={2.2}/>,
+  Delivered: <Check size={15} className="text-green-500 mr-1.5 inline-block" strokeWidth={2.2}/>,
+  Cancelled: <XCircle size={15} className="text-red-500 mr-1.5 inline-block" strokeWidth={2.2}/>,
+};
+
+const PAYMENT_ICON: Record<Order['paymentMethod'], React.ReactNode> = {
+  Dahabiya: <DollarSign size={16} className="text-orange-500 mr-1 inline-block" strokeWidth={2}/>,
+  CIB: <CreditCard size={16} className="text-emerald-500 mr-1 inline-block" strokeWidth={2}/>,
+  "Cash on Delivery": <CreditCard size={16} className="text-blue-400 mr-1 inline-block" strokeWidth={2}/>,
 };
 
 const SupplierOrdersSection: React.FC = () => {
@@ -68,81 +81,75 @@ const SupplierOrdersSection: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [openDetails, setOpenDetails] = useState<string | null>(null);
 
-  const handleStatusChange = (orderReference: string, newStatus: Order['deliveryStatus']) => {
-    setOrders(currentOrders =>
-      currentOrders.map(order =>
-        order.orderReference === orderReference
-          ? { ...order, deliveryStatus: newStatus }
-          : order
-      )
-    );
-  };
-
   const filteredOrders = orders.filter(order =>
     order.orderReference.toLowerCase().includes(searchTerm.toLowerCase()) ||
     order.client.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <div className="p-6 bg-[#f7f7f9] min-h-screen">
-      <h2 className="text-2xl font-bold mb-1">Orders</h2>
-      <p className="text-muted-foreground mb-7">Manage and track your orders, update their status & view order details.</p>
-      {/* Filtering/Search Bar */}
-      <div className="flex items-center gap-2 mb-4">
-        <Button variant="outline" className="text-blue-600 border-blue-400 flex items-center gap-1 px-4 py-2.5">
-          <span className="h-3 w-3 rounded-full bg-blue-500 mr-2 inline-block"></span>
-          Filtrage
-        </Button>
-        <Input
-          placeholder="Recherche"
-          className="max-w-xs"
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-        />
+    <div className="p-6 md:p-8 bg-gradient-to-tr from-[#e6f3ff] via-white to-[#f6fbff] min-h-screen transition-colors duration-500">
+      {/* Header */}
+      <div className="mb-8 flex flex-col md:flex-row items-center justify-between gap-3">
+        <div>
+          <h2 className="text-3xl font-bold text-[#065fad] mb-2 tracking-tight">Orders</h2>
+          <p className="text-muted-foreground mb-2 md:mb-0">Manage, track & update your orders—all in one beautiful view.</p>
+        </div>
+        <div className="flex items-center gap-2 w-full md:w-auto">
+          <Input
+            placeholder="🔍 Search by order ref/client"
+            className="max-w-xs bg-white/80 border border-blue-200 shadow-inner focus:border-primary"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
+        </div>
       </div>
-      {/* Orders Table */}
-      <div className="bg-white rounded-lg shadow-[0_4px_16px_0_rgba(70,148,235,0.05)] border mb-10">
-        <div className="overflow-x-auto rounded-lg">
+      {/* Orders Table Card */}
+      <div className="bg-white/80 rounded-2xl shadow-xl border border-blue-50 overflow-hidden animate-fade-in">
+        <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-[#0794FE] text-white">
-                <th className="p-3 text-left rounded-tl-lg">Order Reference</th>
-                <th className="p-3 text-left">Client</th>
-                <th className="p-3 text-left">Order Date</th>
-                <th className="p-3 text-left">Delivery Date</th>
-                <th className="p-3 text-left">Status</th>
-                <th className="p-3 text-left">Price</th>
-                <th className="p-3 text-left rounded-tr-lg"></th>
+              <tr className="bg-gradient-to-r from-[#0794FE] via-[#43b0f9] to-[#77c7fa] text-white">
+                <th className="p-4 text-left font-semibold tracking-wide rounded-tl-2xl">Order Ref.</th>
+                <th className="p-4 text-left font-semibold">Client</th>
+                <th className="p-4 text-left font-semibold">Order Date</th>
+                <th className="p-4 text-left font-semibold">Delivery Date</th>
+                <th className="p-4 text-left font-semibold">Status</th>
+                <th className="p-4 text-left font-semibold">Price</th>
+                <th className="p-4 text-left font-semibold rounded-tr-2xl"></th>
               </tr>
             </thead>
             <tbody>
               {filteredOrders.map((order, i) => (
                 <React.Fragment key={order.orderReference}>
-                  {/* Main row */}
-                  <tr className={i === filteredOrders.length - 1 ? "" : "border-b"}>
-                    <td className="p-3 font-medium">{order.orderReference}</td>
-                    <td className="p-3">
-                      <span className="font-bold">{order.client.name}</span>
-                      <div className="text-xs text-muted-foreground">{order.client.contact}</div>
+                  <tr
+                    className={`group transition-colors duration-200 ${i === filteredOrders.length - 1 ? "" : "border-b"} hover:bg-blue-50/60`}
+                  >
+                    <td className="p-4 font-medium flex items-center gap-1">
+                      <span className="rounded text-[#0794FE] font-bold px-2 py-0.5 bg-blue-50 border border-blue-100 mr-2 drop-shadow-sm">{order.orderReference}</span>
                     </td>
-                    <td className="p-3">{order.orderDate}</td>
-                    <td className="p-3">{order.deliveryDate}</td>
-                    <td className="p-3">
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold align-middle ${DELIVERY_STATUS_COLORS[order.deliveryStatus]}`}>
+                    <td className="p-4 flex flex-col">
+                      <span className="font-bold text-gray-700">{order.client.name}</span>
+                      <span className="text-xs text-blue-400">{order.client.contact}</span>
+                    </td>
+                    <td className="p-4">{order.orderDate}</td>
+                    <td className="p-4">{order.deliveryDate}</td>
+                    <td className="p-4">
+                      <span className={`inline-flex items-center gap-1 px-3 py-1.5 min-w-[120px] rounded-lg text-xs font-semibold uppercase shadow transition ${DELIVERY_STATUS_STYLES[order.deliveryStatus]}`}>
+                        {DELIVERY_STATUS_ICON[order.deliveryStatus]}
                         {order.deliveryStatus}
                       </span>
                     </td>
-                    <td className="p-3 font-semibold">{order.totalPrice.toFixed(2)} DZD</td>
-                    <td className="p-3 text-right">
+                    <td className="p-4 font-semibold">{order.totalPrice.toFixed(2)} <span className="text-xs text-gray-400">DZD</span></td>
+                    <td className="p-4 text-right">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => setOpenDetails(openDetails === order.orderReference ? null : order.orderReference)}
-                        className="flex items-center gap-1 px-4"
+                        className={`flex items-center gap-1 px-4 shadow transition-transform hover:scale-105 font-medium border-blue-200 ${openDetails === order.orderReference ? "bg-blue-50" : "bg-white"}`}
                       >
                         <ChevronDown
-                          className={`transition-transform duration-200 ${openDetails === order.orderReference ? "rotate-180" : ""}`}
-                          size={16}
+                          className={`transition-transform duration-300 ${openDetails === order.orderReference ? "rotate-180" : ""}`}
+                          size={17}
                         />
                         Details
                       </Button>
@@ -150,45 +157,50 @@ const SupplierOrdersSection: React.FC = () => {
                   </tr>
                   {/* Expandable details row */}
                   {openDetails === order.orderReference && (
-                    <tr className="bg-[#fafbfc]">
-                      <td colSpan={7} className="p-6 pt-2 border-t">
-                        <div className="flex flex-col md:flex-row gap-4 md:justify-between">
+                    <tr>
+                      <td colSpan={7} className="p-0 bg-blue-50/80">
+                        <div className="animate-fade-in flex flex-col md:flex-row gap-4 md:justify-between px-6 py-6 border-t border-blue-100 shadow-inner rounded-b-2xl">
                           {/* Left: details */}
-                          <div className="space-y-2 flex-1 text-[15px]">
+                          <div className="space-y-3 flex-1 text-[15px] font-medium">
                             <div>
-                              <span className="font-semibold">Product(s):</span>
-                              <ul className="ml-4 mt-1 list-none">
+                              <span className="font-bold text-[#0794FE]">Products:</span>
+                              <ul className="ml-5 mt-1 list-disc text-gray-700">
                                 {order.products.map((prod, idx) => (
                                   <li key={idx} className="leading-5">
-                                    {prod.name}
-                                    <span className="text-xs text-muted-foreground ml-1">×{prod.qty}</span>
+                                    <span>{prod.name}</span>
+                                    <span className="text-xs text-gray-500 ml-2">×{prod.qty}</span>
                                   </li>
                                 ))}
                               </ul>
                             </div>
                             <div>
-                              <span className="font-semibold">Payment:</span> {order.paymentMethod}
+                              <span className="font-bold text-[#0794FE]">Payment:</span>
+                              <span className="inline-flex items-center ml-2">{PAYMENT_ICON[order.paymentMethod]}{order.paymentMethod}</span>
                             </div>
                             <div>
-                              <span className="font-semibold">Address:</span> {order.deliveryAddress}
+                              <span className="font-bold text-[#0794FE]">Delivery Address:</span>
+                              <span className="ml-2">{order.deliveryAddress}</span>
                             </div>
                             <div>
-                              <span className="font-semibold">Notes / Comments:</span> {order.notes || "-"}
+                              <span className="font-bold text-[#0794FE]">Notes:</span>
+                              <span className="ml-2">{order.notes || "-"}</span>
                             </div>
                             <div>
-                              <span className="font-semibold">Return Status:</span> {order.returnStatus || "N/A"}
+                              <span className="font-bold text-[#0794FE]">Return Status:</span>
+                              <span className="ml-2">{order.returnStatus || "N/A"}</span>
                             </div>
                           </div>
                           {/* Right: download invoice button */}
-                          <div className="flex items-start md:justify-end flex-shrink-0">
+                          <div className="flex flex-col items-start md:justify-end flex-shrink-0 gap-2 min-w-[180px]">
                             <a
                               href={order.invoiceLink}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center border border-gray-300 bg-white hover:bg-gray-100 text-gray-800 font-medium rounded px-4 h-10 shadow transition-colors"
+                              className="inline-flex items-center border border-blue-300 bg-white hover:bg-blue-100 text-blue-700 font-semibold rounded-lg px-4 h-11 gap-2 shadow transition-all active:bg-blue-200 focus:ring-2 focus:ring-blue-200"
                               download
                             >
-                              📄 Download Invoice
+                              <Download className="w-5 h-5 mr-1" />
+                              Download Invoice
                             </a>
                           </div>
                         </div>
@@ -199,7 +211,7 @@ const SupplierOrdersSection: React.FC = () => {
               ))}
               {filteredOrders.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="text-center text-gray-500 py-5">
+                  <td colSpan={7} className="text-center text-gray-400 py-7 bg-white rounded-b-2xl">
                     No orders found.
                   </td>
                 </tr>
@@ -208,12 +220,12 @@ const SupplierOrdersSection: React.FC = () => {
           </table>
         </div>
         {/* Pagination/rows (static for demo) */}
-        <div className="flex items-center justify-end bg-[#fafbfc] rounded-b-lg px-4 py-2 border-t text-xs text-gray-500">
+        <div className="flex items-center justify-end bg-blue-50 rounded-b-2xl px-6 py-3 border-t border-blue-100 text-xs text-blue-600 font-semibold tracking-wide">
           Rows per page:
-          <select className="mx-2 border rounded py-1 px-2 text-xs">
+          <select className="mx-2 border border-blue-100 rounded py-1 px-2 text-xs bg-white">
             <option>5</option><option>10</option>
           </select>
-          <span className="text-gray-600">1–{filteredOrders.length} of {filteredOrders.length}</span>
+          <span className="ml-2">1–{filteredOrders.length} of {filteredOrders.length}</span>
         </div>
       </div>
     </div>
