@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -96,16 +95,22 @@ const ProductDetail = ({
       </Button>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Product Image */}
+        {/* Product Image & (MOVED) MAIN PRICE */}
         <div className="space-y-4">
           <Card className="overflow-hidden">
             <CardContent className="p-0">
-              <div className="aspect-square bg-gradient-to-br from-orange-50 to-red-50 relative flex items-center justify-center">
+              <div className="aspect-square bg-gradient-to-br from-orange-50 to-red-50 relative flex flex-col items-center justify-center">
                 <img 
                   src="/lovable-uploads/2772f3d5-06fc-4c62-a337-1fc9f51010b1.png"
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
+                {/* MAIN PRODUCT PRICE JUST BELOW IMAGE */}
+                <div className="w-full flex justify-center mt-4">
+                  <span className="text-3xl font-bold text-red-600 bg-white bg-opacity-70 rounded px-4 py-1 shadow">
+                    {product.price} <span className="text-lg font-semibold text-gray-700">DZD</span>
+                  </span>
+                </div>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -116,7 +121,6 @@ const ProductDetail = ({
               </div>
             </CardContent>
           </Card>
-
           {/* Rating */}
           <div className="flex items-center gap-1">
             {[1, 2, 3, 4, 5].map((star) => (
