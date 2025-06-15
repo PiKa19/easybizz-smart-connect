@@ -323,8 +323,8 @@ const SupplierSection = ({ selectedSupplierId, onBack, initialMessageSupplier }:
           </div>
         ) : activeTab === "messages" ? (
           <div>
-            {/* Only pass initialMessageSupplier. MessagingSection itself doesn't take supplier as a direct prop. */}
-            <MessagingSection />
+            {/* Pass initialMessageSupplier prop into MessagingSection */}
+            <MessagingSection initialMessageSupplier={initialMessageSupplier} />
           </div>
         ) : (
           // "my-suppliers" or "find-suppliers"

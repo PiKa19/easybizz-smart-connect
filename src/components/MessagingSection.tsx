@@ -1,5 +1,5 @@
 
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,14 +25,26 @@ interface Conversation {
   messages: Message[];
 }
 
-const MessagingSection = () => {
+// Accept initialMessageSupplier as a prop
+interface MessagingSectionProps {
+  initialMessageSupplier?: {
+    id: number;
+    name: string;
+    rating: string;
+    reviews: number;
+    price: string;
+    isDefault?: boolean;
+  } | null;
+}
+
+const MessagingSection = ({ initialMessageSupplier }: MessagingSectionProps) => {
   const { t } = useContext(LanguageContext);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
   // Mock conversations data
-  const conversations: Conversation[] = [
+  const [conversations, setConversations] = useState<Conversation[]>([
     {
       id: '1',
       supplierName: 'Fresh Foods Algeria',
@@ -138,7 +150,33 @@ const MessagingSection = () => {
         }
       ]
     }
-  ];
+  ]);
+  
+  // Effect: If initialMessageSupplier is provided, open (or create) its conversation
+  useEffect(() => {
+    if (initialMessageSupplier) {
+      // Check if we already have a conversation for this supplier by name
+      let conversation = conversations.find(
+        (c) => c.supplierName === initialMessageSupplier.name
+      );
+      if (!conversation) {
+        // Create a new, empty conversation for this supplier
+        conversation = {
+          id: `${initialMessageSupplier.id}`,
+          supplierName: initialMessageSupplier.name,
+          supplierAvatar: '/placeholder.svg',
+          lastMessage: '',
+          lastMessageTime: '',
+          unreadCount: 0,
+          isOnline: true,
+          messages: []
+        };
+        setConversations((prev) => [...prev, conversation!]);
+      }
+      setSelectedConversation(conversation.id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialMessageSupplier]);
 
   const filteredConversations = conversations.filter(conversation =>
     conversation.supplierName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -148,8 +186,27 @@ const MessagingSection = () => {
 
   const sendMessage = () => {
     if (!newMessage.trim() || !selectedConversation) return;
-    
-    console.log(`Sending message: ${newMessage} to conversation ${selectedConversation}`);
+    setConversations((prev) =>
+      prev.map((conv) =>
+        conv.id === selectedConversation
+          ? {
+              ...conv,
+              messages: [
+                ...conv.messages,
+                {
+                  id: String(conv.messages.length + 1),
+                  text: newMessage,
+                  timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                  isFromMe: true,
+                },
+              ],
+              lastMessage: newMessage,
+              lastMessageTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              unreadCount: 0,
+            }
+          : conv
+      )
+    );
     setNewMessage('');
   };
 
@@ -180,7 +237,6 @@ const MessagingSection = () => {
             />
           </div>
         </div>
-
         <div className="overflow-y-auto h-[calc(100%-120px)]">
           {filteredConversations.map((conversation) => (
             <div
@@ -201,7 +257,6 @@ const MessagingSection = () => {
                     conversation.isOnline ? 'bg-green-400' : 'bg-gray-400'
                   }`}></div>
                 </div>
-                
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <h3 className="font-semibold text-sm truncate">{conversation.supplierName}</h3>
@@ -214,9 +269,7 @@ const MessagingSection = () => {
                       )}
                     </div>
                   </div>
-                  
                   <p className="text-sm text-gray-600 truncate mt-1">{conversation.lastMessage}</p>
-                  
                   <div className="flex items-center gap-1 mt-1">
                     <Circle className={`w-2 h-2 ${conversation.isOnline ? 'fill-green-400 text-green-400' : 'fill-gray-400 text-gray-400'}`} />
                     <span className="text-xs text-gray-500">
@@ -297,6 +350,13 @@ const MessagingSection = () => {
               </div>
             </div>
           </>
+        ) : initialMessageSupplier ? (
+          // If a supplier is set but conversation not loaded yet
+          <div className="flex-1 flex flex-col items-center justify-center bg-gray-50">
+            <img src="/placeholder.svg" alt={initialMessageSupplier.name} className="w-16 h-16 rounded-full mb-4"/>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{initialMessageSupplier.name}</h3>
+            <p className="text-gray-500">{t('start_conversation')}</p>
+          </div>
         ) : (
           <div className="flex-1 flex items-center justify-center bg-gray-50">
             <div className="text-center">
