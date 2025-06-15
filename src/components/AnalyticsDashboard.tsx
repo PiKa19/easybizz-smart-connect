@@ -1,47 +1,29 @@
 
 import React from "react";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import {
   BarChart,
   LineChart,
+  AreaChart,
   Line,
   Bar,
+  Area,
   XAxis,
   YAxis,
   Tooltip,
   ResponsiveContainer,
   Legend,
+  CartesianGrid,
 } from "recharts";
 
-const randomInt = (min: number, max: number) =>
-  Math.floor(Math.random() * (max - min + 1)) + min;
+// Dummy data remains
+const categories = [ "Beverages", "Dairy", "Bakery", "Household", "Snacks", "Produce" ];
+const randomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+const randomFloat = (min: number, max: number, decimals = 2) => +(Math.random() * (max - min) + min).toFixed(decimals);
 
-const randomFloat = (min: number, max: number, decimals = 2) =>
-  +(Math.random() * (max - min) + min).toFixed(decimals);
-
-const categories = [
-  "Beverages",
-  "Dairy",
-  "Bakery",
-  "Household",
-  "Snacks",
-  "Produce",
-];
-
-// Dummy KPIs
 const kpis = {
   sales: {
     totalSales: randomInt(80000, 250000),
-    salesByCategory: categories.map((c) => ({
-      category: c,
-      amount: randomInt(2000, 25000),
-    })),
+    salesByCategory: categories.map((c) => ({ category: c, amount: randomInt(2000, 25000) })),
     salesBySupplier: [
       { supplier: "FRS Semmar", amount: randomInt(10000, 50000) },
       { supplier: "Top Fresh", amount: randomInt(10000, 50000) },
@@ -58,358 +40,194 @@ const kpis = {
       { name: "Dentifrice Colgate", sales: 19 },
     ],
   },
-  inventory: {
-    stockLevels: 5900,
-    fastMoving: ["Coca-Cola 1L", "Biscottes Croquantes"],
-    slowMoving: ["Margarine 250g", "Yaourt Vanille"],
-    outOfStock: ["Savon Liquide 1L"],
-    nearExpiry: ["Lait 1L Candia (4 days)"],
-    restock: ["Eau minérale 0.5L", "Riz 1kg"],
-  },
-  customers: {
-    totalCustomers: 1340,
-    repeatCustomers: 487,
-    avgOrderFreq: randomFloat(1.7, 4),
-    clv: randomInt(5400, 18000),
-    satisfaction: randomFloat(3.5, 5).toFixed(2),
-  },
-  profitability: {
-    grossProfit: randomInt(39000, 78000),
-    profitMargin: randomFloat(15, 37),
-    netIncome: randomInt(20000, 45000),
-    breakEven: randomInt(10000, 29000),
-  },
   financial: {
-    pendingPayments: randomInt(9000, 24000),
-    overdueInvoices: randomInt(3, 21),
-    paymentsByMethod: [
-      { type: "Cash", amount: 54000 },
-      { type: "Card", amount: 32000 },
-      { type: "Cheque", amount: 9700 },
-    ],
-    refundRate: randomFloat(0.5, 5),
+    revenue: 24500,
+    revenueChange: 0.13,
+    profitMargin: 9.5,
+    profitMarginChange: 0.01,
+    roi: 19.1,
+    roiChange: 0.08,
+    clv: 2176,
+    clvChange: 0.023,
+  },
+  metrics: {
+    ebitda: Array(19).fill(0).map((_, i) => ({
+      x: i + 1,
+      layer1: randomInt(1000, 2000),
+      layer2: randomInt(1200, 3100),
+    })),
+    csat: [
+      { time: "09:00", score: 1 },
+      { time: "10:00", score: 2 },
+      { time: "11:00", score: 1.5 },
+      { time: "12:00", score: 3 },
+      { time: "13:00", score: 2 },
+      { time: "14:00", score: 2.5 },
+      { time: "15:00", score: 3 },
+    ]
   },
   trends: {
-    salesData: Array(14)
-      .fill(0)
-      .map((_, i) => ({
-        date: `Day ${i + 1}`,
-        Sales: randomInt(1800, 6000),
-      })),
-    seasonalData: [
-      { month: "Jan", sales: 18000 },
-      { month: "Feb", sales: 15200 },
-      { month: "Mar", sales: 16770 },
-      { month: "Apr", sales: 18550 },
-      { month: "May", sales: 23300 },
-      { month: "Jun", sales: 21000 },
-      { month: "Jul", sales: 22500 },
-    ],
-    orderVolume: [
-      { week: "W1", orders: 42 },
-      { week: "W2", orders: 56 },
-      { week: "W3", orders: 67 },
-      { week: "W4", orders: 40 },
-    ],
-  },
-  orders: {
-    totalOrders: 399,
-    completed: 340,
-    cancelled: 25,
-    returned: 10,
-    avgDelivery: 1.7,
-  },
-  staff: {
-    salesPerCashier: [
-      { name: "Ahmed", sales: 113 },
-      { name: "Farida", sales: 140 },
-    ],
-    activityLogs: 76,
-    refundsPerCashier: [
-      { name: "Ahmed", refunds: 2 },
-      { name: "Farida", refunds: 1 },
-    ],
-  },
+    netProfit: Array(8).fill(0).map((_, i) => ({
+      x: i+1, value: randomInt(4,12)
+    })),
+    debtEquity: Array(8).fill(0).map((_, i) => ({
+      x: i+1, green: randomInt(2,5), gray: randomInt(2,7)
+    })),
+  }
 };
 
-const sectionCard =
-  "rounded-2xl shadow-xl border border-blue-100 p-6 bg-white animate-fade-in-scale";
-
-// Small helper to format numbers DZD
 const formatDZD = (amount: number) =>
   amount.toLocaleString("en-US", { style: "currency", currency: "DZD", maximumFractionDigits: 0 }).replace("DZD", "DZD");
 
+const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+  <div className={`bg-white rounded-2xl shadow border border-gray-100 p-6 transition hover:shadow-lg ${className || ""}`}>{children}</div>
+);
+
+const StatCard = ({
+  label, value, change, isMoney, unit
+}: {
+  label: string,
+  value: number|string,
+  change?: number,
+  isMoney?: boolean,
+  unit?: string,
+}) => (
+  <Card className="flex flex-col gap-2 items-start min-w-[125px]">
+    <span className="text-sm text-gray-500">{label}</span>
+    <span className="text-3xl font-semibold text-gray-800">
+      {isMoney ? (typeof value === "number" ? `$${value}` : value) : value}
+      {unit && <span className="ml-1 text-lg text-gray-500">{unit}</span>}
+    </span>
+    {typeof change === "number" && (
+      <span className={`flex items-center text-xs font-medium ${change > 0 ? "text-green-500" : "text-gray-400"}`}>
+        {change > 0 ? "↑" : "↓"} {Math.abs(change*100).toFixed(1)}%
+        <span className="ml-1 text-gray-400 font-normal">vs previous 7 days</span>
+      </span>
+    )}
+  </Card>
+);
+
 const AnalyticsDashboard = () => {
   return (
-    <div className="space-y-7">
-      {/* 1. Sales */}
-      <div className={sectionCard}>
-        <CardHeader>
-          <CardTitle>🛍️ Sales KPIs</CardTitle>
-        </CardHeader>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-          <CardContent>
-            <CardTitle className="text-lg">Total Sales</CardTitle>
-            <div className="text-2xl font-bold mt-2">{formatDZD(kpis.sales.totalSales)}</div>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">Average Basket Size</CardTitle>
-            <div className="text-2xl font-bold mt-2">{kpis.sales.avgBasket} items</div>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">Top-Selling Products</CardTitle>
-            <ul className="mt-2 text-sm">
-              {kpis.sales.topSelling.map((item) => (
-                <li key={item.name}>✓ {item.name} ({item.sales})</li>
-              ))}
-            </ul>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">Underperforming Products</CardTitle>
-            <ul className="mt-2 text-sm">
-              {kpis.sales.underperforming.map((item) => (
-                <li key={item.name}>⛔ {item.name} ({item.sales})</li>
-              ))}
-            </ul>
-          </CardContent>
+    <div className="min-h-screen bg-gray-100 rounded-2xl p-6 animate-fade-in">
+      {/* Header */}
+      <div>
+        <div className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+          Performance Management Dashboard
         </div>
-        <div className="mt-5 flex flex-col md:flex-row gap-4">
-          <div className="w-full md:w-1/2 h-40">
-            <CardDescription>Sales by Category</CardDescription>
-            <ResponsiveContainer width="100%" height="90%">
-              <BarChart data={kpis.sales.salesByCategory}>
-                <XAxis dataKey="category" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="amount" fill="#0794FE" />
-              </BarChart>
-            </ResponsiveContainer>
+        {/* Filter Row */}
+        <div className="my-3 flex flex-col sm:flex-row gap-3">
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">Auto date range</label>
+            <select className="rounded border-gray-200 px-3 py-1.5 bg-white shadow">
+              <option>This Week</option>
+              <option>Last Week</option>
+              <option>This Month</option>
+              <option>Last Month</option>
+            </select>
           </div>
-          <div className="w-full md:w-1/2 h-40">
-            <CardDescription>Sales by Supplier</CardDescription>
-            <ResponsiveContainer width="100%" height="90%">
-              <BarChart data={kpis.sales.salesBySupplier}>
-                <XAxis dataKey="supplier" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="amount" fill="#09AF8A" />
-              </BarChart>
-            </ResponsiveContainer>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">Services</label>
+            <select className="rounded border-gray-200 px-3 py-1.5 bg-white shadow">
+              <option>All</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">Posts</label>
+            <select className="rounded border-gray-200 px-3 py-1.5 bg-white shadow">
+              <option>All</option>
+            </select>
           </div>
         </div>
       </div>
-      {/* 2. Inventory */}
-      <div className={sectionCard}>
-        <CardHeader>
-          <CardTitle>📦 Inventory KPIs</CardTitle>
-        </CardHeader>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
-          <CardContent>
-            <CardTitle className="text-lg">Current Stock Levels</CardTitle>
-            <div className="text-2xl font-bold mt-2">{kpis.inventory.stockLevels}</div>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">Fast/Slow Movers</CardTitle>
-            <div className="mt-2 text-sm">
-              <strong>Fast:</strong> {kpis.inventory.fastMoving.join(", ")}<br />
-              <strong>Slow:</strong> {kpis.inventory.slowMoving.join(", ")}
-            </div>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">Restock / Alerts</CardTitle>
-            <div className="mt-2 text-sm">
-              <span>OOS: {kpis.inventory.outOfStock.join(", ") || "None"}</span>
-              <br />
-              <span>Near Exp: {kpis.inventory.nearExpiry.join(", ") || "None"}</span>
-              <br />
-              <span>Restock: {kpis.inventory.restock.join(", ")}</span>
-            </div>
-          </CardContent>
-        </div>
-      </div>
-      {/* 3. Customers */}
-      <div className={sectionCard}>
-        <CardHeader>
-          <CardTitle>👥 Customer KPIs</CardTitle>
-        </CardHeader>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <CardContent>
-            <CardTitle className="text-lg">Total Customers</CardTitle>
-            <div className="text-2xl font-bold mt-2">{kpis.customers.totalCustomers}</div>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">Repeat Customers</CardTitle>
-            <div className="text-2xl font-bold mt-2">{kpis.customers.repeatCustomers}</div>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">Avg Order Freq</CardTitle>
-            <div className="text-2xl font-bold mt-2">{kpis.customers.avgOrderFreq} / mo</div>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">CLV</CardTitle>
-            <div className="text-2xl font-bold mt-2">{formatDZD(kpis.customers.clv)}</div>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">Satisfaction</CardTitle>
-            <div className="text-2xl font-bold mt-2">{kpis.customers.satisfaction} / 5</div>
-          </CardContent>
-        </div>
-      </div>
-      {/* 4. Profitability */}
-      <div className={sectionCard}>
-        <CardHeader>
-          <CardTitle>📈 Profitability KPIs</CardTitle>
-        </CardHeader>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-          <CardContent>
-            <CardTitle className="text-lg">Gross Profit</CardTitle>
-            <div className="text-2xl font-bold mt-2">{formatDZD(kpis.profitability.grossProfit)}</div>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">Margin per Product</CardTitle>
-            <div className="text-2xl font-bold mt-2">{kpis.profitability.profitMargin}%</div>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">Net Income</CardTitle>
-            <div className="text-2xl font-bold mt-2">{formatDZD(kpis.profitability.netIncome)}</div>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">Break-Even Point</CardTitle>
-            <div className="text-2xl font-bold mt-2">{formatDZD(kpis.profitability.breakEven)}</div>
-          </CardContent>
-        </div>
-      </div>
-      {/* 5. Financial */}
-      <div className={sectionCard}>
-        <CardHeader>
-          <CardTitle>💸 Financial KPIs</CardTitle>
-        </CardHeader>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-          <CardContent>
-            <CardTitle className="text-lg">Pending Payments</CardTitle>
-            <div className="text-2xl font-bold mt-2">{formatDZD(kpis.financial.pendingPayments)}</div>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">Overdue Invoices</CardTitle>
-            <div className="text-2xl font-bold mt-2">{kpis.financial.overdueInvoices}</div>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">Refund Rate</CardTitle>
-            <div className="text-2xl font-bold mt-2">{kpis.financial.refundRate}%</div>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">Payments by Method</CardTitle>
-            <ul className="mt-2 text-sm">
-              {kpis.financial.paymentsByMethod.map((item) => (
-                <li key={item.type}>
-                  {item.type}: {formatDZD(item.amount)}
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </div>
-      </div>
-      {/* 6. Trends */}
-      <div className={sectionCard}>
-        <CardHeader>
-          <CardTitle>📅 Trend KPIs</CardTitle>
-        </CardHeader>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="h-44">
-            <CardDescription>Daily Sales (2 Weeks)</CardDescription>
-            <ResponsiveContainer width="100%" height="90%">
-              <LineChart data={kpis.trends.salesData}>
-                <XAxis dataKey="date" />
-                <YAxis />
+
+      {/* Grid Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-6 gap-6 mt-2">
+        {/* Main Analytics Charts (left section 4/6) */}
+        <div className="lg:col-span-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Net Profit Margin */}
+          <Card>
+            <h3 className="font-semibold mb-2 text-gray-700">Net Profit Margin</h3>
+            <ResponsiveContainer width="100%" height={170}>
+              <BarChart data={kpis.trends.netProfit} barGap={8}>
+                <CartesianGrid strokeDasharray="2 2" vertical={false} stroke="#ECECEC" />
+                <XAxis dataKey="x" axisLine={false} tickLine={false} />
+                <YAxis axisLine={false} tickLine={false} />
                 <Tooltip />
-                <Line type="monotone" dataKey="Sales" stroke="#0794FE" />
+                <Bar dataKey="value" fill="#66C27C" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+          {/* Debt-to-Equity Ratio (composite) */}
+          <Card>
+            <h3 className="font-semibold mb-2 text-gray-700">Debt-to-Equity Ratio</h3>
+            <ResponsiveContainer width="100%" height={170}>
+              <BarChart data={kpis.trends.debtEquity}>
+                <CartesianGrid strokeDasharray="2 2" vertical={false} stroke="#ECECEC" />
+                <XAxis dataKey="x" axisLine={false} tickLine={false} />
+                <YAxis axisLine={false} tickLine={false} />
+                <Tooltip />
+                <Bar dataKey="gray" stackId="a" fill="#C6C6C6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="green" stackId="a" fill="#66C27C" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+
+          {/* EBITDA Area Chart (row 2, spans 2 cols) */}
+          <div className="md:col-span-2">
+            <Card>
+              <h3 className="font-semibold mb-2 text-gray-700">Earnings Before Interest, Taxes, Depreciation, and Amortization (EBITDA)</h3>
+              <ResponsiveContainer width="100%" height={210}>
+                <AreaChart data={kpis.metrics.ebitda}>
+                  <CartesianGrid strokeDasharray="2 2" vertical={false} stroke="#ECECEC" />
+                  <XAxis dataKey="x" axisLine={false} tickLine={false} />
+                  <YAxis axisLine={false} tickLine={false} />
+                  <Tooltip />
+                  <Area type="monotone" dataKey="layer1" stackId="1" stroke="#7998FF" fill="#C7D8FF" fillOpacity={0.6} />
+                  <Area type="monotone" dataKey="layer2" stackId="1" stroke="#867AE9" fill="#D6C9FA" fillOpacity={0.4} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </Card>
+          </div>
+        </div>
+        {/* KPIs right column (2/6) */}
+        <div className="lg:col-span-2 grid grid-cols-2 gap-6">
+          <StatCard
+            label="Revenue"
+            value={kpis.financial.revenue}
+            change={kpis.financial.revenueChange}
+            isMoney
+          />
+          <StatCard
+            label="Avg Profit Margin"
+            value={kpis.financial.profitMargin + "%"}
+            change={kpis.financial.profitMarginChange}
+          />
+          <StatCard
+            label="Return On Investment (ROI)"
+            value={kpis.financial.roi + "%"}
+            change={kpis.financial.roiChange}
+          />
+          <StatCard
+            label="CLV"
+            value={formatDZD(kpis.financial.clv)}
+            change={kpis.financial.clvChange}
+          />
+        </div>
+        {/* Row below: CSAT line chart */}
+        <div className="lg:col-span-4">
+          <Card>
+            <h3 className="font-semibold mb-2 text-gray-700">Customer Satisfaction Score (CSAT)</h3>
+            <ResponsiveContainer width="100%" height={180}>
+              <LineChart data={kpis.metrics.csat}>
+                <CartesianGrid strokeDasharray="2 2" vertical={false} stroke="#ECECEC" />
+                <XAxis dataKey="time" axisLine={false} tickLine={false} />
+                <YAxis axisLine={false} tickLine={false} />
+                <Tooltip />
+                <Line type="monotone" dataKey="score" stroke="#4787FC" strokeWidth={2} dot={{ r: 2 }} />
               </LineChart>
             </ResponsiveContainer>
-          </div>
-          <div className="h-44">
-            <CardDescription>Order Volume Trends</CardDescription>
-            <ResponsiveContainer width="100%" height="90%">
-              <BarChart data={kpis.trends.orderVolume}>
-                <XAxis dataKey="week" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="orders" fill="#09AF8A" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="h-44">
-            <CardDescription>Seasonal Sales</CardDescription>
-            <ResponsiveContainer width="100%" height="90%">
-              <LineChart data={kpis.trends.seasonalData}>
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="sales" stroke="#fbbf24" />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-      {/* 7. Order Management */}
-      <div className={sectionCard}>
-        <CardHeader>
-          <CardTitle>🧾 Order Management KPIs</CardTitle>
-        </CardHeader>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-          <CardContent>
-            <CardTitle className="text-lg">Total Orders</CardTitle>
-            <div className="text-2xl font-bold mt-2">{kpis.orders.totalOrders}</div>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">Completed vs Cancelled</CardTitle>
-            <div className="mt-2 text-sm">
-              <span className="text-green-600">✔ {kpis.orders.completed}</span>{" "}
-              <span className="mx-2 text-gray-400">/</span>
-              <span className="text-red-600">⛔ {kpis.orders.cancelled}</span>
-            </div>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">Return Rate</CardTitle>
-            <div className="text-2xl font-bold mt-2">{kpis.orders.returned}</div>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">Avg Delivery Time</CardTitle>
-            <div className="text-2xl font-bold mt-2">{kpis.orders.avgDelivery} days</div>
-          </CardContent>
-        </div>
-      </div>
-      {/* 8. Staff KPIs */}
-      <div className={sectionCard}>
-        <CardHeader>
-          <CardTitle>👨‍💼 Staff/Cashier KPIs</CardTitle>
-        </CardHeader>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <CardContent>
-            <CardTitle className="text-lg">Sales per Cashier</CardTitle>
-            <ul className="mt-2 text-sm">
-              {kpis.staff.salesPerCashier.map((c) => (
-                <li key={c.name}>
-                  {c.name}: {c.sales}
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">Activity Logs</CardTitle>
-            <div className="text-2xl font-bold mt-2">{kpis.staff.activityLogs}</div>
-          </CardContent>
-          <CardContent>
-            <CardTitle className="text-lg">Refunds per Cashier</CardTitle>
-            <ul className="mt-2 text-sm">
-              {kpis.staff.refundsPerCashier.map((c) => (
-                <li key={c.name}>
-                  {c.name}: {c.refunds}
-                </li>
-              ))}
-            </ul>
-          </CardContent>
+          </Card>
         </div>
       </div>
     </div>
@@ -417,4 +235,3 @@ const AnalyticsDashboard = () => {
 };
 
 export default AnalyticsDashboard;
-
