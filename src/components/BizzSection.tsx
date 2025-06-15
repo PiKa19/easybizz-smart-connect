@@ -77,7 +77,63 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
   }, [cartItems]);
 
+  // New product listings (Coca Cola, Elio oils, Skor Civital) with random suppliers
   const products: Product[] = [
+    // Elio Oil 2L
+    {
+      id: 101,
+      name: "Elio Oil 2L",
+      description: "Vegetable Oil - 2 Liter Bottle",
+      price: "350",
+      image: "/lovable-uploads/75fa4299-081c-4a60-b0f2-2e05b0a82ad4.png",
+      category: "Oils & Fats",
+      volume: "2 Liters",
+      packaging: "PET bottle",
+      storage: "Store at room temperature",
+      usage: "Cooking and frying",
+      sellers: [
+        { id: 5, name: "Atlas Alimentaire", rating: "4.6", reviews: 54, price: "340", isDefault: true },
+        { id: 8, name: "Sarl NourFood", rating: "4.9", reviews: 112, price: "350" },
+        { id: 12, name: "Epicerie Maroc", rating: "4.7", reviews: 78, price: "345" }
+      ]
+    },
+    // Elio Oil 5L
+    {
+      id: 102,
+      name: "Elio Oil 5L",
+      description: "Vegetable Oil - 5 Liter Bottle",
+      price: "790",
+      image: "/lovable-uploads/c644764e-0ea6-4962-913f-1137b4e0e713.png",
+      category: "Oils & Fats",
+      volume: "5 Liters",
+      packaging: "Large PET bottle",
+      storage: "Store at room temperature",
+      usage: "Catering and large kitchens",
+      sellers: [
+        { id: 6, name: "Bled Distributeur", rating: "4.4", reviews: 99, price: "789", isDefault: true },
+        { id: 9, name: "Marché Express", rating: "4.8", reviews: 59, price: "795" },
+        { id: 15, name: "Djezzy Food Wholesale", rating: "4.5", reviews: 65, price: "780" }
+      ]
+    },
+    // Skor Civital 2KG
+    {
+      id: 103,
+      name: "Skor Civital 2KG",
+      description: "Refined sugar - 2 KG pack",
+      price: "290",
+      image: "/lovable-uploads/e74f37fd-6aa5-4408-9543-a9cce368970d.png",
+      category: "Sugar",
+      volume: "2 KG",
+      packaging: "Plastic pack",
+      storage: "Store in dry place",
+      usage: "Tea, baking, multi-use",
+      sellers: [
+        { id: 7, name: "AgroSweets", rating: "4.8", reviews: 77, price: "285", isDefault: true },
+        { id: 10, name: "Civital Centrale", rating: "4.6", reviews: 81, price: "290" },
+        { id: 11, name: "Ain FoodMarket", rating: "4.9", reviews: 63, price: "288" }
+      ]
+    },
+    // ... The rest of the original example products (Coca-Cola, etc) ...
     {
       id: 1,
       name: "Coca-cola",
