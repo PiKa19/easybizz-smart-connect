@@ -33,6 +33,8 @@ interface DashboardProps {
   onLogout: () => void;
 }
 
+const AnalyticsDashboard = React.lazy(() => import('./AnalyticsDashboard'));
+
 const SIDEBAR_WIDTH = 256; // 64 * 4 = 256px (w-64)
 const HEADER_HEIGHT = 73;  // px-6 py-4, h-16~h-20 (estimated/padded below)
 
