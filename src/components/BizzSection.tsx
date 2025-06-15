@@ -133,7 +133,107 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
         { id: 11, name: "Ain FoodMarket", rating: "4.9", reviews: 63, price: "288" }
       ]
     },
-    // ... The rest of the original example products (Coca-Cola, etc) ...
+    // La Vache qui rit 24p
+    {
+      id: 104,
+      name: "La Vache qui rit 24p",
+      description: "Creamy cheese, 24 portions",
+      price: "450",
+      image: "/lovable-uploads/e7b1650b-c98e-4190-989c-e6153f13970f.png",
+      category: "Dairy Products",
+      volume: "24 portions",
+      packaging: "Round box",
+      storage: "Refrigerate after opening",
+      usage: "Spread, snacks, sandwiches",
+      sellers: [
+        { id: 13, name: "Dairy Market Plus", rating: "4.7", reviews: 82, price: "445", isDefault: true },
+        { id: 14, name: "Fromagerie Express", rating: "4.8", reviews: 65, price: "450" },
+        { id: 15, name: "SuperMart Distributors", rating: "4.6", reviews: 107, price: "455" }
+      ]
+    },
+    // Cheezy 24p
+    {
+      id: 105,
+      name: "Cheezy 24p",
+      description: "Spreadable processed cheese, 24 portions",
+      price: "390",
+      image: "/lovable-uploads/62fa08c2-a7b0-4852-90cc-e4621b3c1760.png",
+      category: "Dairy Products",
+      volume: "24 portions",
+      packaging: "Round box",
+      storage: "Refrigerate after opening",
+      usage: "Spread, snacks, sandwiches",
+      sellers: [
+        { id: 16, name: "Epicerie Maroc", rating: "4.5", reviews: 54, price: "385", isDefault: true },
+        { id: 17, name: "Laiterie Maghreb", rating: "4.8", reviews: 103, price: "390" },
+        { id: 18, name: "SuperMart Distributors", rating: "4.7", reviews: 91, price: "395" }
+      ]
+    },
+    // Random additional products
+    {
+      id: 106,
+      name: "Nestlé Water 1.5L",
+      description: "Pack of 6 bottles, spring water",
+      price: "210",
+      image: "/lovable-uploads/bc27ac7e-7ac9-405e-bf04-b04f5339fe06.png",
+      category: "Beverages",
+      volume: "1.5L x 6",
+      packaging: "Plastic bottles",
+      storage: "Store in cool dry place",
+      usage: "Daily hydration",
+      sellers: [
+        { id: 19, name: "Marché Express", rating: "4.6", reviews: 49, price: "210", isDefault: true },
+        { id: 20, name: "FreshMart", rating: "4.7", reviews: 37, price: "215" }
+      ]
+    },
+    {
+      id: 107,
+      name: "Barilla Spaghetti 500g",
+      description: "Classic Italian pasta",
+      price: "190",
+      image: "/placeholder.svg",
+      category: "Canned Foods",
+      volume: "500g",
+      packaging: "Plastic package",
+      storage: "Cool, dry place",
+      usage: "Pasta dishes",
+      sellers: [
+        { id: 21, name: "Epicerie Italia", rating: "4.8", reviews: 44, price: "189", isDefault: true },
+        { id: 22, name: "Bled Distributeur", rating: "4.5", reviews: 28, price: "190" }
+      ]
+    },
+    {
+      id: 108,
+      name: "Sunshine Chips",
+      description: "Crispy salted potato chips, 210g",
+      price: "120",
+      image: "/lovable-uploads/b7b53d1c-2060-4de4-931d-52706bd84107.png",
+      category: "Snacks",
+      volume: "210g",
+      packaging: "Bag",
+      storage: "Store in dry place",
+      usage: "Snacking",
+      sellers: [
+        { id: 23, name: "SnackMania", rating: "4.4", reviews: 22, price: "119", isDefault: true },
+        { id: 24, name: "FreshMart", rating: "4.5", reviews: 19, price: "120" }
+      ]
+    },
+    {
+      id: 109,
+      name: "Oreo Pack 24p",
+      description: "Chocolate sandwich cookies, 24 pieces",
+      price: "250",
+      image: "/placeholder.svg",
+      category: "Snacks",
+      volume: "24 cookies",
+      packaging: "Box",
+      storage: "Store in cool dry place",
+      usage: "Snacks, tea time",
+      sellers: [
+        { id: 25, name: "SnackMania", rating: "4.5", reviews: 41, price: "248", isDefault: true },
+        { id: 26, name: "Epicerie Maroc", rating: "4.5", reviews: 34, price: "250" }
+      ]
+    },
     {
       id: 1,
       name: "Coca-cola",
