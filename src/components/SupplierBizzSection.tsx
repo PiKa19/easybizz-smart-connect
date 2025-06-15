@@ -148,38 +148,38 @@ const SupplierBizzSection = ({ onBack }: SupplierBizzSectionProps) => {
         <h1 className="text-3xl font-bold text-gray-800 mb-2">Sell products on easybizz</h1>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-4">
-        <Button
-          variant={activeTab === 'listings' ? "default" : "outline"}
-          onClick={() => setActiveTab('listings')}
-          className={activeTab === 'listings' ? "bg-[#0794FE] text-white" : ""}
-        >
-          listings
-        </Button>
-        <Button
-          variant={activeTab === 'add-listing' ? "default" : "outline"}
-          onClick={() => {
-            setActiveTab('add-listing');
-            setCurrentView('add-listing');
-          }}
-          className={activeTab === 'add-listing' ? "bg-[#0794FE] text-white" : ""}
-        >
-          Add listing
-        </Button>
+      {/* Tabs and Search Bar in a Single Row */}
+      <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4">
+        <div className="flex gap-2">
+          <Button
+            variant={activeTab === 'listings' ? "default" : "outline"}
+            onClick={() => setActiveTab('listings')}
+            className={activeTab === 'listings' ? "bg-[#0794FE] text-white" : ""}
+          >
+            listings
+          </Button>
+          <Button
+            variant={activeTab === 'add-listing' ? "default" : "outline"}
+            onClick={() => {
+              setActiveTab('add-listing');
+              setCurrentView('add-listing');
+            }}
+            className={activeTab === 'add-listing' ? "bg-[#0794FE] text-white" : ""}
+          >
+            Add listing
+          </Button>
+        </div>
+        <div className="flex-1 w-full md:w-auto">
+          <Input
+            placeholder="Search your listings..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-3 min-w-[200px] md:w-72"
+          />
+        </div>
       </div>
 
-      {/* Search Bar for Filtering Products */}
-      <div className="max-w-md my-2">
-        <Input
-          placeholder="Search your listings..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-3"
-        />
-      </div>
-
-      {/* Category filters: now more categories */}
+      {/* Category filters */}
       <div className="flex gap-2 flex-wrap">
         {categories.map((category) => (
           <Button key={category} variant="outline" size="sm">{category}</Button>
