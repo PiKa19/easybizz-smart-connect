@@ -101,12 +101,10 @@ const ProductDetail = ({
             <CardContent className="p-0">
               <div className="aspect-square bg-gradient-to-br from-orange-50 to-red-50 relative flex flex-col items-center justify-center">
                 <img 
-                  src="/lovable-uploads/2772f3d5-06fc-4c62-a337-1fc9f51010b1.png"
+                  src={product.image}
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
-                {/* Remove the main product price display here, since the user requested price instead in seller card */}
-                {/* (You may also keep the main price display if you want both, but per instruction we'll focus on the seller box) */}
                 <Button
                   variant="ghost"
                   size="icon"
