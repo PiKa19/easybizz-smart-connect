@@ -166,6 +166,7 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
     }));
   };
 
+  // Change callback type to expect Seller object
   const handleContactSeller = (seller: Seller) => {
     setMessageSeller(seller);
     setCurrentView('messages');
@@ -302,7 +303,7 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
         return <SupplierSection />;
       case 'messages':
         // Forward seller to SupplierSection so its message tab can be auto-opened for this seller
-        return <SupplierSection initialMessageSupplier={messageSeller} />;
+        return <SupplierSection initialMessageSeller={messageSeller} />;
       default:
         return renderProductsView();
     }

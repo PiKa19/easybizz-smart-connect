@@ -40,7 +40,7 @@ interface ProductDetailProps {
   onBack: () => void;
   onAddToCart: (product: Product, quantity: number, seller: Seller) => void;
   onBuyMoreFromSupplier?: (sellerId: number) => void;
-  onContactSeller?: (sellerId: number) => void;
+  onContactSeller?: (seller: Seller) => void; // Ensure this expects a Seller object
 }
 
 const ProductDetail = ({
@@ -77,7 +77,7 @@ const ProductDetail = ({
   // Modified: onContactSeller triggers the parent callback with the seller object
   const handleContactSeller = (seller: Seller) => {
     if (onContactSeller) {
-      onContactSeller(seller);
+      onContactSeller(seller); // <-- pass SELLER OBJECT (fix)
     } else if (onBuyMoreFromSupplier) {
       onBuyMoreFromSupplier(seller.id);
     }

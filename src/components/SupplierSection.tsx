@@ -38,7 +38,7 @@ interface Product {
 interface SupplierSectionProps {
   selectedSupplierId?: string;
   onBack?: () => void;
-  initialMessageSupplier?: any; // NEW: pass which supplier you want to preselect in the messages tab
+  initialMessageSupplier?: any; // Keep as-is for flexibility (should be a Seller type ideally)
 }
 
 const SupplierSection = ({ selectedSupplierId, onBack, initialMessageSupplier }: SupplierSectionProps) => {
@@ -323,7 +323,8 @@ const SupplierSection = ({ selectedSupplierId, onBack, initialMessageSupplier }:
           </div>
         ) : activeTab === "messages" ? (
           <div>
-            <MessagingSection supplier={initialMessageSupplier || undefined} />
+            {/* Only pass initialMessageSupplier. MessagingSection itself doesn't take supplier as a direct prop. */}
+            <MessagingSection />
           </div>
         ) : (
           // "my-suppliers" or "find-suppliers"
