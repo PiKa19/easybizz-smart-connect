@@ -303,7 +303,7 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
         return <SupplierSection />;
       case 'messages':
         // Forward seller to SupplierSection so its message tab can be auto-opened for this seller
-        return <SupplierSection initialMessageSeller={messageSeller} />;
+        return <SupplierSection initialMessageSupplier={messageSeller} />;
       default:
         return renderProductsView();
     }
