@@ -1,4 +1,3 @@
-
 import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -138,7 +137,6 @@ const OrdersSection = ({ onBack }: OrdersSectionProps) => {
             <select
               className="mx-2 border border-blue-100 rounded py-1 px-2 text-xs bg-white"
               value="5"
-              readOnly
             >
               <option value="5">5</option>
             </select>
@@ -153,4 +151,3 @@ const OrdersSection = ({ onBack }: OrdersSectionProps) => {
 };
 
 export default OrdersSection;
-
