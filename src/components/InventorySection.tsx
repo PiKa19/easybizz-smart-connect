@@ -129,7 +129,7 @@ const InventorySection = () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent 
-            className="bg-white z-50 p-4 border shadow-md min-w-[320px] grid grid-cols-1 gap-3"
+            className="bg-white z-50 p-4 border shadow-md min-w-[320px] grid grid-cols-1 gap-3 max-h-72 overflow-y-auto"
             align="start"
           >
             {columnDefs.map(col => (
