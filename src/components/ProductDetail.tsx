@@ -185,8 +185,6 @@ const ProductDetail = ({
             {/* Current Seller Display + Contact Seller Button */}
             {selectedSeller && (
               <div className="bg-blue-50 rounded-lg p-4 flex flex-col gap-3 relative">
-                {/* NO top-right price anymore */}
-
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm text-gray-600">You are buying from</span>
                 </div>
@@ -196,7 +194,7 @@ const ProductDetail = ({
                     <div>
                       <div className="font-medium text-gray-800 flex items-center gap-3">
                         {selectedSeller.name}
-                        <span className="text-3xl font-bold text-red-600 ml-2">
+                        <span className="text-3xl font-bold text-red-600 ml-6">
                           {selectedSeller.price}
                           <span className="text-lg text-gray-700 font-semibold ml-1">DZD</span>
                         </span>
