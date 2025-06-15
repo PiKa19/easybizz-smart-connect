@@ -130,6 +130,17 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
       case 'inventory':
         return <InventorySection />;
 
+      case 'analytics':
+        return (
+          <div className="animate-fade-in scale-95 animate-scale-in duration-500">
+            <React.Suspense fallback={<div>Loading KPIs...</div>}>
+              {/** This will animate in the analytics dashboard */}
+              {/* @ts-expect-error Server Component */}
+              {React.createElement(require("./AnalyticsDashboard").default)}
+            </React.Suspense>
+          </div>
+        );
+
       default:
         return (
           <div className="text-center py-12">
