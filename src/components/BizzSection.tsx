@@ -384,107 +384,116 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
     setCurrentView('messages');
   };
 
+  // Use a modern card-like container to match Clients/Orders sections:
   const renderProductsView = () => (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">{t('buy_products')}</h1>
-          <p className="text-gray-600">{t('dashboard_subtitle')}</p>
+      <div className="bg-white/90 border border-blue-100 rounded-2xl shadow-xl p-6 animate-fade-in">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h1 className="text-3xl font-bold text-[#0794FE] mb-1">{t('buy_products')}</h1>
+            <p className="text-muted-foreground">{t('dashboard_subtitle')}</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="bg-blue-50 text-[#0794FE] border border-blue-100 px-3 py-1.5 rounded-lg font-semibold text-sm shadow hover:shadow-md transition">
+              {filteredProducts.length} {t('products')} Available
+            </span>
+            {/* Red animated cart popover if items exist */}
+            {cartItems.length > 0 ? (
+              <Popover open={cartPopoverOpen} onOpenChange={setCartPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="relative flex items-center gap-2 bg-[#0794FE] hover:bg-[#065fad] text-white shadow-lg animate-bounce rounded-lg"
+                    onClick={() => setCartPopoverOpen(true)}
+                  >
+                    <ShoppingCart className="w-4 h-4" />
+                    {t('cart')}
+                    <span className="absolute -top-2 -right-2 text-xs font-semibold bg-white text-[#0794FE] rounded-full px-2 py-0.5 shadow border border-blue-200">{cartItems.length}</span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="p-4 max-w-xs text-center bg-blue-50 border-blue-100 rounded-2xl shadow-lg">
+                  <div className="font-semibold text-[#0794FE] mb-2 flex items-center justify-center gap-2">
+                    <ShoppingCart className="w-5 h-5" />
+                    {t('cart')} ({cartItems.length})
+                  </div>
+                  <div className="mb-2 text-sm text-blue-900">{t('you_have')} {cartItems.length} {t('products')} {t('in_cart')}</div>
+                  <Button
+                    className="w-full bg-[#0794FE] hover:bg-[#065fad] text-white mt-2 shadow"
+                    onClick={() => { setCurrentView('cart'); setCartPopoverOpen(false); }}
+                  >
+                    {t('go_to_cart')}
+                  </Button>
+                </PopoverContent>
+              </Popover>
+            ) : (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentView('cart')}
+                className="flex items-center gap-2 rounded-lg border-blue-200 text-[#0794FE] shadow hover:shadow-md"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                {t('cart')} ({cartItems.length})
+              </Button>
+            )}
+          </div>
         </div>
-        <div className="flex items-center gap-4">
-          <Badge className="bg-blue-100 text-[#0794FE]">
-            {filteredProducts.length} {t('products')} Available
-          </Badge>
-          {/* Red animated cart popover if items exist */}
-          {cartItems.length > 0 ? (
-            <Popover open={cartPopoverOpen} onOpenChange={setCartPopoverOpen}>
-              <PopoverTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  className="relative flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white animate-bounce"
-                  onClick={() => setCartPopoverOpen(true)}
+
+        <div className="flex flex-col md:flex-row gap-2 mb-2">
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-52 bg-blue-50 border-blue-100 rounded shadow-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-white shadow-xl border-blue-200 z-50">
+              {categories.map(category => (
+                <SelectItem
+                  key={category}
+                  value={category}
+                  className="text-[#0794FE] font-semibold data-[state=checked]:bg-[#0794FE]/10 data-[state=checked]:text-[#0794FE]"
                 >
-                  <ShoppingCart className="w-4 h-4" />
-                  {t('cart')}
-                  <span className="absolute -top-2 -right-2 text-xs font-semibold bg-white text-red-600 rounded-full px-2 py-0.5 shadow">{cartItems.length}</span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="p-4 max-w-xs text-center bg-red-50 border-red-300">
-                <div className="font-semibold text-red-600 mb-2 flex items-center justify-center gap-2">
-                  <ShoppingCart className="w-5 h-5" />
-                  {t('cart')} ({cartItems.length})
-                </div>
-                <div className="mb-2 text-sm text-gray-700">
-                  {t('you_have')} {cartItems.length} {t('products')} {t('in_cart')}
-                </div>
-                <Button
-                  className="w-full bg-red-600 hover:bg-red-700 text-white mt-2"
-                  onClick={() => { setCurrentView('cart'); setCartPopoverOpen(false); }}
-                >
-                  {t('go_to_cart')}
-                </Button>
-              </PopoverContent>
-            </Popover>
-          ) : (
-            <Button 
-              variant="outline" 
-              onClick={() => setCurrentView('cart')}
-              className="flex items-center gap-2"
+                  {category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-blue-300" />
+            <Input 
+              placeholder={t('search_product')}
+              className="pl-10 min-w-[120px] rounded bg-blue-50 border-blue-100 text-blue-900 focus:ring-2 focus:ring-blue-200"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* Category pills */}
+        <div className="flex gap-2 flex-wrap pb-4">
+          {categories.map(category => (
+            <Button
+              key={category}
+              variant={selectedCategory === category ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedCategory(category)}
+              className={selectedCategory === category ? "bg-[#0794FE] text-white shadow" : "border-blue-200 text-[#0794FE] bg-blue-50 hover:bg-blue-100"}
             >
-              <ShoppingCart className="w-4 h-4" />
-              {t('cart')} ({cartItems.length})
+              {category}
             </Button>
-          )}
+          ))}
         </div>
-      </div>
 
-      <div className="flex items-center gap-4">
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-          <SelectTrigger className="w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map(category => (
-              <SelectItem key={category} value={category}>
-                {category}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <Input 
-            placeholder={t('search_product')}
-            className="pl-10"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        {/* Product grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredProducts.map(product => (
+            <div key={product.id} className="bg-white border border-blue-50 rounded-xl shadow hover:shadow-lg transition-shadow p-0 animate-fade-in flex flex-col hover-scale cursor-pointer"
+              onClick={() => handleProductSelect(product)}
+              style={{ minHeight: '320px' }}>
+              <ProductCard 
+                product={product} 
+                onSelect={handleProductSelect}
+              />
+            </div>
+          ))}
         </div>
-      </div>
-
-      <div className="flex gap-2 flex-wrap">
-        {categories.map(category => (
-          <Button
-            key={category}
-            variant={selectedCategory === category ? "default" : "outline"}
-            size="sm"
-            onClick={() => setSelectedCategory(category)}
-            className={selectedCategory === category ? "bg-[#0794FE] text-white" : ""}
-          >
-            {category}
-          </Button>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredProducts.map(product => (
-          <ProductCard 
-            key={product.id} 
-            product={product} 
-            onSelect={handleProductSelect}
-          />
-        ))}
       </div>
     </div>
   );
