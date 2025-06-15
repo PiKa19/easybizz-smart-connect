@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -54,11 +53,9 @@ const paymentBadgeColors: Record<string, string> = {
 
 const statusOptions = ["Preparing", "Shipped", "Delivered", "Returned"];
 
-const SupplierClientsSection = () => {
+const SupplierOrdersSection = () => {
   const [search, setSearch] = useState("");
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
-
-  // Use state for delivery statuses per order
   const [orderStatuses, setOrderStatuses] = useState<Record<string, string>>(
     Object.fromEntries(mockOrders.map((o) => [o.id, o.deliveryStatus]))
   );
@@ -78,9 +75,9 @@ const SupplierClientsSection = () => {
 
   return (
     <div className="p-4 w-full">
-      <h1 className="text-2xl font-bold text-gray-800 mb-1">Clients orders</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-1">Orders</h1>
       <p className="text-gray-600 mb-6">
-        Manage your retailer orders, track status & view order details.
+        Manage and track your orders, update their status & view order details.
       </p>
 
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
@@ -259,5 +256,4 @@ const SupplierClientsSection = () => {
   );
 };
 
-export default SupplierClientsSection;
-
+export default SupplierOrdersSection;

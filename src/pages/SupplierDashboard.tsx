@@ -17,6 +17,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import SupplierBizzSection from '@/components/SupplierBizzSection';
 import SupplierMessagingSection from '@/components/SupplierMessagingSection';
 import SupplierClientsSection from '@/components/SupplierClientsSection';
+import SupplierOrdersSection from '@/components/SupplierClientsSection';
 
 const SupplierDashboard = () => {
   const { t } = useContext(LanguageContext);
@@ -113,6 +114,9 @@ const SupplierDashboard = () => {
 
       case 'clients':
         return <SupplierClientsSection />;
+
+      case 'orders':
+        return <SupplierOrdersSection />;
 
       default:
         return (
