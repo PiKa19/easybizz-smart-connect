@@ -185,20 +185,25 @@ const ProductDetail = ({
             {/* Current Seller Display + Contact Seller Button */}
             {selectedSeller && (
               <div className="bg-blue-50 rounded-lg p-4 flex flex-col gap-3 relative">
-                {/* Price in top right, big and red, as in the screenshot */}
-                <div className="absolute top-2 right-2">
-                  <span className="text-2xl font-bold text-red-600">{selectedSeller.price} <span className="text-lg text-gray-700 font-semibold">DZD</span></span>
-                </div>
+                {/* NO top-right price anymore */}
+
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm text-gray-600">You are buying from</span>
-                  {/* Removed price from this line */}
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
-                  <div>
-                    <div className="font-medium text-gray-800">{selectedSeller.name}</div>
-                    <div className="text-sm text-gray-600">
-                      ❤️ {selectedSeller.rating} 🛒 {selectedSeller.reviews}
+                <div className="flex items-center gap-3 justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+                    <div>
+                      <div className="font-medium text-gray-800 flex items-center gap-3">
+                        {selectedSeller.name}
+                        <span className="text-3xl font-bold text-red-600 ml-2">
+                          {selectedSeller.price}
+                          <span className="text-lg text-gray-700 font-semibold ml-1">DZD</span>
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        ❤️ {selectedSeller.rating} 🛒 {selectedSeller.reviews}
+                      </div>
                     </div>
                   </div>
                 </div>
