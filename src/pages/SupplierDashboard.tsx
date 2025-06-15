@@ -17,6 +17,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import SupplierBizzSection from '@/components/SupplierBizzSection';
 import SupplierMessagingSection from '@/components/SupplierMessagingSection';
 import SupplierClientsSection from '@/components/SupplierClientsSection';
+import SupplierOrdersSection from '@/components/SupplierOrdersSection';
 
 const SupplierDashboard = () => {
   const { t } = useContext(LanguageContext);
@@ -107,6 +108,9 @@ const SupplierDashboard = () => {
 
       case 'bizz':
         return <SupplierBizzSection onBack={() => setActiveSection('home')} />;
+
+      case 'orders':
+        return <SupplierOrdersSection />;
 
       case 'messages':
         return <SupplierMessagingSection />;
