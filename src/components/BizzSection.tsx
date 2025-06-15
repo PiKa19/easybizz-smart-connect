@@ -207,7 +207,7 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
       name: "Sunshine Chips",
       description: "Crispy salted potato chips, 210g",
       price: "120",
-      image: "/lovable-uploads/b7b53d1c-2060-4de4-931d-52706bd84107.png",
+      image: "/lovable-uploads/c09a307e-6df1-48ad-bf47-8beae7b89bcc.png", // Updated image here
       category: "Snacks",
       volume: "210g",
       packaging: "Bag",
