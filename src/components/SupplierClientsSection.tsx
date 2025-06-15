@@ -1,150 +1,259 @@
-
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Download, ChevronDown, ChevronUp } from "lucide-react";
+import OrderStatusSelect from "./OrderStatusSelect";
 
-type Client = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  totalOrders: number;
-  lastOrder: string; // date string
+const mockOrders = [
+  {
+    id: "ORD-10545",
+    client: { name: "Boutique Lina", contact: "07 10 23 55 90" },
+    products: [
+      { name: "Huile 5L elio", qty: 1 },
+      { name: "Biscottes Croquantes", qty: 2 },
+    ],
+    orderDate: "15/06/2025, 09:15",
+    deliveryDate: "17/06/2025",
+    deliveryStatus: "Preparing",
+    paymentMethod: "CIB",
+    totalPrice: "1850.00",
+    invoiceUrl: "#",
+    notes: "Deliver in the morning.",
+    address: "14 Rue des Oliviers, Alger",
+    returnStatus: "N/A",
+  },
+  {
+    id: "ORD-10546",
+    client: { name: "Superette Amine", contact: "06 90 17 13 17" },
+    products: [{ name: "Lait 1L Candia", qty: 10 }],
+    orderDate: "16/06/2025, 10:50",
+    deliveryDate: "18/06/2025",
+    deliveryStatus: "Shipped",
+    paymentMethod: "Dahabiya",
+    totalPrice: "900.00",
+    invoiceUrl: "#",
+    notes: "",
+    address: "6 Bd Che Guevara, Oran",
+    returnStatus: "Returned",
+  },
+];
+
+const deliveryStatusColors: Record<string, string> = {
+  Preparing: "bg-yellow-100 text-yellow-900 border border-yellow-300",
+  Shipped: "bg-blue-100 text-blue-900 border border-blue-300",
+  Delivered: "bg-green-100 text-green-900 border border-green-300",
+  Returned: "bg-red-100 text-red-900 border border-red-300",
 };
 
-const mockClients: Client[] = [
-  {
-    id: "CL-1",
-    name: "Boutique Lina",
-    email: "lina@example.com",
-    phone: "07 10 23 55 90",
-    totalOrders: 34,
-    lastOrder: "2025-06-14T12:10:00Z"
-  },
-  {
-    id: "CL-2",
-    name: "Superette Amine",
-    email: "amine@example.com",
-    phone: "06 90 17 13 17",
-    totalOrders: 52,
-    lastOrder: "2025-06-15T15:55:00Z"
-  },
-  {
-    id: "CL-3",
-    name: "Gros Plan",
-    email: "grossplan@example.com",
-    phone: "05 50 81 11 14",
-    totalOrders: 17,
-    lastOrder: "2025-06-13T09:40:00Z"
-  },
-];
+const paymentBadgeColors: Record<string, string> = {
+  CIB: "bg-green-50 text-green-600 border border-green-200",
+  Dahabiya: "bg-purple-50 text-purple-700 border border-purple-200",
+  "Cash on Delivery": "bg-gray-50 text-gray-700 border border-gray-200",
+};
 
-const FILTERS = [
-  { key: "latest", label: "Latest Orders" },
-  { key: "most_sales", label: "Most Sales" }
-];
+const statusOptions = ["Preparing", "Shipped", "Delivered", "Returned"];
 
-const SupplierClientsSection = () => {
+const SupplierOrdersSection = () => {
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState(FILTERS[0].key);
+  const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  const [orderStatuses, setOrderStatuses] = useState<Record<string, string>>(
+    Object.fromEntries(mockOrders.map((o) => [o.id, o.deliveryStatus]))
+  );
 
-  const handleAddClient = () => {
-    // You could show a dialog/modal in a real app
-    alert("Add new client (not yet implemented)");
+  const handleStatusChange = (orderId: string, newStatus: string) => {
+    setOrderStatuses((prev) => ({ ...prev, [orderId]: newStatus }));
   };
 
-  // Filtering logic
-  let filteredClients = mockClients.filter(
-    (c) =>
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.email.toLowerCase().includes(search.toLowerCase()) ||
-      c.phone.includes(search)
+  const filteredOrders = mockOrders.filter(
+    (order) =>
+      order.id.toLowerCase().includes(search.toLowerCase()) ||
+      order.client.name.toLowerCase().includes(search.toLowerCase()) ||
+      order.products.some((p) =>
+        p.name.toLowerCase().includes(search.toLowerCase())
+      )
   );
-  if (filter === "most_sales") {
-    filteredClients = [...filteredClients].sort((a, b) => b.totalOrders - a.totalOrders);
-  }
-  if (filter === "latest") {
-    filteredClients = [...filteredClients].sort((a, b) =>
-      new Date(b.lastOrder).getTime() - new Date(a.lastOrder).getTime()
-    );
-  }
 
   return (
-    <div className="px-8 py-8 w-full">
-      {/* Top section: Title, search, add and filter */}
-      <div className="flex flex-col sm:flex-row gap-3 sm:items-center mb-6 justify-between">
-        <h1 className="text-2xl font-bold mb-2">Clients</h1>
-        <div className="flex flex-1 gap-3 items-center">
-          <Input
-            placeholder="Search clients"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full sm:w-72"
-          />
-          <Button
-            variant="default"
-            className="flex items-center gap-2"
-            onClick={handleAddClient}
-          >
-            <Plus className="w-4 h-4" />
-            Add Client
-          </Button>
-        </div>
-        <div className="flex gap-2 mt-2 sm:mt-0">
-          {FILTERS.map((f) => (
-            <Button
-              key={f.key}
-              variant={filter === f.key ? "default" : "outline"}
-              onClick={() => setFilter(f.key)}
-              className="text-sm"
-            >
-              {f.label}
-            </Button>
-          ))}
-        </div>
+    <div className="p-4 w-full">
+      <h1 className="text-2xl font-bold text-gray-800 mb-1">Orders</h1>
+      <p className="text-gray-600 mb-6">
+        Manage and track your orders, update their status & view order details.
+      </p>
+
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+        <Button
+          variant="outline"
+          className="flex items-center gap-2 w-full sm:w-auto font-semibold shadow hover:shadow-md focus:ring-2 focus:ring-blue-200"
+        >
+          <span className="inline-block w-2 h-2 rounded-full bg-[#0794FE] mr-1"></span>
+          Filtrage
+        </Button>
+        <Input
+          placeholder="Recherche"
+          className="w-full sm:max-w-xs shadow"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
-      {/* Clients list */}
-      <div className="bg-white rounded-xl shadow-sm border p-6">
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-[15px]">
-            <thead>
+
+      <div className="rounded-xl overflow-hidden shadow-xl border border-blue-100/60 bg-gradient-to-b from-blue-50 to-white">
+        <table className="w-full min-w-[650px]">
+          <thead>
+            <tr className="bg-[#0794FE] text-white text-sm">
+              <th className="px-3 py-3 font-semibold whitespace-nowrap text-left">
+                Order Reference
+              </th>
+              <th className="px-3 py-3 font-semibold whitespace-nowrap text-left">
+                Client
+              </th>
+              <th className="px-3 py-3 font-semibold whitespace-nowrap text-left">
+                Order Date
+              </th>
+              <th className="px-3 py-3 font-semibold whitespace-nowrap text-left">
+                Delivery Date
+              </th>
+              <th className="px-3 py-3 font-semibold whitespace-nowrap text-left">
+                Status
+              </th>
+              <th className="px-3 py-3 font-semibold whitespace-nowrap text-left">
+                Price
+              </th>
+              <th className="px-3 py-3 whitespace-nowrap text-left"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredOrders.length === 0 ? (
               <tr>
-                <th className="px-4 py-3 text-left">Name</th>
-                <th className="px-4 py-3 text-left">Email</th>
-                <th className="px-4 py-3 text-left">Phone</th>
-                <th className="px-4 py-3 text-left">Total Orders</th>
-                <th className="px-4 py-3 text-left">Last Order</th>
-                <th className="px-4 py-3 text-left"></th>
+                <td colSpan={7} className="text-center py-10 text-gray-500">
+                  No orders found.
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {filteredClients.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-10 text-center text-gray-500">
-                    No clients found.
-                  </td>
-                </tr>
-              ) : (
-                filteredClients.map((c) => (
-                  <tr key={c.id} className="border-b hover:bg-blue-50">
-                    <td className="px-4 py-3 font-medium">{c.name}</td>
-                    <td className="px-4 py-3">{c.email}</td>
-                    <td className="px-4 py-3">{c.phone}</td>
-                    <td className="px-4 py-3">{c.totalOrders}</td>
-                    <td className="px-4 py-3">{new Date(c.lastOrder).toLocaleString()}</td>
-                    <td className="px-4 py-3 text-right">
-                      <Button size="sm" variant="outline">View</Button>
+            ) : (
+              filteredOrders.map((order) => (
+                <React.Fragment key={order.id}>
+                  <tr className="border-b text-gray-900 bg-white hover:bg-blue-50 transition-all text-[15px] group">
+                    <td className="px-3 py-3 font-semibold">{order.id}</td>
+                    <td className="px-3 py-3">
+                      <div className="font-semibold">{order.client.name}</div>
+                      <div className="text-xs text-gray-400">
+                        {order.client.contact}
+                      </div>
+                    </td>
+                    <td className="px-3 py-3">{order.orderDate}</td>
+                    <td className="px-3 py-3">{order.deliveryDate}</td>
+                    <td className="px-3 py-3">
+                      <OrderStatusSelect
+                        value={orderStatuses[order.id]}
+                        onChange={(val) => handleStatusChange(order.id, val)}
+                      />
+                    </td>
+                    <td className="px-3 py-3 font-medium text-base">
+                      {order.totalPrice} DZD
+                    </td>
+                    <td className="px-3 py-3 align-middle">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-1 px-3 py-1 rounded-md shadow transition hover:bg-blue-100 hover:text-blue-700 hover:border-blue-400 animate-fade-in"
+                        onClick={() =>
+                          setExpandedRow(expandedRow === order.id ? null : order.id)
+                        }
+                        aria-expanded={expandedRow === order.id}
+                        aria-controls={`row-details-${order.id}`}
+                      >
+                        {expandedRow === order.id ? (
+                          <>
+                            <ChevronUp className="w-4 h-4" /> Hide
+                          </>
+                        ) : (
+                          <>
+                            <ChevronDown className="w-4 h-4" /> Details
+                          </>
+                        )}
+                      </Button>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                  <tr>
+                    <td
+                      colSpan={7}
+                      className={
+                        expandedRow === order.id
+                          ? "bg-gradient-to-b from-white via-blue-50/70 to-white border-t-0 transition-all animate-fade-in"
+                          : "p-0"
+                      }
+                      style={{
+                        padding: 0,
+                        borderTop: 0,
+                        height: expandedRow === order.id ? "auto" : 0,
+                      }}
+                    >
+                      <div
+                        id={`row-details-${order.id}`}
+                        className={`overflow-hidden transition-all duration-300 ${
+                          expandedRow === order.id
+                            ? "max-h-[500px] py-4 px-6 opacity-100 scale-100"
+                            : "max-h-0 p-0 opacity-0 scale-95 pointer-events-none"
+                        }`}
+                      >
+                        {/* Details: Product, Payment, Address, Notes, Invoice, etc */}
+                        <div className="flex flex-col md:flex-row gap-6">
+                          <div className="flex-1 min-w-0">
+                            <div className="mb-2 mt-2 font-semibold text-gray-700 text-[15px]">
+                              Product(s):
+                              {order.products.map((prod, idx) => (
+                                <div className="ml-2 mt-1 text-[15px] font-normal" key={prod.name}>
+                                  {prod.name} <span className="text-xs text-gray-500">x{prod.qty}</span>
+                                </div>
+                              ))}
+                            </div>
+                            <div className="mb-2 flex items-center gap-2">
+                              <span className="font-semibold">Payment:</span>
+                              <span className={`px-2 py-1 rounded-full text-xs font-semibold shadow-sm ${paymentBadgeColors[order.paymentMethod] || "bg-gray-50 text-gray-500 border"}`}>
+                                {order.paymentMethod}
+                              </span>
+                            </div>
+                            <div className="mb-2">
+                              <span className="font-semibold">Address:</span> {order.address}
+                            </div>
+                            <div className="mb-2">
+                              <span className="font-semibold">Notes / Comments:</span>{" "}
+                              <span className="italic text-gray-700">{order.notes || "-"}</span>
+                            </div>
+                            <div className="mb-2">
+                              <span className="font-semibold">Return Status:</span> {order.returnStatus}
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-start md:items-end min-w-[180px]">
+                            <a
+                              href={order.invoiceUrl}
+                              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-100 text-sm font-medium shadow transition animate-fade-in"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Download className="w-4 h-4" />
+                              Download Invoice
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </React.Fragment>
+              ))
+            )}
+          </tbody>
+        </table>
+        <div className="flex items-center justify-end p-3 text-xs text-gray-500 bg-white border-t">
+          Rows per page:
+          <select className="mx-2 border border-gray-200 rounded px-1 py-0.5 shadow-sm focus:ring-2 focus:ring-blue-100">
+            <option>5</option>
+            <option>10</option>
+          </select>
+          1-{filteredOrders.length} of {filteredOrders.length}
         </div>
       </div>
     </div>
   );
 };
 
-export default SupplierClientsSection;
+export default SupplierOrdersSection;
