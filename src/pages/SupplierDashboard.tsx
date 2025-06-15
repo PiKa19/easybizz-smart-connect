@@ -16,6 +16,7 @@ import { LanguageContext } from '@/contexts/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import SupplierBizzSection from '@/components/SupplierBizzSection';
 import SupplierMessagingSection from '@/components/SupplierMessagingSection';
+import SupplierClientsSection from '@/components/SupplierClientsSection';
 
 const SupplierDashboard = () => {
   const { t } = useContext(LanguageContext);
@@ -111,12 +112,7 @@ const SupplierDashboard = () => {
         return <SupplierMessagingSection />;
 
       case 'clients':
-        return (
-          <div className="text-center py-12">
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">Clients</h3>
-            <p className="text-gray-500">Manage your retailer clients here. (Coming soon)</p>
-          </div>
-        );
+        return <SupplierClientsSection />;
 
       default:
         return (
