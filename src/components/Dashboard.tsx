@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, Suspense } from 'react';
 import {
   Home,
   ShoppingCart,
@@ -124,10 +124,9 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
       case 'analytics':
         return (
           <div className="animate-fade-in scale-95 animate-scale-in duration-500">
-            <React.Suspense fallback={<div>Loading KPIs...</div>}>
-              {/* This will animate in the analytics dashboard */}
-              {React.createElement(require("./AnalyticsDashboard").default)}
-            </React.Suspense>
+            <Suspense fallback={<div>Loading KPIs...</div>}>
+              <AnalyticsDashboard />
+            </Suspense>
           </div>
         );
       default:
