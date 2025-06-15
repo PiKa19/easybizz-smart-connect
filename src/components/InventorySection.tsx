@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -103,24 +102,11 @@ const InventorySection = () => {
           <h1 className="text-2xl font-bold text-gray-800">{t("inventory") || "Inventory"}</h1>
           <p className="text-gray-600">{t("manage_inventory") || "Start managing your supermarket"}</p>
         </div>
-        <div className="flex gap-2">
-          <Button
-            className="bg-[#0794FE] hover:bg-[#0670CC] text-white px-4"
-            onClick={() => handleStatusQuickFilter("Endommagé")}
-          >
-            produit endomagé
-          </Button>
-          <Button
-            className="bg-[#0794FE] hover:bg-[#0670CC] text-white px-4"
-            onClick={() => handleStatusQuickFilter("Disponible")}
-          >
-            produit disponible
-          </Button>
-        </div>
       </div>
 
-      {/* Filtrage Section as Dropdown */}
-      <div className="flex gap-4 items-center mb-4 flex-wrap">
+      {/* Filtrage + Quick Filters */}
+      <div className="flex gap-2 items-center mb-4 flex-wrap">
+        {/* Filtrage Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="flex items-center gap-2">
@@ -161,6 +147,19 @@ const InventorySection = () => {
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
+        {/* Quick Filter Buttons */}
+        <Button
+          className="bg-[#0794FE] hover:bg-[#0670CC] text-white px-4"
+          onClick={() => handleStatusQuickFilter("Endommagé")}
+        >
+          produit endomagé
+        </Button>
+        <Button
+          className="bg-[#0794FE] hover:bg-[#0670CC] text-white px-4"
+          onClick={() => handleStatusQuickFilter("Disponible")}
+        >
+          produit disponible
+        </Button>
       </div>
 
       {/* Table */}
