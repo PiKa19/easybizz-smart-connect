@@ -279,8 +279,8 @@ const ProductDetail = ({
                         <div className="text-sm text-blue-600">
                           ❤️ {seller.rating} 🛒 {seller.reviews}
                         </div>
-                        {/* Show more listing info here */}
-                        <div className="text-xs text-gray-500 mt-2">
+                        {/* Show more listing info here as a horizontal row */}
+                        <div className="flex flex-row flex-wrap gap-8 text-xs text-gray-500 mt-2">
                           {typeof seller.quantityAvailable !== "undefined" && (
                             <div>
                               <span className="font-medium">Qty:</span> {seller.quantityAvailable}
