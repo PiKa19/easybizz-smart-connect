@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   BarChart,
@@ -80,46 +79,55 @@ const formatDZD = (amount: number) =>
   amount.toLocaleString("en-US", { style: "currency", currency: "DZD", maximumFractionDigits: 0 }).replace("DZD", "DZD");
 
 const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
-  <div className={`bg-white rounded-2xl shadow border border-gray-100 p-6 transition hover:shadow-lg ${className || ""}`}>{children}</div>
+  <div className={`bg-white/80 backdrop-blur-md rounded-3xl shadow-lg border border-gray-100 p-6 transition-all hover:shadow-xl hover:scale-[1.025] ${className || ""}`}>
+    {children}
+  </div>
 );
 
 const StatCard = ({
   label, value, change, isMoney, unit
 }: {
   label: string,
-  value: number|string,
+  value: number | string,
   change?: number,
   isMoney?: boolean,
   unit?: string,
 }) => (
-  <Card className="flex flex-col gap-2 items-start min-w-[125px]">
-    <span className="text-sm text-gray-500">{label}</span>
-    <span className="text-3xl font-semibold text-gray-800">
-      {isMoney ? (typeof value === "number" ? `$${value}` : value) : value}
+  <Card className="flex flex-col gap-2 items-start min-w-[130px] border-0 ring-1 ring-primary/10">
+    <span className="text-xs font-medium text-primary/90">{label}</span>
+    <span className="text-3xl font-bold text-gray-900 drop-shadow-sm">
+      {isMoney ? (typeof value === "number" ? "$" + value : value) : value}
       {unit && <span className="ml-1 text-lg text-gray-500">{unit}</span>}
     </span>
     {typeof change === "number" && (
-      <span className={`flex items-center text-xs font-medium ${change > 0 ? "text-green-500" : "text-gray-400"}`}>
-        {change > 0 ? "↑" : "↓"} {Math.abs(change*100).toFixed(1)}%
-        <span className="ml-1 text-gray-400 font-normal">vs previous 7 days</span>
+      <span className={`flex items-center text-xs font-semibold ${change > 0 ? "text-green-500" : "text-gray-400"} transition-all`}>
+        <span className="inline-block animate-pulse">{change > 0 ? "▲" : "▼"}</span>
+        &nbsp;{Math.abs(change * 100).toFixed(1)}%
+        <span className="ml-1 text-gray-400 font-normal">vs prev 7d</span>
       </span>
     )}
   </Card>
 );
 
+const SectionTitle = ({ children }: { children: React.ReactNode }) => (
+  <h3 className="font-bold mb-2 text-gray-800/80 text-lg tracking-wide flex items-center gap-2">
+    <span className="inline-block w-1 h-4 bg-primary/50 rounded-full mr-2" />
+    {children}
+  </h3>
+);
+
 const AnalyticsDashboard = () => {
   return (
-    <div className="min-h-screen bg-gray-100 rounded-2xl p-6 animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-tl from-blue-50 via-white to-white rounded-3xl px-2 md:px-8 py-6 animate-fade-in">
+
       {/* Header */}
-      <div>
-        <div className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-          Performance Management Dashboard
-        </div>
+      <div className="mb-2">
+        <div className="text-3xl md:text-4xl font-black text-gray-900 mb-3 tracking-tight">Performance Management Dashboard</div>
         {/* Filter Row */}
-        <div className="my-3 flex flex-col sm:flex-row gap-3">
+        <div className="my-3 flex flex-col md:flex-row gap-3">
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Auto date range</label>
-            <select className="rounded border-gray-200 px-3 py-1.5 bg-white shadow">
+            <label className="block text-[11px] text-gray-500 mb-1 font-bold uppercase">Auto date range</label>
+            <select className="rounded-lg border-gray-200 px-3 py-1.5 bg-white shadow-sm font-semibold text-sm focus:ring-primary/40 transition">
               <option>This Week</option>
               <option>Last Week</option>
               <option>This Month</option>
@@ -127,14 +135,14 @@ const AnalyticsDashboard = () => {
             </select>
           </div>
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Services</label>
-            <select className="rounded border-gray-200 px-3 py-1.5 bg-white shadow">
+            <label className="block text-[11px] text-gray-500 mb-1 font-bold uppercase">Services</label>
+            <select className="rounded-lg border-gray-200 px-3 py-1.5 bg-white shadow-sm font-semibold text-sm focus:ring-primary/40 transition">
               <option>All</option>
             </select>
           </div>
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Posts</label>
-            <select className="rounded border-gray-200 px-3 py-1.5 bg-white shadow">
+            <label className="block text-[11px] text-gray-500 mb-1 font-bold uppercase">Posts</label>
+            <select className="rounded-lg border-gray-200 px-3 py-1.5 bg-white shadow-sm font-semibold text-sm focus:ring-primary/40 transition">
               <option>All</option>
             </select>
           </div>
@@ -142,33 +150,33 @@ const AnalyticsDashboard = () => {
       </div>
 
       {/* Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-6 gap-6 mt-2">
+      <div className="grid grid-cols-1 lg:grid-cols-6 gap-7 mt-4">
         {/* Main Analytics Charts (left section 4/6) */}
-        <div className="lg:col-span-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="lg:col-span-4 grid grid-cols-1 md:grid-cols-2 gap-7">
           {/* Net Profit Margin */}
           <Card>
-            <h3 className="font-semibold mb-2 text-gray-700">Net Profit Margin</h3>
+            <SectionTitle>Net Profit Margin</SectionTitle>
             <ResponsiveContainer width="100%" height={170}>
               <BarChart data={kpis.trends.netProfit} barGap={8}>
-                <CartesianGrid strokeDasharray="2 2" vertical={false} stroke="#ECECEC" />
-                <XAxis dataKey="x" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} tickLine={false} />
+                <CartesianGrid strokeDasharray="2 2" vertical={false} stroke="#EFEFEF" />
+                <XAxis dataKey="x" axisLine={false} tickLine={false} tick={{ fill: "#989CA9", fontSize: 12 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: "#989CA9", fontSize: 12 }} />
                 <Tooltip />
-                <Bar dataKey="value" fill="#66C27C" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="value" fill="#4AC47E" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </Card>
           {/* Debt-to-Equity Ratio (composite) */}
           <Card>
-            <h3 className="font-semibold mb-2 text-gray-700">Debt-to-Equity Ratio</h3>
+            <SectionTitle>Debt-to-Equity Ratio</SectionTitle>
             <ResponsiveContainer width="100%" height={170}>
               <BarChart data={kpis.trends.debtEquity}>
-                <CartesianGrid strokeDasharray="2 2" vertical={false} stroke="#ECECEC" />
-                <XAxis dataKey="x" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} tickLine={false} />
+                <CartesianGrid strokeDasharray="2 2" vertical={false} stroke="#EFEFEF" />
+                <XAxis dataKey="x" axisLine={false} tickLine={false} tick={{ fill: "#989CA9", fontSize: 12 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: "#989CA9", fontSize: 12 }} />
                 <Tooltip />
-                <Bar dataKey="gray" stackId="a" fill="#C6C6C6" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="green" stackId="a" fill="#66C27C" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="gray" stackId="a" fill="#DDDDE0" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="green" stackId="a" fill="#6EC2C1" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </Card>
@@ -176,22 +184,24 @@ const AnalyticsDashboard = () => {
           {/* EBITDA Area Chart (row 2, spans 2 cols) */}
           <div className="md:col-span-2">
             <Card>
-              <h3 className="font-semibold mb-2 text-gray-700">Earnings Before Interest, Taxes, Depreciation, and Amortization (EBITDA)</h3>
+              <SectionTitle>
+                Earnings Before Interest, Taxes, Depreciation &amp; Amortization (EBITDA)
+              </SectionTitle>
               <ResponsiveContainer width="100%" height={210}>
                 <AreaChart data={kpis.metrics.ebitda}>
-                  <CartesianGrid strokeDasharray="2 2" vertical={false} stroke="#ECECEC" />
-                  <XAxis dataKey="x" axisLine={false} tickLine={false} />
-                  <YAxis axisLine={false} tickLine={false} />
+                  <CartesianGrid strokeDasharray="2 2" vertical={false} stroke="#EFEFEF" />
+                  <XAxis dataKey="x" axisLine={false} tickLine={false} tick={{ fill: "#989CA9", fontSize: 12 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: "#989CA9", fontSize: 12 }} />
                   <Tooltip />
-                  <Area type="monotone" dataKey="layer1" stackId="1" stroke="#7998FF" fill="#C7D8FF" fillOpacity={0.6} />
-                  <Area type="monotone" dataKey="layer2" stackId="1" stroke="#867AE9" fill="#D6C9FA" fillOpacity={0.4} />
+                  <Area type="monotone" dataKey="layer1" stackId="1" stroke="#7DB5FF" fill="#C1DBFF" fillOpacity={0.6} />
+                  <Area type="monotone" dataKey="layer2" stackId="1" stroke="#A488FF" fill="#E8E2FF" fillOpacity={0.4} />
                 </AreaChart>
               </ResponsiveContainer>
             </Card>
           </div>
         </div>
         {/* KPIs right column (2/6) */}
-        <div className="lg:col-span-2 grid grid-cols-2 gap-6">
+        <div className="lg:col-span-2 grid grid-cols-2 gap-7">
           <StatCard
             label="Revenue"
             value={kpis.financial.revenue}
@@ -217,14 +227,14 @@ const AnalyticsDashboard = () => {
         {/* Row below: CSAT line chart */}
         <div className="lg:col-span-4">
           <Card>
-            <h3 className="font-semibold mb-2 text-gray-700">Customer Satisfaction Score (CSAT)</h3>
+            <SectionTitle>Customer Satisfaction Score (CSAT)</SectionTitle>
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={kpis.metrics.csat}>
-                <CartesianGrid strokeDasharray="2 2" vertical={false} stroke="#ECECEC" />
-                <XAxis dataKey="time" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} tickLine={false} />
+                <CartesianGrid strokeDasharray="2 2" vertical={false} stroke="#EFEFEF" />
+                <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fill: "#989CA9", fontSize: 12 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: "#989CA9", fontSize: 12 }} />
                 <Tooltip />
-                <Line type="monotone" dataKey="score" stroke="#4787FC" strokeWidth={2} dot={{ r: 2 }} />
+                <Line type="monotone" dataKey="score" stroke="#4787FC" strokeWidth={3} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           </Card>
