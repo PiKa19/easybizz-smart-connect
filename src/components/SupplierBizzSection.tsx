@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Plus, Edit, Trash2 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowLeft, Edit, Trash2 } from "lucide-react";
 import ProductListingForm from './ProductListingForm';
+import { Input } from "@/components/ui/input";
 
 interface Product {
   id: number;
@@ -22,6 +22,7 @@ const SupplierBizzSection = ({ onBack }: SupplierBizzSectionProps) => {
   const [currentView, setCurrentView] = useState<'listings' | 'add-listing' | 'edit-listing'>('listings');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [activeTab, setActiveTab] = useState<'listings' | 'add-listing'>('listings');
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Add more realistic/random categories
   const categories = [
@@ -108,6 +109,15 @@ const SupplierBizzSection = ({ onBack }: SupplierBizzSectionProps) => {
     setSelectedProduct(null);
   };
 
+  // Filter products by search term (case-insensitive match on name or description)
+  const filteredProducts = products.filter(product => {
+    const query = searchTerm.toLowerCase();
+    return (
+      product.name.toLowerCase().includes(query) ||
+      product.description.toLowerCase().includes(query)
+    );
+  });
+
   if (currentView === 'add-listing' || currentView === 'edit-listing') {
     return (
       <ProductListingForm
@@ -159,6 +169,16 @@ const SupplierBizzSection = ({ onBack }: SupplierBizzSectionProps) => {
         </Button>
       </div>
 
+      {/* Search Bar for Filtering Products */}
+      <div className="max-w-md my-2">
+        <Input
+          placeholder="Search your listings..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="pl-3"
+        />
+      </div>
+
       {/* Category filters: now more categories */}
       <div className="flex gap-2 flex-wrap">
         {categories.map((category) => (
@@ -168,7 +188,7 @@ const SupplierBizzSection = ({ onBack }: SupplierBizzSectionProps) => {
 
       {/* Products Grid (NO Buy now button) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-        {products.map(product => (
+        {filteredProducts.map(product => (
           <Card key={product.id} className="hover:shadow-lg transition-shadow">
             <CardContent className="p-4">
               <div className="relative">
