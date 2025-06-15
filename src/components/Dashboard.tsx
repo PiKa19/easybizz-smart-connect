@@ -1,4 +1,3 @@
-
 import React, { useState, useContext } from 'react';
 import {
   Home,
@@ -24,6 +23,7 @@ import ProductsSection from "./ProductsSection";
 import OrdersSection from "./OrdersSection";
 import BizzSection from "./BizzSection";
 import SubscriptionWall from './SubscriptionWall';
+import InventorySection from "./InventorySection";
 // Extracted components:
 import DashboardHeader from './dashboard/DashboardHeader';
 import DashboardSidebar from './dashboard/DashboardSidebar';
@@ -128,13 +128,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
         return <CashierSection onBack={() => setActiveSection('home')} />;
 
       case 'inventory':
-        return (
-          <div className="text-center py-12">
-            <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('section')}</h3>
-            <p className="text-gray-500">{t('section_under_development')}</p>
-          </div>
-        );
+        return <InventorySection />;
 
       default:
         return (
@@ -198,4 +192,3 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 };
 
 export default Dashboard;
-
