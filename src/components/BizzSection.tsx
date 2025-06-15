@@ -18,6 +18,9 @@ interface Seller {
   reviews: number;
   price: string;
   isDefault?: boolean;
+  quantityAvailable?: number;
+  deliveryAvailable?: boolean;
+  paymentMethods?: string[];
 }
 
 interface Product {
@@ -92,9 +95,37 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
       storage: "Store at room temperature",
       usage: "Cooking and frying",
       sellers: [
-        { id: 5, name: "Atlas Alimentaire", rating: "4.6", reviews: 54, price: "340", isDefault: true },
-        { id: 8, name: "Sarl NourFood", rating: "4.9", reviews: 112, price: "350" },
-        { id: 12, name: "Epicerie Maroc", rating: "4.7", reviews: 78, price: "345" }
+        {
+          id: 5,
+          name: "Atlas Alimentaire",
+          rating: "4.6",
+          reviews: 54,
+          price: "340",
+          isDefault: true,
+          quantityAvailable: 250,
+          deliveryAvailable: true,
+          paymentMethods: ["Cash", "Card"]
+        },
+        {
+          id: 8,
+          name: "Sarl NourFood",
+          rating: "4.9",
+          reviews: 112,
+          price: "350",
+          quantityAvailable: 110,
+          deliveryAvailable: true,
+          paymentMethods: ["Cash"]
+        },
+        {
+          id: 12,
+          name: "Epicerie Maroc",
+          rating: "4.7",
+          reviews: 78,
+          price: "345",
+          quantityAvailable: 45,
+          deliveryAvailable: false,
+          paymentMethods: ["Cash", "Card", "Cheque"]
+        }
       ]
     },
     // Elio Oil 5L
@@ -164,9 +195,34 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
       storage: "Refrigerate after opening",
       usage: "Spread, snacks, sandwiches",
       sellers: [
-        { id: 16, name: "Epicerie Maroc", rating: "4.5", reviews: 54, price: "385", isDefault: true },
-        { id: 17, name: "Laiterie Maghreb", rating: "4.8", reviews: 103, price: "390" },
-        { id: 18, name: "SuperMart Distributors", rating: "4.7", reviews: 91, price: "395" }
+        {
+          id: 16,
+          name: "Epicerie Maroc",
+          rating: "4.5",
+          reviews: 54,
+          price: "385",
+          isDefault: true,
+          quantityAvailable: 60,
+          deliveryAvailable: false,
+          paymentMethods: ["Cash"]
+        },
+        {
+          id: 17,
+          name: "Laiterie Maghreb",
+          rating: "4.8",
+          reviews: 103,
+          price: "390",
+          quantityAvailable: 120,
+          deliveryAvailable: true,
+          paymentMethods: ["Cash", "Card"]
+        },
+        {
+          id: 18,
+          name: "SuperMart Distributors",
+          rating: "4.7",
+          reviews: 91,
+          price: "395"
+        }
       ]
     },
     // Random additional products

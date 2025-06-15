@@ -18,6 +18,9 @@ interface Seller {
   reviews: number;
   price: string;
   isDefault?: boolean;
+  quantityAvailable?: number;
+  deliveryAvailable?: boolean;
+  paymentMethods?: string[];
 }
 
 interface Product {
@@ -200,6 +203,31 @@ const ProductDetail = ({
                       <div className="text-sm text-gray-600">
                         ❤️ {selectedSeller.rating} 🛒 {selectedSeller.reviews}
                       </div>
+                      {/* Additional info below seller details */}
+                      <div className="mt-2 space-y-1 text-sm">
+                        {typeof selectedSeller.quantityAvailable !== "undefined" && (
+                          <div>
+                            <span className="font-medium">Quantity available:</span>{" "}
+                            {selectedSeller.quantityAvailable}
+                          </div>
+                        )}
+                        {typeof selectedSeller.deliveryAvailable !== "undefined" && (
+                          <div>
+                            <span className="font-medium">Delivery:</span>{" "}
+                            {selectedSeller.deliveryAvailable ? (
+                              <span className="text-green-600">Available</span>
+                            ) : (
+                              <span className="text-red-600">Not available</span>
+                            )}
+                          </div>
+                        )}
+                        {selectedSeller.paymentMethods && selectedSeller.paymentMethods.length > 0 && (
+                          <div>
+                            <span className="font-medium">Payment Methods:</span>{" "}
+                            {selectedSeller.paymentMethods.join(", ")}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -248,6 +276,29 @@ const ProductDetail = ({
                         <div className="text-sm text-gray-600">excellent seller</div>
                         <div className="text-sm text-blue-600">
                           ❤️ {seller.rating} 🛒 {seller.reviews}
+                        </div>
+                        {/* Show more listing info here */}
+                        <div className="text-xs text-gray-500 mt-2">
+                          {typeof seller.quantityAvailable !== "undefined" && (
+                            <div>
+                              <span className="font-medium">Qty:</span> {seller.quantityAvailable}
+                            </div>
+                          )}
+                          {typeof seller.deliveryAvailable !== "undefined" && (
+                            <div>
+                              <span className="font-medium">Delivery:</span>{" "}
+                              {seller.deliveryAvailable ? (
+                                <span className="text-green-600">Yes</span>
+                              ) : (
+                                <span className="text-red-600">No</span>
+                              )}
+                            </div>
+                          )}
+                          {seller.paymentMethods && seller.paymentMethods.length > 0 && (
+                            <div>
+                              <span className="font-medium">Pay:</span> {seller.paymentMethods.join(", ")}
+                            </div>
+                          )}
                         </div>
                         <Button 
                           variant="link" 
