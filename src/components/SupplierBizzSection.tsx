@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -144,87 +145,109 @@ const SupplierBizzSection = ({ onBack }: SupplierBizzSectionProps) => {
         </Button>
       </div>
 
-      <div>
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Sell products on easybizz</h1>
-      </div>
-
-      {/* Tabs and Search Bar in a Single Row */}
-      <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4">
-        <div className="flex gap-2">
-          <Button
-            variant={activeTab === 'listings' ? "default" : "outline"}
-            onClick={() => setActiveTab('listings')}
-            className={activeTab === 'listings' ? "bg-[#0794FE] text-white" : ""}
-          >
-            listings
-          </Button>
-          <Button
-            variant={activeTab === 'add-listing' ? "default" : "outline"}
-            onClick={() => {
-              setActiveTab('add-listing');
-              setCurrentView('add-listing');
-            }}
-            className={activeTab === 'add-listing' ? "bg-[#0794FE] text-white" : ""}
-          >
-            Add listing
-          </Button>
+      <div className="bg-white/90 border border-blue-100 rounded-2xl shadow-xl p-6 animate-fade-in">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-4">
+          <div className="flex flex-col">
+            <h1 className="text-3xl font-bold text-[#0794FE] mb-1">Your Product Listings</h1>
+            <span className="text-muted-foreground text-base">Manage your products and connect with retailers easily.</span>
+          </div>
+          <div className="flex gap-2 mt-2 md:mt-0">
+            <Button
+              variant={activeTab === 'listings' ? "default" : "outline"}
+              className={activeTab === 'listings' ? "bg-[#0794FE] text-white border-blue-300" : "text-[#0794FE] border-blue-100"}
+              onClick={() => {
+                setActiveTab('listings');
+                setCurrentView('listings');
+              }}
+            >
+              Listings
+            </Button>
+            <Button
+              variant={activeTab === 'add-listing' ? "default" : "outline"}
+              className={activeTab === 'add-listing' ? "bg-[#0794FE] text-white border-blue-300" : "text-[#0794FE] border-blue-100"}
+              onClick={() => {
+                setActiveTab('add-listing');
+                setCurrentView('add-listing');
+              }}
+            >
+              Add Listing
+            </Button>
+          </div>
         </div>
-        <div className="flex-1 w-full md:w-auto">
-          <Input
-            placeholder="Search your listings..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-3 min-w-[200px] md:w-72"
-          />
+
+        {/* Search and Filters */}
+        <div className="flex flex-col md:flex-row gap-3 mb-4">
+          <div className="flex-1">
+            <Input
+              placeholder="Search your listings..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-3 min-w-[160px] max-w-lg border-blue-100 bg-blue-50 focus:ring-2 focus:ring-blue-200 rounded-lg shadow-sm"
+            />
+          </div>
         </div>
-      </div>
 
-      {/* Category filters */}
-      <div className="flex gap-2 flex-wrap">
-        {categories.map((category) => (
-          <Button key={category} variant="outline" size="sm">{category}</Button>
-        ))}
-      </div>
+        {/* Category pills */}
+        <div className="flex gap-2 flex-wrap mb-6">
+          {categories.map((category) => (
+            <Button key={category}
+              variant="outline"
+              size="sm"
+              className="rounded-full px-4 py-1.5 border-blue-100 text-[#0794FE] bg-blue-50 hover:bg-blue-100"
+            >
+              {category}
+            </Button>
+          ))}
+        </div>
 
-      {/* Products Grid (NO Buy now button) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-        {filteredProducts.map(product => (
-          <Card key={product.id} className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-4">
-              <div className="relative">
-                <img 
-                  src={product.image} 
-                  alt={product.name}
-                  className="w-full h-32 object-cover rounded mb-3"
-                />
-                <div className="absolute top-2 right-2 flex gap-1">
-                  <Button 
-                    size="sm" 
-                    variant="secondary"
-                    onClick={() => handleEditProduct(product)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Edit className="w-3 h-3" />
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    variant="destructive"
-                    onClick={() => handleDeleteProduct(product.id)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
+        {/* Products Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredProducts.length === 0 && (
+            <div className="col-span-full text-center text-blue-700 py-8 font-medium border-2 border-blue-100/80 bg-blue-50/50 rounded-2xl shadow-inner">
+              No listings found.
+            </div>
+          )}
+          {filteredProducts.map(product => (
+            <Card key={product.id} className="hover:shadow-lg transition-shadow border-blue-100 bg-white rounded-xl animate-fade-in flex flex-col relative group">
+              <CardContent className="p-4 flex-1 flex flex-col">
+                <div className="relative mb-3 w-full flex justify-center items-center">
+                  <img 
+                    src={product.image} 
+                    alt={product.name}
+                    className="w-full h-32 object-cover rounded-lg border border-blue-50 shadow-sm group-hover:scale-105 group-hover:shadow-md transition-transform duration-200"
+                  />
+                  <div className="absolute top-2 right-2 flex gap-1 z-10 opacity-80 group-hover:opacity-100 transition-opacity">
+                    <Button 
+                      size="sm" 
+                      variant="secondary"
+                      onClick={() => handleEditProduct(product)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Edit className="w-3 h-3" />
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="destructive"
+                      onClick={() => handleDeleteProduct(product.id)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-              <h4 className="font-semibold">{product.name}</h4>
-              <p className="text-sm text-gray-600">{product.description}</p>
-              {/* Removed Buy now button */}
-            </CardContent>
-          </Card>
-        ))}
+                <h4 className="font-semibold text-lg text-blue-800 mb-0.5">{product.name}</h4>
+                <p className="text-sm text-blue-600 mb-2">{product.description}</p>
+                <span className="inline-block font-bold text-[#0794FE] bg-blue-50 rounded px-2 py-1 text-base shadow-sm mt-auto mb-0">
+                  {product.price} DA
+                </span>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
 export default SupplierBizzSection;
+
