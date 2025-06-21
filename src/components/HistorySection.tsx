@@ -253,7 +253,9 @@ const HistorySection = () => {
     setExpandedItems(newExpanded);
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string | undefined) => {
+    if (!status) return 'bg-gray-100 text-gray-800';
+    
     switch (status.toLowerCase()) {
       case 'completed':
       case 'delivered':
@@ -272,7 +274,9 @@ const HistorySection = () => {
     }
   };
 
-  const getActionColor = (action: string) => {
+  const getActionColor = (action: string | undefined) => {
+    if (!action) return 'bg-gray-100 text-gray-800';
+    
     switch (action.toLowerCase()) {
       case 'added':
         return 'bg-green-100 text-green-800';
