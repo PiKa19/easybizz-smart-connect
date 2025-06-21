@@ -34,7 +34,7 @@ const SettingsSection = () => {
     // Account Settings
     fullName: "Baraka Store Owner",
     email: "baraka@example.com",
-    phone: "+1234567890",
+    phone: "+213555123456",
     language: "en",
     theme: "light",
     
@@ -50,6 +50,7 @@ const SettingsSection = () => {
     
     // Current Plan
     currentPlan: "Premium",
+    subscriptionDaysLeft: 18,
     usage: {
       products: 150,
       transactions: 1250,
@@ -65,24 +66,30 @@ const SettingsSection = () => {
     {
       id: 1,
       name: "Chrome on Windows",
-      location: "Casablanca, Morocco",
+      location: "Alger, Algeria",
       lastActive: "Currently active",
       current: true
     },
     {
       id: 2,
       name: "Safari on iPhone",
-      location: "Rabat, Morocco",
+      location: "Oran, Algeria",
       lastActive: "2 hours ago",
       current: false
     },
     {
       id: 3,
       name: "Firefox on Ubuntu",
-      location: "Marrakech, Morocco",
+      location: "Constantine, Algeria",
       lastActive: "1 day ago",
       current: false
     }
+  ];
+
+  const paymentHistory = [
+    { date: "2024-01-15", amount: "2,500", status: "Paid", method: "Carte Dahabiya" },
+    { date: "2023-12-15", amount: "2,500", status: "Paid", method: "Carte Dahabiya" },
+    { date: "2023-11-15", amount: "2,500", status: "Paid", method: "Carte Dahabiya" }
   ];
 
   return (
@@ -417,7 +424,8 @@ const SettingsSection = () => {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-xl font-bold">{settings.currentPlan} Plan</h3>
-                    <p className="text-gray-500">$29.99/month</p>
+                    <p className="text-gray-500">2,500 DZD/month</p>
+                    <p className="text-sm text-orange-600">{settings.subscriptionDaysLeft} days left</p>
                   </div>
                   <Badge variant="secondary" className="bg-green-100 text-green-800">
                     Active
@@ -453,18 +461,14 @@ const SettingsSection = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {[
-                    { date: "2024-01-15", amount: "$29.99", status: "Paid", method: "Credit Card" },
-                    { date: "2023-12-15", amount: "$29.99", status: "Paid", method: "Credit Card" },
-                    { date: "2023-11-15", amount: "$29.99", status: "Paid", method: "PayPal" }
-                  ].map((payment, index) => (
+                  {paymentHistory.map((payment, index) => (
                     <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                       <div>
                         <p className="font-medium">{payment.date}</p>
                         <p className="text-sm text-gray-500">{payment.method}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium">{payment.amount}</p>
+                        <p className="font-medium">{payment.amount} DZD</p>
                         <Badge variant="secondary" className="bg-green-100 text-green-800">
                           {payment.status}
                         </Badge>
@@ -521,7 +525,7 @@ const SettingsSection = () => {
                   <p><strong>Build:</strong> 20240115</p>
                   <p><strong>Last Updated:</strong> January 15, 2024</p>
                   <p className="text-sm text-gray-500 mt-4">
-                    EasyBizz is your comprehensive business management solution for retailers and suppliers.
+                    EasyBizz is your comprehensive business management solution for retailers and suppliers in Algeria.
                   </p>
                 </div>
               </CardContent>

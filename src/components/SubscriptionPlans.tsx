@@ -18,25 +18,25 @@ const SubscriptionPlans = ({ onPlanSelect, onBack }: SubscriptionPlansProps) => 
     {
       id: "1month",
       duration: "1 Month",
-      price: 1000,
+      price: 2500,
       description: "Perfect for getting started",
       features: ["Full access to all features", "Customer support", "Analytics dashboard"]
     },
     {
       id: "6months",
       duration: "6 Months",
-      price: 5000,
-      originalPrice: 6000,
+      price: 13500,
+      originalPrice: 15000,
       description: "Most popular choice",
-      features: ["Full access to all features", "Priority customer support", "Advanced analytics", "Save 17%"]
+      features: ["Full access to all features", "Priority customer support", "Advanced analytics", "Save 10%"]
     },
     {
       id: "1year",
       duration: "1 Year",
-      price: 9000,
-      originalPrice: 12000,
+      price: 27000,
+      originalPrice: 30000,
       description: "Best value for committed businesses",
-      features: ["Full access to all features", "Priority customer support", "Advanced analytics", "Save 25%", "Free training sessions"]
+      features: ["Full access to all features", "Priority customer support", "Advanced analytics", "Save 10%", "Free training sessions"]
     }
   ];
 
@@ -70,9 +70,9 @@ const SubscriptionPlans = ({ onPlanSelect, onBack }: SubscriptionPlansProps) => 
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg">{plan.duration}</CardTitle>
                     <div className="text-right">
-                      <div className="text-2xl font-bold text-[#E1275C]">{plan.price} DA</div>
+                      <div className="text-2xl font-bold text-[#E1275C]">{plan.price} DZD</div>
                       {plan.originalPrice && (
-                        <div className="text-sm text-gray-500 line-through">{plan.originalPrice} DA</div>
+                        <div className="text-sm text-gray-500 line-through">{plan.originalPrice} DZD</div>
                       )}
                     </div>
                   </div>
