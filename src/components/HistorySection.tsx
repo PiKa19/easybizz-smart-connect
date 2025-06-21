@@ -22,6 +22,7 @@ import {
   Activity
 } from "lucide-react";
 import { format } from "date-fns";
+import type { DateRange } from "react-day-picker";
 
 // Mock data interfaces
 interface Transaction {
@@ -85,7 +86,7 @@ const HistorySection = () => {
   const { t } = useContext(LanguageContext);
   const [activeTab, setActiveTab] = useState('transactions');
   const [searchTerm, setSearchTerm] = useState('');
-  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [selectedFilters, setSelectedFilters] = useState({
     status: 'all',
     paymentMethod: 'all',
@@ -303,11 +304,11 @@ const HistorySection = () => {
     };
 
     const filterByDate = (items: any[], dateField: string) => {
-      if (!dateRange.from && !dateRange.to) return items;
+      if (!dateRange?.from && !dateRange?.to) return items;
       return items.filter(item => {
         const itemDate = new Date(item[dateField]);
-        if (dateRange.from && itemDate < dateRange.from) return false;
-        if (dateRange.to && itemDate > dateRange.to) return false;
+        if (dateRange?.from && itemDate < dateRange.from) return false;
+        if (dateRange?.to && itemDate > dateRange.to) return false;
         return true;
       });
     };
@@ -396,7 +397,7 @@ const HistorySection = () => {
               <PopoverTrigger asChild>
                 <Button variant="outline" className="flex items-center gap-2">
                   <CalendarIcon className="w-4 h-4" />
-                  {dateRange.from ? (
+                  {dateRange?.from ? (
                     dateRange.to ? (
                       `${format(dateRange.from, "MMM dd")} - ${format(dateRange.to, "MMM dd")}`
                     ) : (
@@ -411,7 +412,7 @@ const HistorySection = () => {
                 <Calendar
                   initialFocus
                   mode="range"
-                  defaultMonth={dateRange.from}
+                  defaultMonth={dateRange?.from}
                   selected={dateRange}
                   onSelect={setDateRange}
                   numberOfMonths={2}
