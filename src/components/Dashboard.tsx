@@ -1,3 +1,4 @@
+
 import React, { useState, useContext, Suspense } from 'react';
 import {
   Home,
@@ -25,6 +26,8 @@ import BizzSection from "./BizzSection";
 import SubscriptionWall from './SubscriptionWall';
 import InventorySection from "./InventorySection";
 import HistorySection from "./HistorySection";
+import NotificationSection from "./NotificationSection";
+import SettingsSection from "./SettingsSection";
 // Extracted components:
 import DashboardHeader from './dashboard/DashboardHeader';
 import DashboardSidebar from './dashboard/DashboardSidebar';
@@ -71,9 +74,9 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     orders: t('manage_orders') || 'View and manage your orders',
     suppliers: t('manage_suppliers') || 'View your suppliers and contacts',
     historique: 'Track all your business activities and transactions',
-    notification: t('section_under_development'),
+    notification: 'Stay updated with all your business activities',
     cashier: t('section_under_development'),
-    settings: t('section_under_development'),
+    settings: 'Manage your account and application preferences',
   };
 
   const handlePlanSelect = (plan: { duration: string; price: number; planType: string }) => {
@@ -126,6 +129,10 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
         return <InventorySection />;
       case 'historique':
         return <HistorySection />;
+      case 'notification':
+        return <NotificationSection />;
+      case 'settings':
+        return <SettingsSection />;
       case 'analytics':
         return (
           <div className="animate-fade-in scale-95 animate-scale-in duration-500">
