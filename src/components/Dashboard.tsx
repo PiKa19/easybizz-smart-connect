@@ -24,6 +24,7 @@ import OrdersSection from "./OrdersSection";
 import BizzSection from "./BizzSection";
 import SubscriptionWall from './SubscriptionWall';
 import InventorySection from "./InventorySection";
+import HistorySection from "./HistorySection";
 // Extracted components:
 import DashboardHeader from './dashboard/DashboardHeader';
 import DashboardSidebar from './dashboard/DashboardSidebar';
@@ -69,7 +70,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     products: t('manage_products') || 'Manage your listed products',
     orders: t('manage_orders') || 'View and manage your orders',
     suppliers: t('manage_suppliers') || 'View your suppliers and contacts',
-    historique: t('section_under_development'),
+    historique: 'Track all your business activities and transactions',
     notification: t('section_under_development'),
     cashier: t('section_under_development'),
     settings: t('section_under_development'),
@@ -123,6 +124,8 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
         return <CashierSection onBack={() => setActiveSection('home')} />;
       case 'inventory':
         return <InventorySection />;
+      case 'historique':
+        return <HistorySection />;
       case 'analytics':
         return (
           <div className="animate-fade-in scale-95 animate-scale-in duration-500">
