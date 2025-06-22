@@ -1,3 +1,4 @@
+
 import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,7 +38,11 @@ type Section =
   | 'settings'
   | 'bizz';
 
-const Dashboard = () => {
+interface DashboardProps {
+  onLogout: () => void;
+}
+
+const Dashboard = ({ onLogout }: DashboardProps) => {
   const { t } = useContext(LanguageContext);
   const [currentSection, setCurrentSection] = useState<Section>('home');
 
