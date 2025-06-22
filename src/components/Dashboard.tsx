@@ -53,6 +53,12 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     setCurrentSection('home');
   };
 
+  // Sample clients data
+  const sampleClients = [
+    { name: "John Doe", email: "john@example.com", totalOrders: 15, lastOrder: "2024-01-20" },
+    { name: "Jane Smith", email: "jane@example.com", totalOrders: 8, lastOrder: "2024-01-18" }
+  ];
+
   const renderCurrentSection = () => {
     switch (currentSection) {
       case 'orders':
@@ -66,7 +72,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
       case 'cashier':
         return <CashierSection onBack={handleBackToHome} />;
       case 'clients':
-        return <ClientTable onBack={handleBackToHome} />;
+        return <ClientTable clients={sampleClients} onBack={handleBackToHome} />;
       case 'boutique':
         return <BoutiqueSection onBack={handleBackToHome} />;
       case 'history':
