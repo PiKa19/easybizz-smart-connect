@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -98,12 +97,12 @@ const ProductFilterDialog = ({ filters, onFiltersChange, onClose }: ProductFilte
         
         <div>
           <label className="block text-sm font-medium mb-2">Rotation Status</label>
-          <Select value={localFilters.rotationStatus} onValueChange={(value) => setLocalFilters({ ...localFilters, rotationStatus: value })}>
+          <Select value={localFilters.rotationStatus} onValueChange={(value) => setLocalFilters({ ...localFilters, rotationStatus: value === 'all' ? '' : value })}>
             <SelectTrigger>
               <SelectValue placeholder="Select rotation status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All</SelectItem>
+              <SelectItem value="all">All</SelectItem>
               <SelectItem value="Rapid">Rapid</SelectItem>
               <SelectItem value="Normal">Normal</SelectItem>
               <SelectItem value="Slow">Slow</SelectItem>
