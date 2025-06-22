@@ -1,9 +1,13 @@
+
 import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, Search, Download } from "lucide-react";
+import { ChevronLeft, Search, Download, Filter } from "lucide-react";
 import { LanguageContext } from '@/contexts/LanguageContext';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import OrderDetailsModal from "@/components/OrderDetailsModal";
+import OrderFilterDialog from "@/components/OrderFilterDialog";
 
 interface Order {
   id: string;
@@ -17,9 +21,29 @@ interface OrdersSectionProps {
   onBack: () => void;
 }
 
+interface FilterState {
+  dateFrom: string;
+  dateTo: string;
+  amountMin: string;
+  amountMax: string;
+  status: string;
+  supplier: string;
+}
+
 const OrdersSection = ({ onBack }: OrdersSectionProps) => {
   const { t } = useContext(LanguageContext);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [showOrderDetails, setShowOrderDetails] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<FilterState>({
+    dateFrom: '',
+    dateTo: '',
+    amountMin: '',
+    amountMax: '',
+    status: '',
+    supplier: ''
+  });
   
   const [orders] = useState<Order[]>([
     {
@@ -31,10 +55,22 @@ const OrdersSection = ({ onBack }: OrdersSectionProps) => {
     }
   ]);
 
-  const filteredOrders = orders.filter(order =>
-    order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order.supplier.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const applyFilters = (orders: Order[]) => {
+    return orders.filter(order => {
+      const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           order.supplier.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesStatus = !filters.status || order.status === filters.status;
+      const matchesSupplier = !filters.supplier || order.supplier.toLowerCase().includes(filters.supplier.toLowerCase());
+      
+      const matchesAmountMin = !filters.amountMin || order.amount >= parseFloat(filters.amountMin);
+      const matchesAmountMax = !filters.amountMax || order.amount <= parseFloat(filters.amountMax);
+      
+      return matchesSearch && matchesStatus && matchesSupplier && matchesAmountMin && matchesAmountMax;
+    });
+  };
+
+  const filteredOrders = applyFilters(orders);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -47,6 +83,11 @@ const OrdersSection = ({ onBack }: OrdersSectionProps) => {
       default:
         return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const handleLearnMore = (order: Order) => {
+    setSelectedOrder(order);
+    setShowOrderDetails(true);
   };
 
   return (
@@ -76,6 +117,22 @@ const OrdersSection = ({ onBack }: OrdersSectionProps) => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
+        
+        <Dialog open={showFilters} onOpenChange={setShowFilters}>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="flex items-center gap-2">
+              <Filter className="w-4 h-4" />
+              Filter
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <OrderFilterDialog 
+              filters={filters}
+              onFiltersChange={setFilters}
+              onClose={() => setShowFilters(false)}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="bg-white rounded-2xl shadow-xl border border-blue-100 overflow-hidden animate-fade-in">
@@ -113,7 +170,11 @@ const OrdersSection = ({ onBack }: OrdersSectionProps) => {
                         <Download className="w-3 h-3 mr-1" />
                         {t('download_bill')}
                       </Button>
-                      <Button size="sm" className="bg-[#0794FE] hover:bg-[#0670CC] text-white">
+                      <Button 
+                        size="sm" 
+                        className="bg-[#0794FE] hover:bg-[#0670CC] text-white"
+                        onClick={() => handleLearnMore(order)}
+                      >
                         {t('learn_more')}
                       </Button>
                     </div>
@@ -146,6 +207,18 @@ const OrdersSection = ({ onBack }: OrdersSectionProps) => {
           </span>
         </div>
       </div>
+
+      {/* Order Details Modal */}
+      <Dialog open={showOrderDetails} onOpenChange={setShowOrderDetails}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          {selectedOrder && (
+            <OrderDetailsModal 
+              order={selectedOrder}
+              onClose={() => setShowOrderDetails(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
