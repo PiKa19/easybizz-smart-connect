@@ -7,7 +7,9 @@ import {
   LogOut,
   Search,
   MessageSquare,
-  Users
+  Users,
+  BarChart3,
+  Package
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,6 +20,9 @@ import SupplierBizzSection from '@/components/SupplierBizzSection';
 import SupplierMessagingSection from '@/components/SupplierMessagingSection';
 import SupplierClientsSection from '@/components/SupplierClientsSection';
 import SupplierOrdersSection from '@/components/SupplierOrdersSection';
+import SupplierAnalyticsSection from '@/components/SupplierAnalyticsSection';
+import SupplierInventorySection from '@/components/SupplierInventorySection';
+import SupplierSettingsSection from '@/components/SupplierSettingsSection';
 
 const SupplierDashboard = () => {
   const { t } = useContext(LanguageContext);
@@ -25,9 +30,11 @@ const SupplierDashboard = () => {
 
   const menuItems = [
     { id: 'home', label: 'Home', icon: Home },
-    { id: 'bizz', label: 'Bizz', icon: ShoppingCart },
+    { id: 'bizz', label: 'Products', icon: ShoppingCart },
     { id: 'orders', label: 'Orders', icon: ShoppingCart },
     { id: 'clients', label: 'Clients', icon: Users },
+    { id: 'inventory', label: 'Inventory', icon: Package },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
     { id: 'messages', label: 'Messages', icon: MessageSquare },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
@@ -42,11 +49,11 @@ const SupplierDashboard = () => {
         return (
           <div className="space-y-6">
             <div className="text-left">
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">bonjour, supérette elbaraka</h1>
-              <p className="text-gray-600">Start managing your supermarket</p>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome, FRS Semmar</h1>
+              <p className="text-gray-600">Manage your supplier business efficiently</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('bizz')}>
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4">
@@ -54,8 +61,8 @@ const SupplierDashboard = () => {
                       <ShoppingCart className="w-6 h-6 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-800">Sell products</h3>
-                      <p className="text-sm text-gray-600">sell your products directly to intrested retailers</p>
+                      <h3 className="font-semibold text-gray-800">Manage Products</h3>
+                      <p className="text-sm text-gray-600">Add, edit and manage your product catalog</p>
                     </div>
                   </div>
                 </CardContent>
@@ -64,42 +71,98 @@ const SupplierDashboard = () => {
               <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('orders')}>
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <ShoppingCart className="w-6 h-6 text-blue-600" />
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                      <ShoppingCart className="w-6 h-6 text-green-600" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-800">Orders</h3>
-                      <p className="text-sm text-gray-600">track orders you recieved</p>
+                      <p className="text-sm text-gray-600">Track and manage incoming orders</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('bizz')}>
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('clients')}>
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <ShoppingCart className="w-6 h-6 text-blue-600" />
+                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <Users className="w-6 h-6 text-purple-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-800">Sell products</h3>
-                      <p className="text-sm text-gray-600">sell your products directly to intrested retailers</p>
+                      <h3 className="font-semibold text-gray-800">Clients</h3>
+                      <p className="text-sm text-gray-600">Manage your client relationships</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('settings')}>
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('inventory')}>
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <ShoppingCart className="w-6 h-6 text-blue-600" />
+                    <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                      <Package className="w-6 h-6 text-orange-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-800">Settings</h3>
-                      <p className="text-sm text-gray-600">track orders you recieved</p>
+                      <h3 className="font-semibold text-gray-800">Inventory</h3>
+                      <p className="text-sm text-gray-600">Track stock levels and manage inventory</p>
                     </div>
                   </div>
+                </CardContent>
+              </Card>
+
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('analytics')}>
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                      <BarChart3 className="w-6 h-6 text-indigo-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-800">Analytics</h3>
+                      <p className="text-sm text-gray-600">View business insights and reports</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('messages')}>
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center">
+                      <MessageSquare className="w-6 h-6 text-pink-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-800">Messages</h3>
+                      <p className="text-sm text-gray-600">Communicate with your clients</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <div className="text-2xl font-bold text-blue-600">156</div>
+                  <div className="text-sm text-gray-600">Total Products</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <div className="text-2xl font-bold text-green-600">342</div>
+                  <div className="text-sm text-gray-600">Orders This Month</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <div className="text-2xl font-bold text-purple-600">89</div>
+                  <div className="text-sm text-gray-600">Active Clients</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <div className="text-2xl font-bold text-orange-600">1.2M</div>
+                  <div className="text-sm text-gray-600">Revenue (DZD)</div>
                 </CardContent>
               </Card>
             </div>
@@ -118,6 +181,15 @@ const SupplierDashboard = () => {
       case 'clients':
         return <SupplierClientsSection />;
 
+      case 'inventory':
+        return <SupplierInventorySection />;
+
+      case 'analytics':
+        return <SupplierAnalyticsSection />;
+
+      case 'settings':
+        return <SupplierSettingsSection />;
+
       default:
         return (
           <div className="text-center py-12">
@@ -134,7 +206,6 @@ const SupplierDashboard = () => {
       <header className="bg-white shadow-sm border-b">
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
-            {/* Logo replaces 'EasyBizz' text */}
             <img
               src="/lovable-uploads/5142faa5-d964-4021-b411-2ea1ad268901.png"
               alt="EasyBizz Logo"
@@ -165,7 +236,7 @@ const SupplierDashboard = () => {
               <div className="w-8 h-8 bg-[#0794FE] rounded-lg flex items-center justify-center text-white font-bold">
                 F
               </div>
-              <span className="hidden md:inline">FRS essemar</span>
+              <span className="hidden md:inline">FRS Semmar</span>
             </Button>
 
             <Button 
