@@ -1,8 +1,9 @@
+
 import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, Search, Download, Filter, Plus } from "lucide-react";
+import { ChevronLeft, Search, Download, Filter } from "lucide-react";
 import { LanguageContext } from '@/contexts/LanguageContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import OrderDetailsModal from "@/components/OrderDetailsModal";
@@ -18,7 +19,6 @@ interface Order {
 
 interface OrdersSectionProps {
   onBack: () => void;
-  onNavigateToBizz: () => void;
 }
 
 interface FilterState {
@@ -30,7 +30,7 @@ interface FilterState {
   supplier: string;
 }
 
-const OrdersSection = ({ onBack, onNavigateToBizz }: OrdersSectionProps) => {
+const OrdersSection = ({ onBack }: OrdersSectionProps) => {
   const { t } = useContext(LanguageContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -52,139 +52,6 @@ const OrdersSection = ({ onBack, onNavigateToBizz }: OrdersSectionProps) => {
       date: "15/06/2025",
       amount: 5000.00,
       status: "confirmed"
-    },
-    {
-      id: "10546",
-      supplier: "Cevital Industries",
-      date: "14/06/2025",
-      amount: 12500.00,
-      status: "pending"
-    },
-    {
-      id: "10547",
-      supplier: "Danone Algerie",
-      date: "13/06/2025",
-      amount: 8750.00,
-      status: "confirmed"
-    },
-    {
-      id: "10548",
-      supplier: "Coca-Cola Algeria",
-      date: "12/06/2025",
-      amount: 3200.00,
-      status: "cancelled"
-    },
-    {
-      id: "10549",
-      supplier: "La Vache Qui Rit",
-      date: "11/06/2025",
-      amount: 6800.00,
-      status: "confirmed"
-    },
-    {
-      id: "10550",
-      supplier: "Elio Industries",
-      date: "10/06/2025",
-      amount: 15200.00,
-      status: "pending"
-    },
-    {
-      id: "10551",
-      supplier: "Laiterie Soummam",
-      date: "09/06/2025",
-      amount: 4500.00,
-      status: "confirmed"
-    },
-    {
-      id: "10552",
-      supplier: "Sim Corporation",
-      date: "08/06/2025",
-      amount: 9300.00,
-      status: "confirmed"
-    },
-    {
-      id: "10553",
-      supplier: "Tchina Food",
-      date: "07/06/2025",
-      amount: 2750.00,
-      status: "pending"
-    },
-    {
-      id: "10554",
-      supplier: "Ifri Beverages",
-      date: "06/06/2025",
-      amount: 7800.00,
-      status: "confirmed"
-    },
-    {
-      id: "10555",
-      supplier: "Benamor Group",
-      date: "05/06/2025",
-      amount: 11200.00,
-      status: "cancelled"
-    },
-    {
-      id: "10556",
-      supplier: "NCA Rouiba",
-      date: "04/06/2025",
-      amount: 5600.00,
-      status: "confirmed"
-    },
-    {
-      id: "10557",
-      supplier: "Groupe Batouche",
-      date: "03/06/2025",
-      amount: 13800.00,
-      status: "pending"
-    },
-    {
-      id: "10558",
-      supplier: "Saidal Pharma",
-      date: "02/06/2025",
-      amount: 8900.00,
-      status: "confirmed"
-    },
-    {
-      id: "10559",
-      supplier: "Henkel Algeria",
-      date: "01/06/2025",
-      amount: 4200.00,
-      status: "confirmed"
-    },
-    {
-      id: "10560",
-      supplier: "Unilever Maghreb",
-      date: "31/05/2025",
-      amount: 16500.00,
-      status: "pending"
-    },
-    {
-      id: "10561",
-      supplier: "Condor Electronics",
-      date: "30/05/2025",
-      amount: 22000.00,
-      status: "confirmed"
-    },
-    {
-      id: "10562",
-      supplier: "Bimo Industries",
-      date: "29/05/2025",
-      amount: 7200.00,
-      status: "cancelled"
-    },
-    {
-      id: "10563",
-      supplier: "Société Générale",
-      date: "28/05/2025",
-      amount: 3800.00,
-      status: "confirmed"
-    },
-    {
-      id: "10564",
-      supplier: "Groupe Othman",
-      date: "27/05/2025",
-      amount: 12900.00,
-      status: "pending"
     }
   ]);
 
@@ -266,14 +133,6 @@ const OrdersSection = ({ onBack, onNavigateToBizz }: OrdersSectionProps) => {
             />
           </DialogContent>
         </Dialog>
-
-        <Button 
-          className="bg-[#0794FE] hover:bg-[#0670CC] text-white flex items-center gap-2"
-          onClick={onNavigateToBizz}
-        >
-          <Plus className="w-4 h-4" />
-          Add Order
-        </Button>
       </div>
 
       <div className="bg-white rounded-2xl shadow-xl border border-blue-100 overflow-hidden animate-fade-in">
