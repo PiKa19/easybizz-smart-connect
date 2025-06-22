@@ -3,8 +3,10 @@ import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronLeft, Search, Plus } from "lucide-react";
+import { ChevronLeft, Search, Plus, Filter } from "lucide-react";
 import { LanguageContext } from '@/contexts/LanguageContext';
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import ProductFilterDialog from "@/components/ProductFilterDialog";
 
 interface Product {
   id: string;
@@ -17,6 +19,29 @@ interface Product {
   buyPrice: number;
   sellPriceHT: number;
   sellPriceTTC: number;
+  rotationStatus: string;
+}
+
+interface ProductsSectionProps {
+  onBack: () => void;
+}
+
+interface ProductFilters {
+  name: string;
+  reference: string;
+  barcode: string;
+  qtyStockMin: string;
+  qtyStockMax: string;
+  qtySoldMin: string;
+  qtySoldMax: string;
+  alertMin: string;
+  alertMax: string;
+  buyPriceMin: string;
+  buyPriceMax: string;
+  sellPriceHTMin: string;
+  sellPriceHTMax: string;
+  sellPriceTTCMin: string;
+  sellPriceTTCMax: string;
   rotationStatus: string;
 }
 
@@ -292,11 +317,62 @@ const ProductsSection = ({ onBack }: ProductsSectionProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState('5');
   const [products] = useState<Product[]>(sampleProducts);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<ProductFilters>({
+    name: '',
+    reference: '',
+    barcode: '',
+    qtyStockMin: '',
+    qtyStockMax: '',
+    qtySoldMin: '',
+    qtySoldMax: '',
+    alertMin: '',
+    alertMax: '',
+    buyPriceMin: '',
+    buyPriceMax: '',
+    sellPriceHTMin: '',
+    sellPriceHTMax: '',
+    sellPriceTTCMin: '',
+    sellPriceTTCMax: '',
+    rotationStatus: ''
+  });
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.reference.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const applyFilters = (products: Product[]) => {
+    return products.filter(product => {
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           product.reference.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesName = !filters.name || product.name.toLowerCase().includes(filters.name.toLowerCase());
+      const matchesReference = !filters.reference || product.reference.toLowerCase().includes(filters.reference.toLowerCase());
+      const matchesBarcode = !filters.barcode || product.barcode.toLowerCase().includes(filters.barcode.toLowerCase());
+      const matchesRotation = !filters.rotationStatus || product.rotationStatus === filters.rotationStatus;
+      
+      const matchesQtyStockMin = !filters.qtyStockMin || product.qtyStock >= parseInt(filters.qtyStockMin);
+      const matchesQtyStockMax = !filters.qtyStockMax || product.qtyStock <= parseInt(filters.qtyStockMax);
+      
+      const matchesQtySoldMin = !filters.qtySoldMin || product.qtySold >= parseInt(filters.qtySoldMin);
+      const matchesQtySoldMax = !filters.qtySoldMax || product.qtySold <= parseInt(filters.qtySoldMax);
+      
+      const matchesAlertMin = !filters.alertMin || product.alert >= parseInt(filters.alertMin);
+      const matchesAlertMax = !filters.alertMax || product.alert <= parseInt(filters.alertMax);
+      
+      const matchesBuyPriceMin = !filters.buyPriceMin || product.buyPrice >= parseFloat(filters.buyPriceMin);
+      const matchesBuyPriceMax = !filters.buyPriceMax || product.buyPrice <= parseFloat(filters.buyPriceMax);
+      
+      const matchesSellPriceHTMin = !filters.sellPriceHTMin || product.sellPriceHT >= parseFloat(filters.sellPriceHTMin);
+      const matchesSellPriceHTMax = !filters.sellPriceHTMax || product.sellPriceHT <= parseFloat(filters.sellPriceHTMax);
+      
+      const matchesSellPriceTTCMin = !filters.sellPriceTTCMin || product.sellPriceTTC >= parseFloat(filters.sellPriceTTCMin);
+      const matchesSellPriceTTCMax = !filters.sellPriceTTCMax || product.sellPriceTTC <= parseFloat(filters.sellPriceTTCMax);
+      
+      return matchesSearch && matchesName && matchesReference && matchesBarcode && matchesRotation &&
+             matchesQtyStockMin && matchesQtyStockMax && matchesQtySoldMin && matchesQtySoldMax &&
+             matchesAlertMin && matchesAlertMax && matchesBuyPriceMin && matchesBuyPriceMax &&
+             matchesSellPriceHTMin && matchesSellPriceHTMax && matchesSellPriceTTCMin && matchesSellPriceTTCMax;
+    });
+  };
+
+  const filteredProducts = applyFilters(products);
 
   return (
     <div className="space-y-6">
@@ -325,6 +401,25 @@ const ProductsSection = ({ onBack }: ProductsSectionProps) => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
+        
+        <Dialog open={showFilters} onOpenChange={setShowFilters}>
+          <Button 
+            variant="outline" 
+            className="flex items-center gap-2"
+            onClick={() => setShowFilters(true)}
+          >
+            <Filter className="w-4 h-4" />
+            Filter
+          </Button>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <ProductFilterDialog 
+              filters={filters}
+              onFiltersChange={setFilters}
+              onClose={() => setShowFilters(false)}
+            />
+          </DialogContent>
+        </Dialog>
+        
         <Button className="bg-[#0794FE] hover:bg-[#0670CC] text-white flex items-center gap-2">
           <Plus className="w-4 h-4" />
           {t('add_product')}
@@ -403,4 +498,3 @@ const ProductsSection = ({ onBack }: ProductsSectionProps) => {
 };
 
 export default ProductsSection;
-

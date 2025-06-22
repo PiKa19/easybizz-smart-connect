@@ -52,6 +52,174 @@ const OrdersSection = ({ onBack }: OrdersSectionProps) => {
       date: "15/06/2025",
       amount: 5000.00,
       status: "confirmed"
+    },
+    {
+      id: "10546",
+      supplier: "Distributeur Alger",
+      date: "16/06/2025",
+      amount: 3200.50,
+      status: "pending"
+    },
+    {
+      id: "10547",
+      supplier: "Grossiste Oran",
+      date: "17/06/2025",
+      amount: 7800.75,
+      status: "confirmed"
+    },
+    {
+      id: "10548",
+      supplier: "FRS Ahmed",
+      date: "18/06/2025",
+      amount: 1500.00,
+      status: "cancelled"
+    },
+    {
+      id: "10549",
+      supplier: "Société Blida",
+      date: "19/06/2025",
+      amount: 4300.25,
+      status: "confirmed"
+    },
+    {
+      id: "10550",
+      supplier: "Import Export Annaba",
+      date: "20/06/2025",
+      amount: 6750.00,
+      status: "pending"
+    },
+    {
+      id: "10551",
+      supplier: "FRS Karim",
+      date: "21/06/2025",
+      amount: 2900.80,
+      status: "confirmed"
+    },
+    {
+      id: "10552",
+      supplier: "Distributeur Constantine",
+      date: "22/06/2025",
+      amount: 5500.60,
+      status: "pending"
+    },
+    {
+      id: "10553",
+      supplier: "Grossiste Tlemcen",
+      date: "23/06/2025",
+      amount: 3800.45,
+      status: "confirmed"
+    },
+    {
+      id: "10554",
+      supplier: "FRS Yacine",
+      date: "24/06/2025",
+      amount: 8200.30,
+      status: "cancelled"
+    },
+    {
+      id: "10555",
+      supplier: "Société Sétif",
+      date: "25/06/2025",
+      amount: 4700.15,
+      status: "confirmed"
+    },
+    {
+      id: "10556",
+      supplier: "Import Béjaïa",
+      date: "26/06/2025",
+      amount: 6100.90,
+      status: "pending"
+    },
+    {
+      id: "10557",
+      supplier: "FRS Malik",
+      date: "27/06/2025",
+      amount: 3500.75,
+      status: "confirmed"
+    },
+    {
+      id: "10558",
+      supplier: "Distributeur Batna",
+      date: "28/06/2025",
+      amount: 7300.40,
+      status: "pending"
+    },
+    {
+      id: "10559",
+      supplier: "Grossiste Mostaganem",
+      date: "29/06/2025",
+      amount: 2100.85,
+      status: "confirmed"
+    },
+    {
+      id: "10560",
+      supplier: "FRS Samir",
+      date: "30/06/2025",
+      amount: 5900.20,
+      status: "cancelled"
+    },
+    {
+      id: "10561",
+      supplier: "Société Djelfa",
+      date: "01/07/2025",
+      amount: 4200.55,
+      status: "confirmed"
+    },
+    {
+      id: "10562",
+      supplier: "Import Skikda",
+      date: "02/07/2025",
+      amount: 6800.70,
+      status: "pending"
+    },
+    {
+      id: "10563",
+      supplier: "FRS Rachid",
+      date: "03/07/2025",
+      amount: 3700.35,
+      status: "confirmed"
+    },
+    {
+      id: "10564",
+      supplier: "Distributeur Mascara",
+      date: "04/07/2025",
+      amount: 8500.95,
+      status: "pending"
+    },
+    {
+      id: "10565",
+      supplier: "Grossiste Tiaret",
+      date: "05/07/2025",
+      amount: 2800.40,
+      status: "confirmed"
+    },
+    {
+      id: "10566",
+      supplier: "FRS Omar",
+      date: "06/07/2025",
+      amount: 5300.65,
+      status: "cancelled"
+    },
+    {
+      id: "10567",
+      supplier: "Société Ouargla",
+      date: "07/07/2025",
+      amount: 4600.25,
+      status: "confirmed"
+    },
+    {
+      id: "10568",
+      supplier: "Import Ghardaïa",
+      date: "08/07/2025",
+      amount: 7100.80,
+      status: "pending"
+    },
+    {
+      id: "10569",
+      supplier: "FRS Farid",
+      date: "09/07/2025",
+      amount: 3900.50,
+      status: "confirmed"
     }
   ]);
 
