@@ -23,6 +23,7 @@ import SupplierOrdersSection from '@/components/SupplierOrdersSection';
 import SupplierAnalyticsSection from '@/components/SupplierAnalyticsSection';
 import SupplierInventorySection from '@/components/SupplierInventorySection';
 import SupplierSettingsSection from '@/components/SupplierSettingsSection';
+import SupplierNotificationSection from '@/components/SupplierNotificationSection';
 
 const SupplierDashboard = () => {
   const { t } = useContext(LanguageContext);
@@ -36,6 +37,7 @@ const SupplierDashboard = () => {
     { id: 'inventory', label: 'Inventory', icon: Package },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
     { id: 'messages', label: 'Messages', icon: MessageSquare },
+    { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
@@ -137,6 +139,20 @@ const SupplierDashboard = () => {
                   </div>
                 </CardContent>
               </Card>
+
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('notifications')}>
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                      <Bell className="w-6 h-6 text-red-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-800">Notifications</h3>
+                      <p className="text-sm text-gray-600">Stay updated with business activities</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Quick Stats */}
@@ -186,6 +202,9 @@ const SupplierDashboard = () => {
 
       case 'analytics':
         return <SupplierAnalyticsSection />;
+
+      case 'notifications':
+        return <SupplierNotificationSection />;
 
       case 'settings':
         return <SupplierSettingsSection />;
