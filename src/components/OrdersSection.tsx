@@ -1,9 +1,8 @@
-
 import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, Search, Download, Filter } from "lucide-react";
+import { ChevronLeft, Search, Download, Filter, Plus } from "lucide-react";
 import { LanguageContext } from '@/contexts/LanguageContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import OrderDetailsModal from "@/components/OrderDetailsModal";
@@ -19,6 +18,7 @@ interface Order {
 
 interface OrdersSectionProps {
   onBack: () => void;
+  onNavigateToBizz?: () => void;
 }
 
 interface FilterState {
@@ -30,7 +30,7 @@ interface FilterState {
   supplier: string;
 }
 
-const OrdersSection = ({ onBack }: OrdersSectionProps) => {
+const OrdersSection = ({ onBack, onNavigateToBizz }: OrdersSectionProps) => {
   const { t } = useContext(LanguageContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -301,6 +301,14 @@ const OrdersSection = ({ onBack }: OrdersSectionProps) => {
             />
           </DialogContent>
         </Dialog>
+
+        <Button 
+          onClick={onNavigateToBizz}
+          className="flex items-center gap-2 bg-[#0794FE] hover:bg-[#0670CC] text-white"
+        >
+          <Plus className="w-4 h-4" />
+          Add Order
+        </Button>
       </div>
 
       <div className="bg-white rounded-2xl shadow-xl border border-blue-100 overflow-hidden animate-fade-in">

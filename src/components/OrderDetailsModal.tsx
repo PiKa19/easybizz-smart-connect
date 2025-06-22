@@ -45,10 +45,11 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose })
     globalStatus: order.status,
     totalAmount: order.amount,
     deliveryAddress: "123 Business Street, Algiers, Algeria",
+    invoiceLink: "#",
     products: [
       {
         id: 1,
-        image: "/placeholder.svg",
+        image: "/lovable-uploads/75fa4299-081c-4a60-b0f2-2e05b0a82ad4.png",
         name: "Premium Olive Oil 5L",
         quantity: 2,
         unitPrice: 1200.00,
@@ -58,7 +59,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose })
       },
       {
         id: 2,
-        image: "/placeholder.svg",
+        image: "/lovable-uploads/c644764e-0ea6-4962-913f-1137b4e0e713.png",
         name: "Organic Honey 1kg",
         quantity: 5,
         unitPrice: 520.00,
@@ -69,7 +70,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose })
     ],
     delivery: {
       company: "Fast Delivery DZ",
-      contact: "+213 555 123 456",
+      transportContact: "+213 555 123 456",
       trackingCode: "FDZ123456789",
       trackingLink: "https://fastdelivery.dz/track/FDZ123456789",
       estimatedDate: "20/06/2025",
@@ -113,6 +114,14 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose })
         return 'bg-green-100 text-green-800';
       case 'in_transit':
         return 'bg-purple-100 text-purple-800';
+      case 'paid':
+        return 'bg-green-100 text-green-800';
+      case 'confirmed':
+        return 'bg-green-100 text-green-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -157,7 +166,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose })
                 <p className="font-semibold">{orderDetails.supplier}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Status</p>
+                <p className="text-sm text-gray-600">Global Status</p>
                 <Badge className={getStatusColor(orderDetails.globalStatus)}>
                   {orderDetails.globalStatus}
                 </Badge>
@@ -167,6 +176,15 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose })
                 <p className="font-semibold">{orderDetails.totalAmount.toFixed(2)} DZD</p>
               </div>
               <div>
+                <p className="text-sm text-gray-600">Invoice</p>
+                <Button variant="outline" size="sm" asChild>
+                  <a href={orderDetails.invoiceLink} target="_blank" rel="noopener noreferrer">
+                    <Download className="w-4 h-4 mr-1" />
+                    Download
+                  </a>
+                </Button>
+              </div>
+              <div className="col-span-2">
                 <p className="text-sm text-gray-600">Delivery Address</p>
                 <p className="font-semibold text-sm">{orderDetails.deliveryAddress}</p>
               </div>
@@ -191,6 +209,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose })
                     <div className="flex-1">
                       <h4 className="font-semibold">{product.name}</h4>
                       <p className="text-sm text-gray-600">SKU: {product.sku}</p>
+                      <p className="text-sm text-gray-600">Quantity: {product.quantity}</p>
                       <div className="flex items-center gap-2 mt-1">
                         {getStatusIcon(product.status)}
                         <Badge className={getStatusColor(product.status)}>
@@ -199,7 +218,9 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose })
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold">{product.quantity} × {product.unitPrice.toFixed(2)} DZD</p>
+                      <p className="text-sm text-gray-600">Unit Price</p>
+                      <p className="font-semibold">{product.unitPrice.toFixed(2)} DZD</p>
+                      <p className="text-sm text-gray-600 mt-2">Line Total</p>
                       <p className="text-lg font-bold text-[#0794FE]">{product.lineTotal.toFixed(2)} DZD</p>
                     </div>
                   </div>
@@ -224,8 +245,8 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose })
                   <p className="font-semibold">{orderDetails.delivery.company}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Contact</p>
-                  <p className="font-semibold">{orderDetails.delivery.contact}</p>
+                  <p className="text-sm text-gray-600">Transport Contact</p>
+                  <p className="font-semibold">{orderDetails.delivery.transportContact}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Tracking Code</p>
@@ -235,21 +256,38 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose })
                   <p className="text-sm text-gray-600">Estimated Date</p>
                   <p className="font-semibold">{orderDetails.delivery.estimatedDate}</p>
                 </div>
+                <div>
+                  <p className="text-sm text-gray-600">Delivery Status</p>
+                  <Badge className={getStatusColor(orderDetails.delivery.status)}>
+                    {orderDetails.delivery.status.replace('_', ' ')}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Tracking Link</p>
+                  <Button variant="outline" size="sm" asChild>
+                    <a href={orderDetails.delivery.trackingLink} target="_blank" rel="noopener noreferrer">
+                      Track Package
+                    </a>
+                  </Button>
+                </div>
               </div>
-              
+
               <div>
-                <p className="text-sm text-gray-600 mb-2">Delivery Status</p>
-                <Badge className={getStatusColor(orderDetails.delivery.status)}>
-                  {orderDetails.delivery.status.replace('_', ' ')}
-                </Badge>
+                <p className="text-sm text-gray-600 mb-2">Delivery Address</p>
+                <p className="font-semibold">{orderDetails.delivery.address}</p>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-600 mb-2">Delivery Instructions</p>
+                <p className="font-semibold">{orderDetails.delivery.instructions}</p>
               </div>
 
               <div className="space-y-2">
-                <p className="text-sm text-gray-600">Delivery Timeline</p>
+                <p className="text-sm text-gray-600">Visual Timeline</p>
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col items-center">
                     <CheckCircle className="w-6 h-6 text-green-500" />
-                    <span className="text-xs mt-1">Prepared</span>
+                    <span className="text-xs mt-1">Order Prepared</span>
                   </div>
                   <div className="flex-1 h-0.5 bg-green-500 mx-2"></div>
                   <div className="flex flex-col items-center">
@@ -268,11 +306,6 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose })
                   </div>
                 </div>
               </div>
-
-              <Button variant="outline" className="w-full">
-                <Download className="w-4 h-4 mr-2" />
-                Track Package
-              </Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -293,16 +326,23 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose })
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Payment Status</p>
-                  <Badge className="bg-green-100 text-green-800">{orderDetails.payment.status}</Badge>
+                  <Badge className={getStatusColor(orderDetails.payment.status)}>{orderDetails.payment.status}</Badge>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Reference</p>
+                  <p className="text-sm text-gray-600">Payment Reference</p>
                   <p className="font-semibold">{orderDetails.payment.reference}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Payment Proof</p>
+                  <Button variant="outline" size="sm">
+                    <Upload className="w-4 h-4 mr-1" />
+                    Upload Proof
+                  </Button>
                 </div>
               </div>
 
               <div className="border-t pt-4">
-                <h4 className="font-semibold mb-2">Amount Breakdown</h4>
+                <h4 className="font-semibold mb-2">Payment Details Breakdown</h4>
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span>Amount Before Tax (HT)</span>
@@ -313,7 +353,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose })
                     <span>{orderDetails.payment.vat.toFixed(2)} DZD</span>
                   </div>
                   <div className="flex justify-between font-semibold border-t pt-2">
-                    <span>Total Amount (TTC)</span>
+                    <span>Total Amount with Tax (TTC)</span>
                     <span>{orderDetails.payment.totalTTC.toFixed(2)} DZD</span>
                   </div>
                   <div className="flex justify-between text-green-600">
@@ -326,11 +366,6 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose })
                   </div>
                 </div>
               </div>
-
-              <Button variant="outline" className="w-full">
-                <Upload className="w-4 h-4 mr-2" />
-                Upload Payment Proof
-              </Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -347,7 +382,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose })
               <div className="h-64 border rounded p-4 overflow-y-auto bg-gray-50">
                 <div className="space-y-3">
                   <div className="bg-white p-3 rounded-lg shadow-sm">
-                    <p className="text-sm font-semibold text-[#0794FE]">Supplier (FRS Semmar)</p>
+                    <p className="text-sm font-semibold text-[#0794FE]">Supplier ({orderDetails.supplier})</p>
                     <p className="text-sm">Your order has been prepared and will be shipped tomorrow.</p>
                     <p className="text-xs text-gray-500 mt-1">2 hours ago</p>
                   </div>
@@ -355,6 +390,11 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose })
                     <p className="text-sm font-semibold">You</p>
                     <p className="text-sm">Thank you for the update. Please ensure careful packaging.</p>
                     <p className="text-xs text-gray-500 mt-1">3 hours ago</p>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg shadow-sm">
+                    <p className="text-sm font-semibold text-[#0794FE]">Supplier ({orderDetails.supplier})</p>
+                    <p className="text-sm">Package has been dispatched. Tracking code: {orderDetails.delivery.trackingCode}</p>
+                    <p className="text-xs text-gray-500 mt-1">1 hour ago</p>
                   </div>
                 </div>
               </div>
@@ -368,6 +408,13 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose })
                 />
                 <Button className="bg-[#0794FE] hover:bg-[#0670CC]">
                   <Send className="w-4 h-4" />
+                </Button>
+              </div>
+
+              <div className="mt-4">
+                <h4 className="font-semibold mb-2">View Past Replies</h4>
+                <Button variant="outline" size="sm">
+                  Load More Messages
                 </Button>
               </div>
             </CardContent>
@@ -388,15 +435,18 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose })
                 </div>
                 <div className="text-center p-4 bg-green-50 rounded-lg">
                   <p className="text-2xl font-bold text-green-600">15%</p>
-                  <p className="text-sm text-gray-600">Better Price vs Market</p>
+                  <p className="text-sm text-gray-600">Price Comparison</p>
+                  <p className="text-xs text-gray-500">Better vs Market</p>
                 </div>
                 <div className="text-center p-4 bg-purple-50 rounded-lg">
                   <p className="text-2xl font-bold text-purple-600">7</p>
-                  <p className="text-sm text-gray-600">Items Ordered</p>
+                  <p className="text-sm text-gray-600">Quantity Analysis</p>
+                  <p className="text-xs text-gray-500">Items Ordered</p>
                 </div>
                 <div className="text-center p-4 bg-orange-50 rounded-lg">
                   <p className="text-2xl font-bold text-orange-600">High</p>
-                  <p className="text-sm text-gray-600">Demand Alert</p>
+                  <p className="text-sm text-gray-600">Critical Product Alert</p>
+                  <p className="text-xs text-gray-500">Demand Status</p>
                 </div>
               </div>
             </CardContent>

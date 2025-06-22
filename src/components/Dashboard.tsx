@@ -1,4 +1,3 @@
-
 import React, { useState, useContext, Suspense } from 'react';
 import {
   Home,
@@ -48,6 +47,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [showSubscriptionWall, setShowSubscriptionWall] = useState(false);
   const [daysLeft, setDaysLeft] = useState(() => Math.floor(Math.random() * 18) + 2);
+  const [currentView, setCurrentView] = useState('home');
 
   const menuItems = [
     { id: 'home', label: t('home'), icon: Home },
@@ -118,7 +118,10 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
       case 'products':
         return <ProductsSection onBack={() => setActiveSection('home')} />;
       case 'orders':
-        return <OrdersSection onBack={() => setActiveSection('home')} />;
+        return <OrdersSection 
+          onBack={() => setCurrentView('home')} 
+          onNavigateToBizz={() => setCurrentView('bizz')}
+        />;
       case 'suppliers':
         return <SupplierSection />;
       case 'messages':
