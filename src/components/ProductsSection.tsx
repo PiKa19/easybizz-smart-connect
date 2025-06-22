@@ -1,10 +1,11 @@
-
 import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronLeft, Search, Plus } from "lucide-react";
+import { ChevronLeft, Search, Plus, Filter } from "lucide-react";
 import { LanguageContext } from '@/contexts/LanguageContext';
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import ProductFilterDialog from "@/components/ProductFilterDialog";
+import AddProductDialog from "@/components/AddProductDialog";
 
 interface Product {
   id: string;
@@ -22,6 +23,27 @@ interface Product {
 
 interface ProductsSectionProps {
   onBack: () => void;
+}
+
+interface ProductFilterState {
+  name: string;
+  reference: string;
+  barcode: string;
+  qtyMin: string;
+  qtyMax: string;
+  stockMin: string;
+  stockMax: string;
+  soldMin: string;
+  soldMax: string;
+  alertMin: string;
+  alertMax: string;
+  buyPriceMin: string;
+  buyPriceMax: string;
+  sellPriceHTMin: string;
+  sellPriceHTMax: string;
+  sellPriceTTCMin: string;
+  sellPriceTTCMax: string;
+  rotation: string;
 }
 
 const sampleProducts: Product[] = [
@@ -291,12 +313,70 @@ const ProductsSection = ({ onBack }: ProductsSectionProps) => {
   const { t } = useContext(LanguageContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState('5');
-  const [products] = useState<Product[]>(sampleProducts);
+  const [products, setProducts] = useState<Product[]>(sampleProducts);
+  const [showFilters, setShowFilters] = useState(false);
+  const [showAddProduct, setShowAddProduct] = useState(false);
+  const [filters, setFilters] = useState<ProductFilterState>({
+    name: '',
+    reference: '',
+    barcode: '',
+    qtyMin: '',
+    qtyMax: '',
+    stockMin: '',
+    stockMax: '',
+    soldMin: '',
+    soldMax: '',
+    alertMin: '',
+    alertMax: '',
+    buyPriceMin: '',
+    buyPriceMax: '',
+    sellPriceHTMin: '',
+    sellPriceHTMax: '',
+    sellPriceTTCMin: '',
+    sellPriceTTCMax: '',
+    rotation: ''
+  });
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.reference.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const applyFilters = (products: Product[]) => {
+    return products.filter(product => {
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           product.reference.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesName = !filters.name || product.name.toLowerCase().includes(filters.name.toLowerCase());
+      const matchesReference = !filters.reference || product.reference.toLowerCase().includes(filters.reference.toLowerCase());
+      const matchesBarcode = !filters.barcode || product.barcode.includes(filters.barcode);
+      const matchesRotation = !filters.rotation || product.rotationStatus === filters.rotation;
+      
+      const matchesStockMin = !filters.stockMin || product.qtyStock >= parseInt(filters.stockMin);
+      const matchesStockMax = !filters.stockMax || product.qtyStock <= parseInt(filters.stockMax);
+      const matchesSoldMin = !filters.soldMin || product.qtySold >= parseInt(filters.soldMin);
+      const matchesSoldMax = !filters.soldMax || product.qtySold <= parseInt(filters.soldMax);
+      const matchesAlertMin = !filters.alertMin || product.alert >= parseInt(filters.alertMin);
+      const matchesAlertMax = !filters.alertMax || product.alert <= parseInt(filters.alertMax);
+      
+      const matchesBuyPriceMin = !filters.buyPriceMin || product.buyPrice >= parseFloat(filters.buyPriceMin);
+      const matchesBuyPriceMax = !filters.buyPriceMax || product.buyPrice <= parseFloat(filters.buyPriceMax);
+      const matchesSellHTMin = !filters.sellPriceHTMin || product.sellPriceHT >= parseFloat(filters.sellPriceHTMin);
+      const matchesSellHTMax = !filters.sellPriceHTMax || product.sellPriceHT <= parseFloat(filters.sellPriceHTMax);
+      const matchesSellTTCMin = !filters.sellPriceTTCMin || product.sellPriceTTC >= parseFloat(filters.sellPriceTTCMin);
+      const matchesSellTTCMax = !filters.sellPriceTTCMax || product.sellPriceTTC <= parseFloat(filters.sellPriceTTCMax);
+      
+      return matchesSearch && matchesName && matchesReference && matchesBarcode && matchesRotation &&
+             matchesStockMin && matchesStockMax && matchesSoldMin && matchesSoldMax &&
+             matchesAlertMin && matchesAlertMax && matchesBuyPriceMin && matchesBuyPriceMax &&
+             matchesSellHTMin && matchesSellHTMax && matchesSellTTCMin && matchesSellTTCMax;
+    });
+  };
+
+  const filteredProducts = applyFilters(products);
+
+  const handleAddProduct = (productData: any) => {
+    const newProduct: Product = {
+      id: (products.length + 1).toString(),
+      ...productData
+    };
+    setProducts(prev => [...prev, newProduct]);
+  };
 
   return (
     <div className="space-y-6">
@@ -325,10 +405,33 @@ const ProductsSection = ({ onBack }: ProductsSectionProps) => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button className="bg-[#0794FE] hover:bg-[#0670CC] text-white flex items-center gap-2">
-          <Plus className="w-4 h-4" />
-          {t('add_product')}
-        </Button>
+        
+        <Dialog open={showFilters} onOpenChange={setShowFilters}>
+          <Button variant="outline" className="flex items-center gap-2" onClick={() => setShowFilters(true)}>
+            <Filter className="w-4 h-4" />
+            Filter
+          </Button>
+          <DialogContent className="max-w-4xl">
+            <ProductFilterDialog 
+              filters={filters}
+              onFiltersChange={setFilters}
+              onClose={() => setShowFilters(false)}
+            />
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={showAddProduct} onOpenChange={setShowAddProduct}>
+          <Button className="bg-[#0794FE] hover:bg-[#0670CC] text-white flex items-center gap-2" onClick={() => setShowAddProduct(true)}>
+            <Plus className="w-4 h-4" />
+            {t('add_product')}
+          </Button>
+          <DialogContent className="max-w-4xl">
+            <AddProductDialog 
+              onSave={handleAddProduct}
+              onClose={() => setShowAddProduct(false)}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="bg-white rounded-2xl shadow-xl border border-blue-100 overflow-hidden animate-fade-in">
@@ -403,4 +506,3 @@ const ProductsSection = ({ onBack }: ProductsSectionProps) => {
 };
 
 export default ProductsSection;
-
