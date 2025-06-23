@@ -8,7 +8,7 @@ import { LanguageContext } from "@/contexts/LanguageContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const Index = () => {
-  const { t } = useContext(LanguageContext);
+  const { t, language } = useContext(LanguageContext);
 
   const testimonials = [
     {
@@ -33,8 +33,11 @@ const Index = () => {
     }
   ];
 
+  // Apply RTL direction for Arabic
+  const isRTL = language === 'ar';
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-blue-50">
+    <div className={`min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-blue-50 ${isRTL ? 'rtl' : 'ltr'}`}>
       {/* Header */}
       <header className="py-4 px-6">
         <div className="container mx-auto flex items-center justify-between">
@@ -54,7 +57,7 @@ const Index = () => {
             <LanguageSwitcher />
             <Link to="/supplier-login">
               <Button className="bg-[#E1275C] hover:bg-[#C91F4F] text-white px-6 py-2 rounded-full font-medium">
-                Supplier Space
+                {t('supplier_space')}
               </Button>
             </Link>
             <Link to="/login">
@@ -70,14 +73,14 @@ const Index = () => {
       <section className="py-16 px-6">
         <div className="container mx-auto text-center max-w-4xl">
           <h1 className="text-4xl md:text-5xl font-bold text-blue-900 mb-6 leading-tight">
-            Your Smart Business Management Starts Here
+            {t('hero_title')}
           </h1>
           <p className="text-lg text-gray-700 mb-8 max-w-2xl mx-auto">
-            EasyBizz connects suppliers and entrepreneurs, automates inventory and order management, and helps you grow your business efficiently
+            {t('hero_subtitle')}
           </p>
           <Link to="/register">
             <Button className="bg-[#E1275C] hover:bg-[#C91F4F] text-white px-8 py-3 rounded-full font-medium text-lg">
-              Get Started
+              {t('get_started')}
             </Button>
           </Link>
         </div>
@@ -86,7 +89,7 @@ const Index = () => {
       {/* Key Features Section */}
       <section id="features" className="py-16 px-6">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center text-blue-900 mb-12">Key Features</h2>
+          <h2 className="text-3xl font-bold text-center text-blue-900 mb-12">{t('key_features')}</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <Card className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6">
@@ -94,11 +97,11 @@ const Index = () => {
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Users className="w-6 h-6 text-[#0794FE]" />
                 </div>
-                <CardTitle className="text-blue-900 text-xl">Smart Supplier Matching</CardTitle>
+                <CardTitle className="text-blue-900 text-xl">{t('smart_supplier_matching')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-gray-600 text-center">
-                  Connect with the right suppliers using advanced algorithms to find the perfect business partners for your needs
+                  {t('smart_supplier_desc')}
                 </CardDescription>
               </CardContent>
             </Card>
@@ -108,11 +111,11 @@ const Index = () => {
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Package className="w-6 h-6 text-[#0794FE]" />
                 </div>
-                <CardTitle className="text-blue-900 text-xl">Automated Inventory</CardTitle>
+                <CardTitle className="text-blue-900 text-xl">{t('automated_inventory')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-gray-600 text-center">
-                  Track and manage your stock in real time with smart automation and alerts
+                  {t('automated_inventory_desc')}
                 </CardDescription>
               </CardContent>
             </Card>
@@ -122,11 +125,11 @@ const Index = () => {
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <BarChart3 className="w-6 h-6 text-[#0794FE]" />
                 </div>
-                <CardTitle className="text-blue-900 text-xl">Insightful Analytics</CardTitle>
+                <CardTitle className="text-blue-900 text-xl">{t('insightful_analytics')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-gray-600 text-center">
-                  Make informed decisions with powerful business analytics and real-time insights
+                  {t('insightful_analytics_desc')}
                 </CardDescription>
               </CardContent>
             </Card>
@@ -137,23 +140,21 @@ const Index = () => {
       {/* Supplier Benefits Section */}
       <section id="supplier-benefits" className="py-16 px-6 bg-white">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center text-blue-900 mb-12">Supplier Benefits</h2>
+          <h2 className="text-3xl font-bold text-center text-blue-900 mb-12">{t('supplier_benefits')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {/* Benefit 1 */}
             <Card className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6">
               <CardHeader className="text-center pb-4">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  {/* Storefront Icon */}
                   <Package className="w-6 h-6 text-[#0794FE]" />
                 </div>
                 <CardTitle className="text-blue-900 text-xl">
-                  Direct Access to Boutiques and Retailers
+                  {t('direct_access_title')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-gray-600 text-center">
-                  <span className="font-semibold">No middlemen:</span> Sell directly to store owners and boutiques who are actively seeking products.<br /><br />
-                  <span className="font-semibold">Wider reach:</span> Instantly showcase your catalog to a network of verified businesses using the platform.
+                <CardDescription className="text-gray-600 text-center whitespace-pre-line">
+                  {t('direct_access_desc')}
                 </CardDescription>
               </CardContent>
             </Card>
@@ -162,17 +163,15 @@ const Index = () => {
             <Card className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6">
               <CardHeader className="text-center pb-4">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  {/* Clipboard List Icon (order management) */}
                   <BarChart3 className="w-6 h-6 text-[#0794FE]" />
                 </div>
                 <CardTitle className="text-blue-900 text-xl">
-                  Smart Order Management
+                  {t('smart_order_management')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-gray-600 text-center">
-                  Centralized dashboard to receive, confirm, and track orders in real time.<br /><br />
-                  Notifications for new orders, delivery deadlines, and payment statuses.
+                <CardDescription className="text-gray-600 text-center whitespace-pre-line">
+                  {t('smart_order_desc')}
                 </CardDescription>
               </CardContent>
             </Card>
@@ -181,17 +180,15 @@ const Index = () => {
             <Card className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6">
               <CardHeader className="text-center pb-4">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  {/* Tag Icon for promotions */}
                   <Users className="w-6 h-6 text-[#0794FE]" />
                 </div>
                 <CardTitle className="text-blue-900 text-xl">
-                  Promotional Tools
+                  {t('promotional_tools')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-gray-600 text-center">
-                  Ability to run limited-time discounts, bundle offers, and highlighted listings.<br /><br />
-                  Feature products on the homepage or in recommended sections to boutiques.
+                <CardDescription className="text-gray-600 text-center whitespace-pre-line">
+                  {t('promotional_tools_desc')}
                 </CardDescription>
               </CardContent>
             </Card>
@@ -202,9 +199,9 @@ const Index = () => {
       {/* About Section */}
       <section id="about" className="py-16 px-6">
         <div className="container mx-auto text-center max-w-4xl">
-          <h2 className="text-3xl font-bold text-blue-900 mb-8">About EasyBizz</h2>
+          <h2 className="text-3xl font-bold text-blue-900 mb-8">{t('about_easybizz')}</h2>
           <p className="text-lg text-gray-700 leading-relaxed">
-            EasyBizz is a smart platform designed for entrepreneurs and merchants to streamline their business operations. We help reduce costs, connect with trusted partners, and make data-driven decisions effortlessly
+            {t('about_desc')}
           </p>
         </div>
       </section>
@@ -212,7 +209,7 @@ const Index = () => {
       {/* Testimonials Section */}
       <section className="py-16 px-6">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center text-blue-900 mb-12">What Our Users Say</h2>
+          <h2 className="text-3xl font-bold text-center text-blue-900 mb-12">{t('what_users_say')}</h2>
           
           <div className="max-w-4xl mx-auto">
             <Carousel className="w-full">
@@ -242,14 +239,14 @@ const Index = () => {
       {/* Contact Footer */}
       <footer id="contact" className="bg-[#0794FE] py-12 px-6 mt-16">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center text-white mb-12">Contact Us</h2>
+          <h2 className="text-3xl font-bold text-center text-white mb-12">{t('contact_us')}</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Mail className="w-8 h-8 text-[#0794FE]" />
               </div>
-              <h3 className="text-white font-semibold text-lg mb-2">Email</h3>
+              <h3 className="text-white font-semibold text-lg mb-2">{t('email')}</h3>
               <p className="text-blue-100">EasyBizz@gmail.com</p>
             </div>
             
@@ -257,7 +254,7 @@ const Index = () => {
               <div className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Phone className="w-8 h-8 text-[#0794FE]" />
               </div>
-              <h3 className="text-white font-semibold text-lg mb-2">Phone</h3>
+              <h3 className="text-white font-semibold text-lg mb-2">{t('phone')}</h3>
               <p className="text-blue-100">+213 778 84 74 73</p>
             </div>
             
@@ -265,7 +262,7 @@ const Index = () => {
               <div className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-4">
                 <MapPin className="w-8 h-8 text-[#0794FE]" />
               </div>
-              <h3 className="text-white font-semibold text-lg mb-2">Location</h3>
+              <h3 className="text-white font-semibold text-lg mb-2">{t('location')}</h3>
               <p className="text-blue-100">Pôle universitaire de Koléa,<br />42003, Tipaza, Algérie</p>
             </div>
           </div>
@@ -311,7 +308,7 @@ const Index = () => {
           </div>
 
           <div className="text-center mt-8 pt-8 border-t border-blue-400">
-            <p className="text-white text-sm">All rights reserved easybizz 2025</p>
+            <p className="text-white text-sm">{t('all_rights_reserved')}</p>
           </div>
         </div>
       </footer>

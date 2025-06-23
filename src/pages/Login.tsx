@@ -11,8 +11,11 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const { t } = useContext(LanguageContext);
+  const { t, language } = useContext(LanguageContext);
   const navigate = useNavigate();
+
+  // Apply RTL direction for Arabic
+  const isRTL = language === 'ar';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +30,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-blue-50 flex items-center justify-center p-6">
+    <div className={`min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-blue-50 flex items-center justify-center p-6 ${isRTL ? 'rtl' : 'ltr'}`}>
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -36,7 +39,7 @@ const Login = () => {
             alt="EasyBizz Logo" 
             className="h-16 w-auto mx-auto mb-4"
           />
-          <h1 className="text-2xl font-bold text-gray-800 font-playfair">Welcome Back</h1>
+          <h1 className="text-2xl font-bold text-gray-800 font-playfair">{t('welcome')}</h1>
           <p className="text-gray-600 mt-2">{t('login_subtitle')}</p>
         </div>
 
@@ -75,7 +78,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                className={`absolute inset-y-0 ${isRTL ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center`}
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4 text-gray-400" />
