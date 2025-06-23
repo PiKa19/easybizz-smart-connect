@@ -25,7 +25,7 @@ const Register = () => {
   };
 
   const handlePaymentSuccess = () => {
-    navigate('/dashboard');
+    navigate('/supplier-dashboard');
   };
 
   const renderContent = () => {
@@ -35,6 +35,7 @@ const Register = () => {
           <SubscriptionPlans 
             onPlanSelect={handlePlanSelect}
             onBack={() => setCurrentStep('register')}
+            isSupplier={true}
           />
         );
       case 'payment':

@@ -9,12 +9,37 @@ import { Check } from "lucide-react";
 interface SubscriptionPlansProps {
   onPlanSelect: (plan: { duration: string; price: number; planType: string }) => void;
   onBack: () => void;
+  isSupplier?: boolean;
 }
 
-const SubscriptionPlans = ({ onPlanSelect, onBack }: SubscriptionPlansProps) => {
+const SubscriptionPlans = ({ onPlanSelect, onBack, isSupplier = false }: SubscriptionPlansProps) => {
   const [selectedPlan, setSelectedPlan] = useState("");
 
-  const plans = [
+  const plans = isSupplier ? [
+    {
+      id: "1month",
+      duration: "1 Month",
+      price: 2000,
+      description: "Perfect for getting started",
+      features: ["Full access to all features", "Customer support", "Analytics dashboard"]
+    },
+    {
+      id: "6months",
+      duration: "6 Months", 
+      price: 10000,
+      originalPrice: 12000,
+      description: "Most popular choice",
+      features: ["Full access to all features", "Priority customer support", "Advanced analytics", "Save 17%"]
+    },
+    {
+      id: "1year",
+      duration: "1 Year",
+      price: 21000,
+      originalPrice: 24000,
+      description: "Best value for committed businesses",
+      features: ["Full access to all features", "Priority customer support", "Advanced analytics", "Save 13%", "Free training sessions"]
+    }
+  ] : [
     {
       id: "1month",
       duration: "1 Month",
