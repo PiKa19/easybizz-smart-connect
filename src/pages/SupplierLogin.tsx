@@ -1,4 +1,3 @@
-
 import { useState, useContext, ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,11 +8,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { LanguageContext } from "@/contexts/LanguageContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { Upload, FileText } from "lucide-react";
+import SupplierSubscriptionPlans from "@/components/SupplierSubscriptionPlans";
+import SupplierPaymentForm from "@/components/SupplierPaymentForm";
+
+type RegistrationStep = 'register' | 'subscription' | 'payment';
 
 const SupplierLogin = () => {
   const { t } = useContext(LanguageContext);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState<RegistrationStep>('register');
+  const [selectedPlan, setSelectedPlan] = useState<{ duration: string; price: number; planType: string } | null>(null);
 
   // State for supplier registration form
   const [registerForm, setRegisterForm] = useState({
@@ -35,6 +40,19 @@ const SupplierLogin = () => {
       setIsLoading(false);
       navigate('/supplier-dashboard');
     }, 1000);
+  };
+
+  const handleRegistrationSuccess = () => {
+    setCurrentStep('subscription');
+  };
+
+  const handlePlanSelect = (plan: { duration: string; price: number; planType: string }) => {
+    setSelectedPlan(plan);
+    setCurrentStep('payment');
+  };
+
+  const handlePaymentSuccess = () => {
+    navigate('/supplier-dashboard');
   };
 
   const handleRegisterInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,8 +95,164 @@ const SupplierLogin = () => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      navigate('/supplier-dashboard');
+      handleRegistrationSuccess();
     }, 1000);
+  };
+
+  const renderRegistrationContent = () => {
+    switch (currentStep) {
+      case 'subscription':
+        return (
+          <SupplierSubscriptionPlans 
+            onPlanSelect={handlePlanSelect}
+            onBack={() => setCurrentStep('register')}
+          />
+        );
+      case 'payment':
+        return selectedPlan ? (
+          <SupplierPaymentForm 
+            plan={selectedPlan}
+            onPaymentSuccess={handlePaymentSuccess}
+            onBack={() => setCurrentStep('subscription')}
+          />
+        ) : null;
+      default:
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Supplier Registration</CardTitle>
+              <CardDescription>
+                Create your supplier account to start selling
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleRegister} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="company">Company Name</Label>
+                  <Input
+                    id="company"
+                    type="text"
+                    placeholder="Your Company Name"
+                    value={registerForm.company}
+                    onChange={handleRegisterInputChange}
+                    required
+                    className={registerErrors.company ? "border border-red-500" : ""}
+                  />
+                  {registerErrors.company && (
+                    <p className="text-xs text-red-500">{registerErrors.company}</p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="reg-email">Email</Label>
+                  <Input
+                    id="reg-email"
+                    type="email"
+                    placeholder="supplier@company.com"
+                    value={registerForm.email}
+                    onChange={handleRegisterInputChange}
+                    required
+                    className={registerErrors.email ? "border border-red-500" : ""}
+                  />
+                  {registerErrors.email && (
+                    <p className="text-xs text-red-500">{registerErrors.email}</p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="+213 XXX XXX XXX"
+                    value={registerForm.phone}
+                    onChange={handleRegisterInputChange}
+                    required
+                    className={registerErrors.phone ? "border border-red-500" : ""}
+                  />
+                  {registerErrors.phone && (
+                    <p className="text-xs text-red-500">{registerErrors.phone}</p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="reg-password">Password</Label>
+                  <Input
+                    id="reg-password"
+                    type="password"
+                    value={registerForm.password}
+                    onChange={handleRegisterInputChange}
+                    required
+                    className={registerErrors.password ? "border border-red-500" : ""}
+                  />
+                  {registerErrors.password && (
+                    <p className="text-xs text-red-500">{registerErrors.password}</p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-password">Confirm Password</Label>
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    value={registerForm.confirmPassword}
+                    onChange={handleRegisterInputChange}
+                    required
+                    className={registerErrors.confirmPassword ? "border border-red-500" : ""}
+                  />
+                  {registerErrors.confirmPassword && (
+                    <p className="text-xs text-red-500">{registerErrors.confirmPassword}</p>
+                  )}
+                </div>
+                
+                {/* Registre de Commerce PDF upload */}
+                <div className="space-y-2">
+                  <Label>Registre de Commerce (PDF)</Label>
+                  <div className={`border-2 border-dashed rounded-lg p-4 ${registerErrors.commerceRegister ? 'border-red-500' : 'border-gray-300'}`}>
+                    <input
+                      type="file"
+                      accept=".pdf"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      id="commerceRegister"
+                    />
+                    <label htmlFor="commerceRegister" className="cursor-pointer flex flex-col items-center space-y-2">
+                      <FileText className="w-8 h-8 text-gray-400" />
+                      <span className="text-sm text-gray-600">
+                        {registerForm.commerceRegister ? registerForm.commerceRegister.name : "Click to upload Registre de Commerce (PDF)"}
+                      </span>
+                    </label>
+                  </div>
+                  {registerErrors.commerceRegister && (
+                    <p className="text-xs text-red-500">{registerErrors.commerceRegister}</p>
+                  )}
+                </div>
+
+                {/* Confirmation Checkbox */}
+                <div className="flex items-start gap-2">
+                  <input
+                    id="agree"
+                    type="checkbox"
+                    checked={registerForm.agree}
+                    onChange={handleRegisterInputChange}
+                    className="mt-1"
+                  />
+                  <label htmlFor="agree" className="text-sm text-gray-700 cursor-pointer">
+                    I confirm that I will use the platform while following its rules and guidelines.
+                  </label>
+                </div>
+                {registerErrors.agree && (
+                  <p className="text-xs text-red-500">{registerErrors.agree}</p>
+                )}
+
+                <Button 
+                  type="submit" 
+                  className="w-full bg-[#E1275C] hover:bg-[#C91F4F]"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Creating account..." : "Create Account"}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        );
+    }
   };
 
   return (
@@ -158,139 +332,7 @@ const SupplierLogin = () => {
             </TabsContent>
             
             <TabsContent value="register">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Supplier Registration</CardTitle>
-                  <CardDescription>
-                    Create your supplier account to start selling
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleRegister} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="company">Company Name</Label>
-                      <Input
-                        id="company"
-                        type="text"
-                        placeholder="Your Company Name"
-                        value={registerForm.company}
-                        onChange={handleRegisterInputChange}
-                        required
-                        className={registerErrors.company ? "border border-red-500" : ""}
-                      />
-                      {registerErrors.company && (
-                        <p className="text-xs text-red-500">{registerErrors.company}</p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="reg-email">Email</Label>
-                      <Input
-                        id="reg-email"
-                        type="email"
-                        placeholder="supplier@company.com"
-                        value={registerForm.email}
-                        onChange={handleRegisterInputChange}
-                        required
-                        className={registerErrors.email ? "border border-red-500" : ""}
-                      />
-                      {registerErrors.email && (
-                        <p className="text-xs text-red-500">{registerErrors.email}</p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Phone Number</Label>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        placeholder="+213 XXX XXX XXX"
-                        value={registerForm.phone}
-                        onChange={handleRegisterInputChange}
-                        required
-                        className={registerErrors.phone ? "border border-red-500" : ""}
-                      />
-                      {registerErrors.phone && (
-                        <p className="text-xs text-red-500">{registerErrors.phone}</p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="reg-password">Password</Label>
-                      <Input
-                        id="reg-password"
-                        type="password"
-                        value={registerForm.password}
-                        onChange={handleRegisterInputChange}
-                        required
-                        className={registerErrors.password ? "border border-red-500" : ""}
-                      />
-                      {registerErrors.password && (
-                        <p className="text-xs text-red-500">{registerErrors.password}</p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="confirm-password">Confirm Password</Label>
-                      <Input
-                        id="confirm-password"
-                        type="password"
-                        value={registerForm.confirmPassword}
-                        onChange={handleRegisterInputChange}
-                        required
-                        className={registerErrors.confirmPassword ? "border border-red-500" : ""}
-                      />
-                      {registerErrors.confirmPassword && (
-                        <p className="text-xs text-red-500">{registerErrors.confirmPassword}</p>
-                      )}
-                    </div>
-                    
-                    {/* Registre de Commerce PDF upload */}
-                    <div className="space-y-2">
-                      <Label>Registre de Commerce (PDF)</Label>
-                      <div className={`border-2 border-dashed rounded-lg p-4 ${registerErrors.commerceRegister ? 'border-red-500' : 'border-gray-300'}`}>
-                        <input
-                          type="file"
-                          accept=".pdf"
-                          onChange={handleFileChange}
-                          className="hidden"
-                          id="commerceRegister"
-                        />
-                        <label htmlFor="commerceRegister" className="cursor-pointer flex flex-col items-center space-y-2">
-                          <FileText className="w-8 h-8 text-gray-400" />
-                          <span className="text-sm text-gray-600">
-                            {registerForm.commerceRegister ? registerForm.commerceRegister.name : "Click to upload Registre de Commerce (PDF)"}
-                          </span>
-                        </label>
-                      </div>
-                      {registerErrors.commerceRegister && (
-                        <p className="text-xs text-red-500">{registerErrors.commerceRegister}</p>
-                      )}
-                    </div>
-
-                    {/* Confirmation Checkbox */}
-                    <div className="flex items-start gap-2">
-                      <input
-                        id="agree"
-                        type="checkbox"
-                        checked={registerForm.agree}
-                        onChange={handleRegisterInputChange}
-                        className="mt-1"
-                      />
-                      <label htmlFor="agree" className="text-sm text-gray-700 cursor-pointer">
-                        I confirm that I will use the platform while following its rules and guidelines.
-                      </label>
-                    </div>
-                    {registerErrors.agree && (
-                      <p className="text-xs text-red-500">{registerErrors.agree}</p>
-                    )}
-
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-[#E1275C] hover:bg-[#C91F4F]"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? "Creating account..." : "Create Account"}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
+              {renderRegistrationContent()}
             </TabsContent>
           </Tabs>
         </div>
@@ -300,4 +342,3 @@ const SupplierLogin = () => {
 };
 
 export default SupplierLogin;
-
