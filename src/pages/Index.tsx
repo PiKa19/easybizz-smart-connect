@@ -39,30 +39,32 @@ const Index = () => {
   return (
     <div className={`min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-blue-50 ${isRTL ? 'rtl' : 'ltr'}`}>
       {/* Header */}
-      <header className="py-4 px-6">
+      <header className="py-4 px-4 lg:px-6">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <img 
               src="/lovable-uploads/5142faa5-d964-4021-b411-2ea1ad268901.png" 
               alt="EasyBizz Logo" 
-              className="h-8 w-auto"
+              className="h-6 lg:h-8 w-auto"
             />
           </div>
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-8">
             <a href="#features" className="text-[#0794FE] font-medium hover:text-blue-700 transition-colors">{t('features')}</a>
             <a href="#about" className="text-[#0794FE] font-medium hover:text-blue-700 transition-colors">{t('about')}</a>
             <a href="#contact" className="text-[#0794FE] font-medium hover:text-blue-700 transition-colors">{t('contact')}</a>
           </nav>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 lg:gap-4">
             <LanguageSwitcher />
-            <Link to="/supplier-login">
-              <Button className="bg-[#E1275C] hover:bg-[#C91F4F] text-white px-6 py-2 rounded-full font-medium">
-                {t('supplier_space')}
+            <Link to="/supplier-login" className="hidden sm:block">
+              <Button className="bg-[#E1275C] hover:bg-[#C91F4F] text-white px-3 lg:px-6 py-2 rounded-full font-medium text-sm lg:text-base">
+                <span className="hidden lg:inline">{t('supplier_space')}</span>
+                <span className="lg:hidden">Supplier</span>
               </Button>
             </Link>
             <Link to="/login">
-              <Button className="bg-[#E1275C] hover:bg-[#C91F4F] text-white px-6 py-2 rounded-full font-medium">
-                {t('sign_in')}
+              <Button className="bg-[#E1275C] hover:bg-[#C91F4F] text-white px-3 lg:px-6 py-2 rounded-full font-medium text-sm lg:text-base">
+                <span className="hidden lg:inline">{t('sign_in')}</span>
+                <span className="lg:hidden">Login</span>
               </Button>
             </Link>
           </div>
@@ -70,12 +72,12 @@ const Index = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="py-16 px-6">
+      <section className="py-8 lg:py-16 px-4 lg:px-6">
         <div className="container mx-auto text-center max-w-4xl">
-          <h1 className="text-4xl md:text-5xl font-bold text-blue-900 mb-6 leading-tight">
+          <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-blue-900 mb-4 lg:mb-6 leading-tight">
             {t('hero_title')}
           </h1>
-          <p className="text-lg text-gray-700 mb-8 max-w-2xl mx-auto">
+          <p className="text-base lg:text-lg text-gray-700 mb-6 lg:mb-8 max-w-2xl mx-auto">
             {t('hero_subtitle')}
           </p>
           <Link to="/register">

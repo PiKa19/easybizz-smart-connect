@@ -11,7 +11,9 @@ import {
   Calculator,
   Settings,
   LogOut,
-  Search
+  Search,
+  Menu,
+  X
 } from 'lucide-react';
 import { LanguageContext } from '@/contexts/LanguageContext';
 import UserProfile from './UserProfile';
@@ -48,6 +50,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   const [showSubscriptionWall, setShowSubscriptionWall] = useState(false);
   const [daysLeft, setDaysLeft] = useState(() => Math.floor(Math.random() * 18) + 2);
   const [currentView, setCurrentView] = useState('home');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const menuItems = [
     { id: 'home', label: t('home'), icon: Home },
@@ -157,9 +160,17 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 
   return (
     <div className="min-h-screen bg-gray-50 relative">
+      {/* Mobile Overlay */}
+      {isMobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
+      
       {/* Fixed Top Header */}
       <div
-        className="fixed top-0 left-0 right-0 z-40"
+        className="fixed top-0 left-0 right-0 z-50"
         style={{ height: HEADER_HEIGHT }}
       >
         <DashboardHeader
@@ -167,25 +178,32 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
           onSubscriptionClick={() => setShowSubscriptionWall(true)}
           onProfileOpen={() => setIsProfileOpen(true)}
           onLogout={onLogout}
+          onMenuToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
           t={t}
         />
       </div>
+      
       {/* Fixed Left Sidebar */}
       <div
-        className="fixed top-[73px] left-0 z-30 h-[calc(100vh-73px)]"
+        className={`fixed top-[73px] left-0 z-40 h-[calc(100vh-73px)] transform transition-transform duration-300 ease-in-out lg:transform-none ${
+          isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }`}
         style={{ width: SIDEBAR_WIDTH }}
       >
         <DashboardSidebar
           menuItems={menuItems}
           activeSection={activeSection}
-          setActiveSection={setActiveSection}
+          setActiveSection={(section) => {
+            setActiveSection(section);
+            setIsMobileSidebarOpen(false);
+          }}
         />
       </div>
+      
       {/* Main Content */}
       <main
-        className="flex-1 p-6"
+        className="flex-1 p-4 lg:p-6 transition-all duration-300 lg:ml-64"
         style={{
-          marginLeft: SIDEBAR_WIDTH,
           marginTop: HEADER_HEIGHT,
           minHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,
           background: "inherit"

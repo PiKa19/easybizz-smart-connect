@@ -9,7 +9,9 @@ import {
   MessageSquare,
   Users,
   BarChart3,
-  Package
+  Package,
+  Menu,
+  X
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,6 +30,7 @@ import SupplierNotificationSection from '@/components/SupplierNotificationSectio
 const SupplierDashboard = () => {
   const { t } = useContext(LanguageContext);
   const [activeSection, setActiveSection] = useState('home');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const menuItems = [
     { id: 'home', label: 'Home', icon: Home },
@@ -55,7 +58,7 @@ const SupplierDashboard = () => {
               <p className="text-gray-600">Manage your supplier business efficiently</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
               <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('bizz')}>
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4">
@@ -156,7 +159,7 @@ const SupplierDashboard = () => {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mt-6 lg:mt-8">
               <Card>
                 <CardContent className="p-6 text-center">
                   <div className="text-2xl font-bold text-blue-600">156</div>
@@ -221,29 +224,45 @@ const SupplierDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Mobile Overlay */}
+      {isMobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
+      
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="flex items-center justify-between px-6 py-4">
+      <header className="bg-white shadow-sm border-b relative z-50">
+        <div className="flex items-center justify-between px-4 lg:px-6 py-4">
           <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+              className="lg:hidden"
+            >
+              <Menu className="w-5 h-5" />
+            </Button>
             <img
               src="/lovable-uploads/5142faa5-d964-4021-b411-2ea1ad268901.png"
               alt="EasyBizz Logo"
-              className="h-8 w-auto"
+              className="h-6 lg:h-8 w-auto"
             />
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 lg:gap-4">
             <LanguageSwitcher />
             
-            <div className="relative">
+            <div className="relative hidden md:block">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input 
                 placeholder="Search"
-                className="w-64 pl-10"
+                className="w-48 lg:w-64 pl-10"
               />
             </div>
             
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" className="hidden sm:flex">
               <Bell className="w-5 h-5" />
             </Button>
             
@@ -255,45 +274,50 @@ const SupplierDashboard = () => {
               <div className="w-8 h-8 bg-[#0794FE] rounded-lg flex items-center justify-center text-white font-bold">
                 F
               </div>
-              <span className="hidden md:inline">FRS Semmar</span>
+              <span className="hidden lg:inline">FRS Semmar</span>
             </Button>
 
             <Button 
               variant="outline" 
               size="sm"
               onClick={handleLogout}
-              className="flex items-center gap-2"
+              className="hidden sm:flex items-center gap-2"
             >
               <LogOut className="w-4 h-4" />
-              <span className="hidden md:inline">Logout</span>
+              <span className="hidden lg:inline">Logout</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <div className="flex">
+      <div className="flex relative">
         {/* Sidebar */}
-        <aside className="w-64 bg-white h-[calc(100vh-73px)] shadow-sm">
+        <aside className={`w-64 bg-white h-[calc(100vh-73px)] shadow-sm fixed lg:relative z-40 transform transition-transform duration-300 ease-in-out lg:transform-none ${
+          isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }`}>
           <nav className="p-4 space-y-2">
             {menuItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => setActiveSection(item.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors ${
+                onClick={() => {
+                  setActiveSection(item.id);
+                  setIsMobileSidebarOpen(false);
+                }}
+                className={`w-full flex items-center gap-3 px-3 py-3 lg:py-2 rounded-lg text-left transition-colors ${
                   activeSection === item.id
                     ? 'bg-[#0794FE] text-white'
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
                 <item.icon className="w-5 h-5" />
-                <span>{item.label}</span>
+                <span className="font-medium">{item.label}</span>
               </button>
             ))}
           </nav>
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-4 lg:p-6 lg:ml-0">
           {renderContent()}
         </main>
       </div>
