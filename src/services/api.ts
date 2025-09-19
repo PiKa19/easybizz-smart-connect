@@ -7,7 +7,12 @@ import {
   ApiUser,
   AuthResponse,
   ApiSupplier,
-  ApiAnalytics
+  ApiAnalytics,
+  ApiBizz,
+  ApiBoutique,
+  ApiInventory,
+  ApiStockAlert,
+  ApiCategory
 } from '@/types/api';
 
 // API Configuration
@@ -260,6 +265,280 @@ export const analyticsApi = {
 
   getInventoryReport: async (): Promise<LaravelResponse> => {
     return apiRequest<LaravelResponse>('/analytics/inventory');
+  },
+};
+
+// Merchant Bizz API
+export const merchantBizzApi = {
+  getAll: async (): Promise<ApiBizz[]> => {
+    return apiRequest<ApiBizz[]>('/merchant/bizz');
+  },
+
+  getById: async (id: number): Promise<ApiBizz> => {
+    return apiRequest<ApiBizz>(`/merchant/bizz/${id}`);
+  },
+
+  create: async (bizzData: Omit<ApiBizz, 'id' | 'created_at' | 'updated_at'>): Promise<ApiBizz> => {
+    return apiRequest<ApiBizz>('/merchant/bizz', {
+      method: 'POST',
+      body: JSON.stringify(bizzData),
+    });
+  },
+
+  update: async (id: number, bizzData: Partial<ApiBizz>): Promise<ApiBizz> => {
+    return apiRequest<ApiBizz>(`/merchant/bizz/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(bizzData),
+    });
+  },
+
+  delete: async (id: number): Promise<{ message: string }> => {
+    return apiRequest<{ message: string }>(`/merchant/bizz/${id}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
+// Merchant Boutiques API
+export const merchantBoutiquesApi = {
+  getAll: async (): Promise<ApiBoutique[]> => {
+    return apiRequest<ApiBoutique[]>('/merchant/boutiques');
+  },
+
+  getById: async (id: number): Promise<ApiBoutique> => {
+    return apiRequest<ApiBoutique>(`/merchant/boutiques/${id}`);
+  },
+
+  create: async (boutiqueData: Omit<ApiBoutique, 'id' | 'created_at' | 'updated_at'>): Promise<ApiBoutique> => {
+    return apiRequest<ApiBoutique>('/merchant/boutiques', {
+      method: 'POST',
+      body: JSON.stringify(boutiqueData),
+    });
+  },
+
+  update: async (id: number, boutiqueData: Partial<ApiBoutique>): Promise<ApiBoutique> => {
+    return apiRequest<ApiBoutique>(`/merchant/boutiques/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(boutiqueData),
+    });
+  },
+
+  delete: async (id: number): Promise<{ message: string }> => {
+    return apiRequest<{ message: string }>(`/merchant/boutiques/${id}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
+// Merchant Inventory API
+export const merchantInventoryApi = {
+  getAll: async (): Promise<ApiInventory[]> => {
+    return apiRequest<ApiInventory[]>('/merchant/inventory');
+  },
+
+  getById: async (id: number): Promise<ApiInventory> => {
+    return apiRequest<ApiInventory>(`/merchant/inventory/${id}`);
+  },
+
+  create: async (inventoryData: Omit<ApiInventory, 'id' | 'created_at' | 'updated_at'>): Promise<ApiInventory> => {
+    return apiRequest<ApiInventory>('/merchant/inventory', {
+      method: 'POST',
+      body: JSON.stringify(inventoryData),
+    });
+  },
+
+  update: async (id: number, inventoryData: Partial<ApiInventory>): Promise<ApiInventory> => {
+    return apiRequest<ApiInventory>(`/merchant/inventory/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(inventoryData),
+    });
+  },
+
+  delete: async (id: number): Promise<{ message: string }> => {
+    return apiRequest<{ message: string }>(`/merchant/inventory/${id}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
+// Merchant Orders API (extended)
+export const merchantOrdersApi = {
+  getAll: async (): Promise<ApiOrder[]> => {
+    return apiRequest<ApiOrder[]>('/merchant/orders');
+  },
+
+  getById: async (id: number): Promise<ApiOrder> => {
+    return apiRequest<ApiOrder>(`/merchant/orders/${id}`);
+  },
+
+  create: async (orderData: any): Promise<ApiOrder> => {
+    return apiRequest<ApiOrder>('/merchant/orders', {
+      method: 'POST',
+      body: JSON.stringify(orderData),
+    });
+  },
+
+  update: async (id: number, orderData: Partial<ApiOrder>): Promise<ApiOrder> => {
+    return apiRequest<ApiOrder>(`/merchant/orders/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(orderData),
+    });
+  },
+
+  delete: async (id: number): Promise<{ message: string }> => {
+    return apiRequest<{ message: string }>(`/merchant/orders/${id}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
+// Merchant Stock Alerts API
+export const merchantStockAlertsApi = {
+  getAll: async (): Promise<ApiStockAlert[]> => {
+    return apiRequest<ApiStockAlert[]>('/merchant/stock-alerts');
+  },
+
+  getById: async (id: number): Promise<ApiStockAlert> => {
+    return apiRequest<ApiStockAlert>(`/merchant/stock-alerts/${id}`);
+  },
+
+  markAsResolved: async (id: number): Promise<ApiStockAlert> => {
+    return apiRequest<ApiStockAlert>(`/merchant/stock-alerts/${id}/resolve`, {
+      method: 'PATCH',
+    });
+  },
+
+  delete: async (id: number): Promise<{ message: string }> => {
+    return apiRequest<{ message: string }>(`/merchant/stock-alerts/${id}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
+// Supplier Space API
+export const supplierSpaceApi = {
+  // Supplier Orders
+  orders: {
+    getAll: async (): Promise<ApiOrder[]> => {
+      return apiRequest<ApiOrder[]>('/supplier/orders');
+    },
+
+    getById: async (id: number): Promise<ApiOrder> => {
+      return apiRequest<ApiOrder>(`/supplier/orders/${id}`);
+    },
+
+    create: async (orderData: any): Promise<ApiOrder> => {
+      return apiRequest<ApiOrder>('/supplier/orders', {
+        method: 'POST',
+        body: JSON.stringify(orderData),
+      });
+    },
+
+    update: async (id: number, orderData: Partial<ApiOrder>): Promise<ApiOrder> => {
+      return apiRequest<ApiOrder>(`/supplier/orders/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(orderData),
+      });
+    },
+
+    delete: async (id: number): Promise<{ message: string }> => {
+      return apiRequest<{ message: string }>(`/supplier/orders/${id}`, {
+        method: 'DELETE',
+      });
+    },
+  },
+
+  // Supplier Inventory
+  inventory: {
+    getAll: async (): Promise<ApiInventory[]> => {
+      return apiRequest<ApiInventory[]>('/supplier/inventory');
+    },
+
+    getById: async (id: number): Promise<ApiInventory> => {
+      return apiRequest<ApiInventory>(`/supplier/inventory/${id}`);
+    },
+
+    create: async (inventoryData: Omit<ApiInventory, 'id' | 'created_at' | 'updated_at'>): Promise<ApiInventory> => {
+      return apiRequest<ApiInventory>('/supplier/inventory', {
+        method: 'POST',
+        body: JSON.stringify(inventoryData),
+      });
+    },
+
+    update: async (id: number, inventoryData: Partial<ApiInventory>): Promise<ApiInventory> => {
+      return apiRequest<ApiInventory>(`/supplier/inventory/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(inventoryData),
+      });
+    },
+
+    delete: async (id: number): Promise<{ message: string }> => {
+      return apiRequest<{ message: string }>(`/supplier/inventory/${id}`, {
+        method: 'DELETE',
+      });
+    },
+  },
+
+  // Supplier Categories
+  categories: {
+    getAll: async (): Promise<ApiCategory[]> => {
+      return apiRequest<ApiCategory[]>('/supplier/categories');
+    },
+
+    getById: async (id: number): Promise<ApiCategory> => {
+      return apiRequest<ApiCategory>(`/supplier/categories/${id}`);
+    },
+
+    create: async (categoryData: Omit<ApiCategory, 'id' | 'created_at' | 'updated_at'>): Promise<ApiCategory> => {
+      return apiRequest<ApiCategory>('/supplier/categories', {
+        method: 'POST',
+        body: JSON.stringify(categoryData),
+      });
+    },
+
+    update: async (id: number, categoryData: Partial<ApiCategory>): Promise<ApiCategory> => {
+      return apiRequest<ApiCategory>(`/supplier/categories/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(categoryData),
+      });
+    },
+
+    delete: async (id: number): Promise<{ message: string }> => {
+      return apiRequest<{ message: string }>(`/supplier/categories/${id}`, {
+        method: 'DELETE',
+      });
+    },
+  },
+};
+
+// Categories API (shared)
+export const categoriesApi = {
+  getAll: async (): Promise<ApiCategory[]> => {
+    return apiRequest<ApiCategory[]>('/categories');
+  },
+
+  getById: async (id: number): Promise<ApiCategory> => {
+    return apiRequest<ApiCategory>(`/categories/${id}`);
+  },
+
+  create: async (categoryData: Omit<ApiCategory, 'id' | 'created_at' | 'updated_at'>): Promise<ApiCategory> => {
+    return apiRequest<ApiCategory>('/categories', {
+      method: 'POST',
+      body: JSON.stringify(categoryData),
+    });
+  },
+
+  update: async (id: number, categoryData: Partial<ApiCategory>): Promise<ApiCategory> => {
+    return apiRequest<ApiCategory>(`/categories/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(categoryData),
+    });
+  },
+
+  delete: async (id: number): Promise<{ message: string }> => {
+    return apiRequest<{ message: string }>(`/categories/${id}`, {
+      method: 'DELETE',
+    });
   },
 };
 

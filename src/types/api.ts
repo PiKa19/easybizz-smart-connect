@@ -114,3 +114,68 @@ export interface ApiAnalytics {
     returning_customers: number;
   };
 }
+
+// Bizz data structure
+export interface ApiBizz {
+  id: number;
+  boutique_id: number;
+  product_name: string;
+  category_id: number;
+  rating?: number;
+  reviews?: number;
+  price: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Boutique data structure
+export interface ApiBoutique {
+  id: number;
+  name: string;
+  address: string;
+  status: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Inventory data structure
+export interface ApiInventory {
+  id: number;
+  product_id: number;
+  product_name: string;
+  barcode?: string;
+  category_id: number;
+  purchased_quantity: number;
+  sold_quantity?: number;
+  returned_quantity?: number;
+  damaged_quantity?: number;
+  current_quantity?: number;
+  unit_price_ht: number;
+  total_cost?: number;
+  supplier_id: number;
+  supplier_name: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Stock Alert data structure
+export interface ApiStockAlert {
+  id: number;
+  product_id: number;
+  alert_type: string;
+  threshold: number;
+  current_quantity: number;
+  message: string;
+  is_resolved: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Category data structure
+export interface ApiCategory {
+  id: number;
+  name: string;
+  description?: string;
+  created_at?: string;
+  updated_at?: string;
+}
