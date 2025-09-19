@@ -50,7 +50,19 @@ export const useSupplierInventoryById = (id: number) => {
 
 export const useCreateSupplierInventory = () => {
   return useMutation(
-    (inventoryData: Omit<ApiInventory, 'id' | 'created_at' | 'updated_at'>) => 
+    (inventoryData: {
+      product_id: number;
+      product_name?: string;
+      category_id?: number;
+      purchased_quantity?: number;
+      sold_quantity?: number;
+      returned_quantity?: number;
+      damaged_quantity?: number;
+      current_quantity?: number;
+      unit_price?: number;
+      total_cost?: number;
+      status: boolean;
+    }) => 
       supplierSpaceApi.inventory.create(inventoryData),
     {
       successMessage: 'Inventory item created successfully',
@@ -77,40 +89,94 @@ export const useDeleteSupplierInventory = () => {
   );
 };
 
-// Supplier Categories hooks
-export const useSupplierCategories = () => {
-  return useApi(() => supplierSpaceApi.categories.getAll(), [], { immediate: true });
+// Supplier Clients hooks
+export const useSupplierClients = () => {
+  return useApi(() => supplierSpaceApi.clients.getAll(), [], { immediate: true });
 };
 
-export const useSupplierCategoryById = (id: number) => {
-  return useApi(() => supplierSpaceApi.categories.getById(id), [id], { immediate: !!id });
+export const useSupplierClientById = (id: number) => {
+  return useApi(() => supplierSpaceApi.clients.getById(id), [id], { immediate: !!id });
 };
 
-export const useCreateSupplierCategory = () => {
+export const useCreateSupplierClient = () => {
   return useMutation(
-    (categoryData: Omit<ApiCategory, 'id' | 'created_at' | 'updated_at'>) => 
-      supplierSpaceApi.categories.create(categoryData),
+    (clientData: {
+      name: string;
+      email: string;
+      total_orders?: number;
+      last_order_date?: string;
+    }) => 
+      supplierSpaceApi.clients.create(clientData),
     {
-      successMessage: 'Category created successfully',
+      successMessage: 'Client created successfully',
     }
   );
 };
 
-export const useUpdateSupplierCategory = () => {
+export const useUpdateSupplierClient = () => {
   return useMutation(
-    ({ id, data }: { id: number; data: Partial<ApiCategory> }) => 
-      supplierSpaceApi.categories.update(id, data),
+    ({ id, data }: { id: number; data: any }) => 
+      supplierSpaceApi.clients.update(id, data),
     {
-      successMessage: 'Category updated successfully',
+      successMessage: 'Client updated successfully',
     }
   );
 };
 
-export const useDeleteSupplierCategory = () => {
+export const useDeleteSupplierClient = () => {
   return useMutation(
-    (id: number) => supplierSpaceApi.categories.delete(id),
+    (id: number) => supplierSpaceApi.clients.delete(id),
     {
-      successMessage: 'Category deleted successfully',
+      successMessage: 'Client deleted successfully',
+    }
+  );
+};
+
+// Supplier Products hooks
+export const useSupplierProducts = () => {
+  return useApi(() => supplierSpaceApi.products.getAll(), [], { immediate: true });
+};
+
+export const useSupplierProductById = (id: number) => {
+  return useApi(() => supplierSpaceApi.products.getById(id), [id], { immediate: !!id });
+};
+
+export const useCreateSupplierProduct = () => {
+  return useMutation(
+    (productData: {
+      store_id: number;
+      name: string;
+      description?: string;
+      category_id?: number;
+      barcode?: string;
+      stock_quantity: number;
+      unit_price?: number;
+      min_order_volume?: number;
+      dimensions?: string;
+      storage_requirements?: string;
+    }) => 
+      supplierSpaceApi.products.create(productData),
+    {
+      successMessage: 'Product created successfully',
+    }
+  );
+};
+
+export const useUpdateSupplierProduct = () => {
+  return useMutation(
+    ({ id, data }: { id: number; data: any }) => 
+      supplierSpaceApi.products.update(id, data),
+    {
+      successMessage: 'Product updated successfully',
+    }
+  );
+};
+
+export const useDeleteSupplierProduct = () => {
+  return useMutation(
+    (id: number) => supplierSpaceApi.products.delete(id),
+    {
+      successMessage: 'Product deleted successfully',
     }
   );
 };

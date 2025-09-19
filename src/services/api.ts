@@ -16,7 +16,7 @@ import {
 } from '@/types/api';
 
 // API Configuration
-const API_BASE_URL = process.env.VITE_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL = process.env.VITE_API_URL || 'http://5.196.209.135/api';
 
 // Request headers
 const getHeaders = (includeAuth = true): HeadersInit => {
@@ -268,7 +268,7 @@ export const analyticsApi = {
   },
 };
 
-// Merchant Bizz API
+// Merchant Bizz API (Updated to match real endpoints)
 export const merchantBizzApi = {
   getAll: async (): Promise<ApiBizz[]> => {
     return apiRequest<ApiBizz[]>('/merchant/bizz');
@@ -278,7 +278,14 @@ export const merchantBizzApi = {
     return apiRequest<ApiBizz>(`/merchant/bizz/${id}`);
   },
 
-  create: async (bizzData: Omit<ApiBizz, 'id' | 'created_at' | 'updated_at'>): Promise<ApiBizz> => {
+  create: async (bizzData: {
+    boutique_id: number;
+    product_name: string;
+    category_id: number;
+    rating?: number;
+    reviews?: number;
+    price: number;
+  }): Promise<ApiBizz> => {
     return apiRequest<ApiBizz>('/merchant/bizz', {
       method: 'POST',
       body: JSON.stringify(bizzData),
@@ -330,7 +337,7 @@ export const merchantBoutiquesApi = {
   },
 };
 
-// Merchant Inventory API
+// Merchant Inventory API (Updated to match real endpoints)
 export const merchantInventoryApi = {
   getAll: async (): Promise<ApiInventory[]> => {
     return apiRequest<ApiInventory[]>('/merchant/inventory');
@@ -340,7 +347,21 @@ export const merchantInventoryApi = {
     return apiRequest<ApiInventory>(`/merchant/inventory/${id}`);
   },
 
-  create: async (inventoryData: Omit<ApiInventory, 'id' | 'created_at' | 'updated_at'>): Promise<ApiInventory> => {
+  create: async (inventoryData: {
+    product_id: number;
+    product_name: string;
+    barcode?: string;
+    category_id: number;
+    purchased_quantity: number;
+    sold_quantity?: number;
+    returned_quantity?: number;
+    damaged_quantity?: number;
+    current_quantity?: number;
+    unit_price_ht: number;
+    total_cost?: number;
+    supplier_id: number;
+    supplier_name: string;
+  }): Promise<ApiInventory> => {
     return apiRequest<ApiInventory>('/merchant/inventory', {
       method: 'POST',
       body: JSON.stringify(inventoryData),
@@ -361,7 +382,7 @@ export const merchantInventoryApi = {
   },
 };
 
-// Merchant Orders API (extended)
+// Merchant Orders API (Updated to match real endpoints)
 export const merchantOrdersApi = {
   getAll: async (): Promise<ApiOrder[]> => {
     return apiRequest<ApiOrder[]>('/merchant/orders');
@@ -371,7 +392,13 @@ export const merchantOrdersApi = {
     return apiRequest<ApiOrder>(`/merchant/orders/${id}`);
   },
 
-  create: async (orderData: any): Promise<ApiOrder> => {
+  create: async (orderData: {
+    supplier_id: number;
+    supplier_name: string;
+    order_date: string;
+    amount: number;
+    status: 'pending' | 'delivered' | 'canceled';
+  }): Promise<ApiOrder> => {
     return apiRequest<ApiOrder>('/merchant/orders', {
       method: 'POST',
       body: JSON.stringify(orderData),
@@ -415,34 +442,39 @@ export const merchantStockAlertsApi = {
   },
 };
 
-// Supplier Space API
+// Supplier Space API (Updated to match real endpoints)
 export const supplierSpaceApi = {
-  // Supplier Orders
-  orders: {
-    getAll: async (): Promise<ApiOrder[]> => {
-      return apiRequest<ApiOrder[]>('/supplier/orders');
+  // Supplier Clients
+  clients: {
+    getAll: async (): Promise<any[]> => {
+      return apiRequest<any[]>('/supplier/clients');
     },
 
-    getById: async (id: number): Promise<ApiOrder> => {
-      return apiRequest<ApiOrder>(`/supplier/orders/${id}`);
+    getById: async (id: number): Promise<any> => {
+      return apiRequest<any>(`/supplier/clients/${id}`);
     },
 
-    create: async (orderData: any): Promise<ApiOrder> => {
-      return apiRequest<ApiOrder>('/supplier/orders', {
+    create: async (clientData: {
+      name: string;
+      email: string;
+      total_orders?: number;
+      last_order_date?: string;
+    }): Promise<any> => {
+      return apiRequest<any>('/supplier/clients', {
         method: 'POST',
-        body: JSON.stringify(orderData),
+        body: JSON.stringify(clientData),
       });
     },
 
-    update: async (id: number, orderData: Partial<ApiOrder>): Promise<ApiOrder> => {
-      return apiRequest<ApiOrder>(`/supplier/orders/${id}`, {
+    update: async (id: number, clientData: any): Promise<any> => {
+      return apiRequest<any>(`/supplier/clients/${id}`, {
         method: 'PUT',
-        body: JSON.stringify(orderData),
+        body: JSON.stringify(clientData),
       });
     },
 
     delete: async (id: number): Promise<{ message: string }> => {
-      return apiRequest<{ message: string }>(`/supplier/orders/${id}`, {
+      return apiRequest<{ message: string }>(`/supplier/clients/${id}`, {
         method: 'DELETE',
       });
     },
@@ -458,7 +490,19 @@ export const supplierSpaceApi = {
       return apiRequest<ApiInventory>(`/supplier/inventory/${id}`);
     },
 
-    create: async (inventoryData: Omit<ApiInventory, 'id' | 'created_at' | 'updated_at'>): Promise<ApiInventory> => {
+    create: async (inventoryData: {
+      product_id: number;
+      product_name?: string;
+      category_id?: number;
+      purchased_quantity?: number;
+      sold_quantity?: number;
+      returned_quantity?: number;
+      damaged_quantity?: number;
+      current_quantity?: number;
+      unit_price?: number;
+      total_cost?: number;
+      status: boolean;
+    }): Promise<ApiInventory> => {
       return apiRequest<ApiInventory>('/supplier/inventory', {
         method: 'POST',
         body: JSON.stringify(inventoryData),
@@ -479,35 +523,121 @@ export const supplierSpaceApi = {
     },
   },
 
-  // Supplier Categories
-  categories: {
-    getAll: async (): Promise<ApiCategory[]> => {
-      return apiRequest<ApiCategory[]>('/supplier/categories');
+  // Supplier Orders
+  orders: {
+    getAll: async (): Promise<ApiOrder[]> => {
+      return apiRequest<ApiOrder[]>('/supplier/orders');
     },
 
-    getById: async (id: number): Promise<ApiCategory> => {
-      return apiRequest<ApiCategory>(`/supplier/categories/${id}`);
+    getById: async (id: number): Promise<ApiOrder> => {
+      return apiRequest<ApiOrder>(`/supplier/orders/${id}`);
     },
 
-    create: async (categoryData: Omit<ApiCategory, 'id' | 'created_at' | 'updated_at'>): Promise<ApiCategory> => {
-      return apiRequest<ApiCategory>('/supplier/categories', {
+    create: async (orderData: {
+      client_id: number;
+      product_id: number;
+      product_name?: string;
+      price: number;
+      quantity: number;
+      order_date?: string;
+      status: 'delivered' | 'on_hold' | 'canceled';
+      total_amount?: number;
+    }): Promise<ApiOrder> => {
+      return apiRequest<ApiOrder>('/supplier/orders', {
         method: 'POST',
-        body: JSON.stringify(categoryData),
+        body: JSON.stringify(orderData),
       });
     },
 
-    update: async (id: number, categoryData: Partial<ApiCategory>): Promise<ApiCategory> => {
-      return apiRequest<ApiCategory>(`/supplier/categories/${id}`, {
+    update: async (id: number, orderData: Partial<ApiOrder>): Promise<ApiOrder> => {
+      return apiRequest<ApiOrder>(`/supplier/orders/${id}`, {
         method: 'PUT',
-        body: JSON.stringify(categoryData),
+        body: JSON.stringify(orderData),
       });
     },
 
     delete: async (id: number): Promise<{ message: string }> => {
-      return apiRequest<{ message: string }>(`/supplier/categories/${id}`, {
+      return apiRequest<{ message: string }>(`/supplier/orders/${id}`, {
         method: 'DELETE',
       });
     },
+  },
+
+  // Supplier Products
+  products: {
+    getAll: async (): Promise<any[]> => {
+      return apiRequest<any[]>('/supplier/products');
+    },
+
+    getById: async (id: number): Promise<any> => {
+      return apiRequest<any>(`/supplier/products/${id}`);
+    },
+
+    create: async (productData: {
+      store_id: number;
+      name: string;
+      description?: string;
+      category_id?: number;
+      barcode?: string;
+      stock_quantity: number;
+      unit_price?: number;
+      min_order_volume?: number;
+      dimensions?: string;
+      storage_requirements?: string;
+    }): Promise<any> => {
+      return apiRequest<any>('/supplier/products', {
+        method: 'POST',
+        body: JSON.stringify(productData),
+      });
+    },
+
+    update: async (id: number, productData: any): Promise<any> => {
+      return apiRequest<any>(`/supplier/products/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(productData),
+      });
+    },
+
+    delete: async (id: number): Promise<{ message: string }> => {
+      return apiRequest<{ message: string }>(`/supplier/products/${id}`, {
+        method: 'DELETE',
+      });
+    },
+  },
+};
+
+// Suppliers API (general endpoints)
+export const suppliersGeneralApi = {
+  getAll: async (): Promise<any[]> => {
+    return apiRequest<any[]>('/suppliers');
+  },
+
+  getById: async (id: number): Promise<any> => {
+    return apiRequest<any>(`/suppliers/${id}`);
+  },
+
+  create: async (supplierData: {
+    name: string;
+    email: string;
+    address?: string;
+  }): Promise<any> => {
+    return apiRequest<any>('/suppliers', {
+      method: 'POST',
+      body: JSON.stringify(supplierData),
+    });
+  },
+
+  update: async (id: number, supplierData: any): Promise<any> => {
+    return apiRequest<any>(`/suppliers/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(supplierData),
+    });
+  },
+
+  delete: async (id: number): Promise<{ message: string }> => {
+    return apiRequest<{ message: string }>(`/suppliers/${id}`, {
+      method: 'DELETE',
+    });
   },
 };
 
