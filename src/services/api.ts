@@ -16,7 +16,7 @@ import {
 } from '@/types/api';
 
 // API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://5.196.209.135/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://5.196.209.135/api';
 
 // Request headers
 const getHeaders = (includeAuth = true): HeadersInit => {
