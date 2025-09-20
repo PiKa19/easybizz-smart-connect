@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,24 +8,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Search, Edit, Trash2, AlertTriangle, Package, TrendingUp, TrendingDown } from 'lucide-react';
-import { supplierSpaceApi } from '@/services/api';
-import { toast } from '@/components/ui/use-toast';
 
 interface InventoryItem {
-  id: number;
-  product_id: number;
-  product_name?: string;
-  category_id?: number;
-  purchased_quantity?: number;
-  sold_quantity?: number;
-  returned_quantity?: number;
-  damaged_quantity?: number;
-  current_quantity?: number;
-  unit_price?: number;
-  total_cost?: number;
-  status: boolean;
-  created_at?: string;
-  updated_at?: string;
+  id: string;
+  name: string;
+  sku: string;
+  category: string;
+  currentStock: number;
+  minStock: number;
+  maxStock: number;
+  unitPrice: number;
+  totalValue: number;
+  lastRestocked: string;
+  supplier: string;
+  status: 'In Stock' | 'Low Stock' | 'Out of Stock' | 'Overstocked';
 }
 
 const SupplierInventorySection = () => {
@@ -34,76 +30,101 @@ const SupplierInventorySection = () => {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
-  const [loading, setLoading] = useState(true);
 
   const [newItem, setNewItem] = useState({
-    product_id: 0,
-    product_name: '',
-    category_id: 1,
-    purchased_quantity: 0,
-    sold_quantity: 0,
-    returned_quantity: 0,
-    damaged_quantity: 0,
-    current_quantity: 0,
-    unit_price: 0,
-    total_cost: 0,
-    status: true
+    name: '',
+    sku: '',
+    category: '',
+    currentStock: 0,
+    minStock: 0,
+    maxStock: 0,
+    unitPrice: 0,
+    supplier: ''
   });
 
-  const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  // Mock inventory data
+  const [inventory, setInventory] = useState<InventoryItem[]>([
+    {
+      id: '1',
+      name: 'Coca-Cola 2L',
+      sku: 'CC-2L-001',
+      category: 'Beverages',
+      currentStock: 150,
+      minStock: 50,
+      maxStock: 300,
+      unitPrice: 150,
+      totalValue: 22500,
+      lastRestocked: '2024-01-10',
+      supplier: 'Coca-Cola Algeria',
+      status: 'In Stock'
+    },
+    {
+      id: '2',
+      name: 'Elio Oil 5L',
+      sku: 'EO-5L-002',
+      category: 'Oils & Fats',
+      currentStock: 25,
+      minStock: 30,
+      maxStock: 100,
+      unitPrice: 790,
+      totalValue: 19750,
+      lastRestocked: '2024-01-08',
+      supplier: 'Elio Industries',
+      status: 'Low Stock'
+    },
+    {
+      id: '3',
+      name: 'Skor Civital 2KG',
+      sku: 'SC-2K-003',
+      category: 'Sugar',
+      currentStock: 0,
+      minStock: 20,
+      maxStock: 80,
+      unitPrice: 290,
+      totalValue: 0,
+      lastRestocked: '2024-01-05',
+      supplier: 'Civital',
+      status: 'Out of Stock'
+    },
+    {
+      id: '4',
+      name: 'La Vache qui rit 24p',
+      sku: 'LV-24P-004',
+      category: 'Dairy',
+      currentStock: 85,
+      minStock: 40,
+      maxStock: 120,
+      unitPrice: 450,
+      totalValue: 38250,
+      lastRestocked: '2024-01-12',
+      supplier: 'Fromageries Bel',
+      status: 'In Stock'
+    },
+    {
+      id: '5',
+      name: 'Cheezy 24p',
+      sku: 'CZ-24P-005',
+      category: 'Dairy',
+      currentStock: 200,
+      minStock: 60,
+      maxStock: 150,
+      unitPrice: 390,
+      totalValue: 78000,
+      lastRestocked: '2024-01-15',
+      supplier: 'Local Dairy Co',
+      status: 'Overstocked'
+    }
+  ]);
 
-  // Fetch inventory data on mount
-  useEffect(() => {
-    const fetchInventory = async () => {
-      try {
-        setLoading(true);
-        const data = await supplierSpaceApi.inventory.getAll();
-        
-        // Transform API data to component interface
-        const transformedData: InventoryItem[] = data.map(apiItem => ({
-          id: apiItem.id || 0,
-          product_id: apiItem.product_id || 0,
-          product_name: apiItem.product_name,
-          category_id: apiItem.category_id,
-          purchased_quantity: apiItem.purchased_quantity,
-          sold_quantity: apiItem.sold_quantity,
-          returned_quantity: apiItem.returned_quantity,
-          damaged_quantity: apiItem.damaged_quantity,
-          current_quantity: apiItem.current_quantity,
-          unit_price: apiItem.unit_price_ht, // Note: API uses unit_price_ht
-          total_cost: apiItem.total_cost,
-          status: true, // Default status since API doesn't provide this field
-          created_at: apiItem.created_at,
-          updated_at: apiItem.updated_at
-        }));
-        
-        setInventory(transformedData);
-      } catch (error) {
-        console.error('Failed to fetch inventory:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load inventory data. Please try again.",
-          variant: "destructive"
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchInventory();
-  }, []);
-
-  const categories = ['all', 'Category 1', 'Category 2', 'Category 3', 'Category 4', 'Category 5'];
-  const statuses = ['all', 'Active', 'Inactive'];
+  const categories = ['all', 'Beverages', 'Oils & Fats', 'Sugar', 'Dairy', 'Snacks'];
+  const statuses = ['all', 'In Stock', 'Low Stock', 'Out of Stock', 'Overstocked'];
 
   const filteredInventory = useMemo(() => {
     return inventory.filter(item => {
-      const matchesSearch = (item.product_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           item.product_id.toString().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'all' || `Category ${item.category_id}` === selectedCategory;
-      const matchesStatus = selectedStatus === 'all' || 
-                           (selectedStatus === 'Active' && item.status) ||
-                           (selectedStatus === 'Inactive' && !item.status);
+      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           item.sku.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+      const matchesStatus = selectedStatus === 'all' || item.status === selectedStatus;
       
       return matchesSearch && matchesCategory && matchesStatus;
     });
@@ -111,88 +132,59 @@ const SupplierInventorySection = () => {
 
   const inventoryStats = useMemo(() => {
     const totalItems = inventory.length;
-    const totalValue = inventory.reduce((sum, item) => sum + (item.total_cost || 0), 0);
-    const lowStockItems = inventory.filter(item => (item.current_quantity || 0) < 10).length;
-    const outOfStockItems = inventory.filter(item => (item.current_quantity || 0) === 0).length;
+    const totalValue = inventory.reduce((sum, item) => sum + item.totalValue, 0);
+    const lowStockItems = inventory.filter(item => item.status === 'Low Stock').length;
+    const outOfStockItems = inventory.filter(item => item.status === 'Out of Stock').length;
     
     return { totalItems, totalValue, lowStockItems, outOfStockItems };
   }, [inventory]);
 
-  const getStatusColor = (status: boolean) => {
-    return status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-  };
-
-  const getStatusIcon = (status: boolean) => {
-    return status ? <Package className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />;
-  };
-
-  const handleAddItem = async () => {
-    try {
-      const apiResponse = await supplierSpaceApi.inventory.create(newItem);
-      
-      // Transform API response to component interface
-      const transformedItem: InventoryItem = {
-        id: apiResponse.id || 0,
-        product_id: apiResponse.product_id || 0,
-        product_name: apiResponse.product_name,
-        category_id: apiResponse.category_id,
-        purchased_quantity: apiResponse.purchased_quantity,
-        sold_quantity: apiResponse.sold_quantity,
-        returned_quantity: apiResponse.returned_quantity,
-        damaged_quantity: apiResponse.damaged_quantity,
-        current_quantity: apiResponse.current_quantity,
-        unit_price: apiResponse.unit_price_ht,
-        total_cost: apiResponse.total_cost,
-        status: true, // Default since API doesn't provide this
-        created_at: apiResponse.created_at,
-        updated_at: apiResponse.updated_at
-      };
-      
-      setInventory(prev => [...prev, transformedItem]);
-      setNewItem({
-        product_id: 0,
-        product_name: '',
-        category_id: 1,
-        purchased_quantity: 0,
-        sold_quantity: 0,
-        returned_quantity: 0,
-        damaged_quantity: 0,
-        current_quantity: 0,
-        unit_price: 0,
-        total_cost: 0,
-        status: true
-      });
-      setIsAddDialogOpen(false);
-      toast({
-        title: "Success",
-        description: "Product added to inventory successfully.",
-      });
-    } catch (error) {
-      console.error('Failed to add item:', error);
-      toast({
-        title: "Error",
-        description: "Failed to add product. Please try again.",
-        variant: "destructive"
-      });
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'In Stock': return 'bg-green-100 text-green-800';
+      case 'Low Stock': return 'bg-yellow-100 text-yellow-800';
+      case 'Out of Stock': return 'bg-red-100 text-red-800';
+      case 'Overstocked': return 'bg-blue-100 text-blue-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const handleDeleteItem = async (id: number) => {
-    try {
-      await supplierSpaceApi.inventory.delete(id);
-      setInventory(prev => prev.filter(item => item.id !== id));
-      toast({
-        title: "Success",
-        description: "Product deleted successfully.",
-      });
-    } catch (error) {
-      console.error('Failed to delete item:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete product. Please try again.",
-        variant: "destructive"
-      });
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'Low Stock': return <AlertTriangle className="w-4 h-4" />;
+      case 'Out of Stock': return <AlertTriangle className="w-4 h-4" />;
+      case 'Overstocked': return <TrendingUp className="w-4 h-4" />;
+      default: return <Package className="w-4 h-4" />;
     }
+  };
+
+  const handleAddItem = () => {
+    const item: InventoryItem = {
+      id: Date.now().toString(),
+      ...newItem,
+      totalValue: newItem.currentStock * newItem.unitPrice,
+      lastRestocked: new Date().toISOString().split('T')[0],
+      status: newItem.currentStock <= newItem.minStock ? 'Low Stock' : 
+              newItem.currentStock === 0 ? 'Out of Stock' :
+              newItem.currentStock > newItem.maxStock ? 'Overstocked' : 'In Stock'
+    };
+    
+    setInventory(prev => [...prev, item]);
+    setNewItem({
+      name: '',
+      sku: '',
+      category: '',
+      currentStock: 0,
+      minStock: 0,
+      maxStock: 0,
+      unitPrice: 0,
+      supplier: ''
+    });
+    setIsAddDialogOpen(false);
+  };
+
+  const handleDeleteItem = (id: string) => {
+    setInventory(prev => prev.filter(item => item.id !== id));
   };
 
   return (
@@ -215,67 +207,78 @@ const SupplierInventorySection = () => {
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="product_name">Product Name</Label>
+                <Label htmlFor="name">Product Name</Label>
                 <Input
-                  id="product_name"
-                  value={newItem.product_name}
-                  onChange={(e) => setNewItem(prev => ({ ...prev, product_name: e.target.value }))}
+                  id="name"
+                  value={newItem.name}
+                  onChange={(e) => setNewItem(prev => ({ ...prev, name: e.target.value }))}
                 />
               </div>
               <div>
-                <Label htmlFor="product_id">Product ID</Label>
+                <Label htmlFor="sku">SKU</Label>
                 <Input
-                  id="product_id"
-                  type="number"
-                  value={newItem.product_id}
-                  onChange={(e) => setNewItem(prev => ({ ...prev, product_id: parseInt(e.target.value) || 0 }))}
+                  id="sku"
+                  value={newItem.sku}
+                  onChange={(e) => setNewItem(prev => ({ ...prev, sku: e.target.value }))}
                 />
               </div>
               <div>
-                <Label htmlFor="category_id">Category ID</Label>
-                <Input
-                  id="category_id"
-                  type="number"
-                  value={newItem.category_id}
-                  onChange={(e) => setNewItem(prev => ({ ...prev, category_id: parseInt(e.target.value) || 1 }))}
-                />
+                <Label htmlFor="category">Category</Label>
+                <Select value={newItem.category} onValueChange={(value) => setNewItem(prev => ({ ...prev, category: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.filter(cat => cat !== 'all').map(category => (
+                      <SelectItem key={category} value={category}>{category}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <Label htmlFor="current_quantity">Current Stock</Label>
+                  <Label htmlFor="currentStock">Current Stock</Label>
                   <Input
-                    id="current_quantity"
+                    id="currentStock"
                     type="number"
-                    value={newItem.current_quantity}
-                    onChange={(e) => setNewItem(prev => ({ ...prev, current_quantity: parseInt(e.target.value) || 0 }))}
+                    value={newItem.currentStock}
+                    onChange={(e) => setNewItem(prev => ({ ...prev, currentStock: parseInt(e.target.value) || 0 }))}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="purchased_quantity">Purchased</Label>
+                  <Label htmlFor="minStock">Min Stock</Label>
                   <Input
-                    id="purchased_quantity"
+                    id="minStock"
                     type="number"
-                    value={newItem.purchased_quantity}
-                    onChange={(e) => setNewItem(prev => ({ ...prev, purchased_quantity: parseInt(e.target.value) || 0 }))}
+                    value={newItem.minStock}
+                    onChange={(e) => setNewItem(prev => ({ ...prev, minStock: parseInt(e.target.value) || 0 }))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="maxStock">Max Stock</Label>
+                  <Input
+                    id="maxStock"
+                    type="number"
+                    value={newItem.maxStock}
+                    onChange={(e) => setNewItem(prev => ({ ...prev, maxStock: parseInt(e.target.value) || 0 }))}
                   />
                 </div>
               </div>
               <div>
-                <Label htmlFor="unit_price">Unit Price (DZD)</Label>
+                <Label htmlFor="unitPrice">Unit Price (DZD)</Label>
                 <Input
-                  id="unit_price"
+                  id="unitPrice"
                   type="number"
-                  value={newItem.unit_price}
-                  onChange={(e) => setNewItem(prev => ({ ...prev, unit_price: parseInt(e.target.value) || 0 }))}
+                  value={newItem.unitPrice}
+                  onChange={(e) => setNewItem(prev => ({ ...prev, unitPrice: parseInt(e.target.value) || 0 }))}
                 />
               </div>
               <div>
-                <Label htmlFor="total_cost">Total Cost (DZD)</Label>
+                <Label htmlFor="supplier">Supplier</Label>
                 <Input
-                  id="total_cost"
-                  type="number"
-                  value={newItem.total_cost}
-                  onChange={(e) => setNewItem(prev => ({ ...prev, total_cost: parseInt(e.target.value) || 0 }))}
+                  id="supplier"
+                  value={newItem.supplier}
+                  onChange={(e) => setNewItem(prev => ({ ...prev, supplier: e.target.value }))}
                 />
               </div>
               <div className="flex gap-2">
@@ -387,11 +390,11 @@ const SupplierInventorySection = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Cost</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Value</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
@@ -401,24 +404,22 @@ const SupplierInventorySection = () => {
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{item.product_name || 'Unknown Product'}</div>
-                        <div className="text-xs text-gray-500">ID: {item.product_id}</div>
+                        <div className="text-sm font-medium text-gray-900">{item.name}</div>
+                        <div className="text-sm text-gray-500">{item.supplier}</div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.product_id}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Category {item.category_id}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.sku}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.category}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{item.current_quantity || 0}</div>
-                      <div className="text-xs text-gray-500">
-                        Purchased: {item.purchased_quantity || 0} | Sold: {item.sold_quantity || 0}
-                      </div>
+                      <div className="text-sm text-gray-900">{item.currentStock}</div>
+                      <div className="text-xs text-gray-500">Min: {item.minStock} | Max: {item.maxStock}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{(item.unit_price || 0).toLocaleString()} DZD</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{(item.total_cost || 0).toLocaleString()} DZD</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.unitPrice.toLocaleString()} DZD</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.totalValue.toLocaleString()} DZD</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Badge className={`${getStatusColor(item.status)} flex items-center gap-1`}>
                         {getStatusIcon(item.status)}
-                        {item.status ? 'Active' : 'Inactive'}
+                        {item.status}
                       </Badge>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

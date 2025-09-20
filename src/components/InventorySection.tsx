@@ -1,12 +1,10 @@
 
-import React, { useState, useMemo, useContext, useEffect } from "react";
+import React, { useState, useMemo, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LanguageContext } from "@/contexts/LanguageContext";
 import { Filter, Plus } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
-import AddInventoryItemDialog from "./AddInventoryItemDialog";
-import { merchantInventoryApi, categoriesApi } from '@/services/api';
 // shadcn/ui dropdown menu
 import {
   DropdownMenu,
@@ -15,37 +13,234 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface InventoryRow {
-  id?: number;
-  product_id?: number;
-  product_name: string;
-  barcode?: string;
-  category_id?: number;
-  purchased_quantity?: number;
-  sold_quantity?: number;
-  returned_quantity?: number;
-  damaged_quantity?: number;
-  current_quantity?: number;
-  unit_price_ht: number;
-  total_cost?: number;
-  supplier_id?: number;
-  supplier_name: string;
-  created_at?: string;
-  updated_at?: string;
+  product: string;
+  ref: string;
+  codebar: string;
+  dateTime: string;
+  fabricationDate: string;
+  perimationDate: string;
+  prixHT: number;
+  tva: number;
+  ttc: number;
+  status: string;
+  alertQty: number;
+  alertDate: string;
+  supplier: string;
 }
 
-// Remove dummy data - will be loaded from API
+// Filled dummy data:
+const DUMMY_INVENTORY: InventoryRow[] = [
+  {
+    product: "Huile 5L elio",
+    ref: "HUI-001",
+    codebar: "59446032664B",
+    dateTime: "2024-06-01 14:30",
+    fabricationDate: "2024-01-10",
+    perimationDate: "2025-01-10",
+    prixHT: 550,
+    tva: 19,
+    ttc: 654.5,
+    status: "Disponible",
+    alertQty: 5,
+    alertDate: "2024-12-31",
+    supplier: "Baraka"
+  },
+  {
+    product: "Lait 1L Candia",
+    ref: "LAI-010",
+    codebar: "59446889012C",
+    dateTime: "2024-06-03 08:10",
+    fabricationDate: "2024-05-18",
+    perimationDate: "2024-11-18",
+    prixHT: 90,
+    tva: 9,
+    ttc: 98.1,
+    status: "Disponible",
+    alertQty: 10,
+    alertDate: "2024-11-01",
+    supplier: "IFRIN"
+  },
+  {
+    product: "Biscuits Choco",
+    ref: "BIS-011",
+    codebar: "59440011229B",
+    dateTime: "2024-06-02 11:03",
+    fabricationDate: "2024-04-28",
+    perimationDate: "2025-04-28",
+    prixHT: 150,
+    tva: 19,
+    ttc: 178.5,
+    status: "Endommagé",
+    alertQty: 15,
+    alertDate: "2025-01-01",
+    supplier: "BN Lova"
+  },
+  {
+    product: "Jus d'orange 2L",
+    ref: "JUS-201",
+    codebar: "59411324655O",
+    dateTime: "2024-06-05 10:44",
+    fabricationDate: "2024-05-10",
+    perimationDate: "2025-05-10",
+    prixHT: 130,
+    tva: 19,
+    ttc: 154.7,
+    status: "Disponible",
+    alertQty: 8,
+    alertDate: "2025-04-01",
+    supplier: "BriZa"
+  },
+  {
+    product: "Eau minérale 0.5L",
+    ref: "EAU-001",
+    codebar: "59419944321E",
+    dateTime: "2024-06-06 13:00",
+    fabricationDate: "2024-06-01",
+    perimationDate: "2025-06-01",
+    prixHT: 20,
+    tva: 0,
+    ttc: 20,
+    status: "Disponible",
+    alertQty: 12,
+    alertDate: "2025-05-01",
+    supplier: "AquaDz"
+  },
+  {
+    product: "Café Moulu 500g",
+    ref: "CAF-123",
+    codebar: "59416654321C",
+    dateTime: "2024-06-04 12:30",
+    fabricationDate: "2024-03-10",
+    perimationDate: "2025-03-10",
+    prixHT: 720,
+    tva: 19,
+    ttc: 857.0,
+    status: "Disponible",
+    alertQty: 2,
+    alertDate: "2025-02-20",
+    supplier: "Barista"
+  },
+  {
+    product: "Savon Liquide 1L",
+    ref: "SAV-312",
+    codebar: "59417331234S",
+    dateTime: "2024-06-02 09:23",
+    fabricationDate: "2024-04-16",
+    perimationDate: "2026-04-16",
+    prixHT: 80,
+    tva: 9,
+    ttc: 87.2,
+    status: "Disponible",
+    alertQty: 9,
+    alertDate: "2026-04-01",
+    supplier: "Aswaq Clean"
+  },
+  {
+    product: "Sardine boîte 120g",
+    ref: "SAR-0003",
+    codebar: "59417678912N",
+    dateTime: "2024-06-04 10:10",
+    fabricationDate: "2024-01-20",
+    perimationDate: "2026-01-20",
+    prixHT: 160,
+    tva: 19,
+    ttc: 190.4,
+    status: "Endommagé",
+    alertQty: 1,
+    alertDate: "2025-12-23",
+    supplier: "SuperFood"
+  },
+  {
+    product: "Fromage 200g",
+    ref: "FRO-100",
+    codebar: "59417688733F",
+    dateTime: "2024-05-28 17:12",
+    fabricationDate: "2024-05-01",
+    perimationDate: "2024-09-01",
+    prixHT: 210,
+    tva: 19,
+    ttc: 249.9,
+    status: "Disponible",
+    alertQty: 6,
+    alertDate: "2024-08-15",
+    supplier: "DairyLand"
+  },
+  {
+    product: "Spaghetti 1kg",
+    ref: "SPA-555",
+    codebar: "59414444222P",
+    dateTime: "2024-06-06 08:45",
+    fabricationDate: "2024-03-20",
+    perimationDate: "2025-10-20",
+    prixHT: 130,
+    tva: 9,
+    ttc: 141.7,
+    status: "Disponible",
+    alertQty: 4,
+    alertDate: "2025-09-25",
+    supplier: "PastaCity"
+  },
+  {
+    product: "Sucre 1kg",
+    ref: "SUC-777",
+    codebar: "59418428519S",
+    dateTime: "2024-06-04 15:55",
+    fabricationDate: "2024-05-01",
+    perimationDate: "2026-05-01",
+    prixHT: 70,
+    tva: 9,
+    ttc: 76.3,
+    status: "Disponible",
+    alertQty: 20,
+    alertDate: "2026-04-01",
+    supplier: "SweetFourn"
+  },
+  {
+    product: "Shampoing 400ml",
+    ref: "SHA-101",
+    codebar: "59413331450Z",
+    dateTime: "2024-06-06 09:12",
+    fabricationDate: "2024-02-28",
+    perimationDate: "2026-02-28",
+    prixHT: 200,
+    tva: 19,
+    ttc: 238,
+    status: "Disponible",
+    alertQty: 7,
+    alertDate: "2026-02-01",
+    supplier: "HairPro"
+  },
+  {
+    product: "Brique de Jus Mangue",
+    ref: "JUS-403",
+    codebar: "59419119193M",
+    dateTime: "2024-05-30 18:44",
+    fabricationDate: "2024-05-20",
+    perimationDate: "2025-05-20",
+    prixHT: 85,
+    tva: 19,
+    ttc: 101.15,
+    status: "Disponible",
+    alertQty: 3,
+    alertDate: "2025-04-15",
+    supplier: "BriZa"
+  },
+];
 
 const columnDefs = [
-  { key: "product_name", label: "Product", type: "text" },
-  { key: "barcode", label: "Barcode", type: "text" },
-  { key: "category_id", label: "Category", type: "text" },
-  { key: "purchased_quantity", label: "Purchased", type: "number" },
-  { key: "sold_quantity", label: "Sold", type: "number" },
-  { key: "current_quantity", label: "Current Stock", type: "number" },
-  { key: "unit_price_ht", label: "Unit Price HT", type: "number" },
-  { key: "total_cost", label: "Total Cost", type: "number" },
-  { key: "supplier_name", label: "Supplier", type: "text" },
-  { key: "created_at", label: "Date Added", type: "date" }
+  { key: "product", label: "Product", type: "text" },
+  { key: "ref", label: "ref", type: "text" },
+  { key: "codebar", label: "codebar", type: "text" },
+  { key: "dateTime", label: "date et heure", type: "text" },
+  { key: "fabricationDate", label: "date de fabrication", type: "date" },
+  { key: "perimationDate", label: "date de perimation", type: "date" },
+  { key: "prixHT", label: "prix ht", type: "number" },
+  { key: "tva", label: "TVA", type: "number" },
+  { key: "ttc", label: "TTC", type: "number" },
+  { key: "status", label: "status", type: "text" },
+  { key: "alertQty", label: "product alert in quantité", type: "number" },
+  { key: "alertDate", label: "product alert in date", type: "date" },
+  { key: "supplier", label: "Supplier", type: "text" }
 ];
 
 const InventorySection = () => {
@@ -53,87 +248,24 @@ const InventorySection = () => {
 
   // One filter state per column
   const [filters, setFilters] = useState<Record<string, string>>({});
-  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
-  const [inventoryData, setInventoryData] = useState<InventoryRow[]>([]);
-  const [loading, setLoading] = useState(true);
 
   // Demo state, could integrate pagination here
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // Fetch inventory data on mount
-  useEffect(() => {
-    const fetchInventory = async () => {
-      try {
-        setLoading(true);
-        const data = await merchantInventoryApi.getAll();
-        setInventoryData(data);
-      } catch (error) {
-        console.error('Failed to fetch inventory:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load inventory data. Please try again.",
-          variant: "destructive"
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchInventory();
-  }, []);
-
-  // Status quick filters
-  const handleStatusQuickFilter = (filterType: string) => {
-    if (filterType === 'low_stock') {
-      // Filter items with current_quantity < 10 (or similar logic)
-      setFilters(f => ({ ...f, current_quantity: '<10' }));
-    } else if (filterType === 'available') {
-      // Filter items with current_quantity > 0
-      setFilters(f => ({ ...f, current_quantity: '>0' }));
-    }
+  // "produit endommagé" and "produit disponible" could work as status-quick-filters
+  const handleStatusQuickFilter = (status: string) => {
+    setFilters(f => ({ ...f, status }));
   };
 
   const handleAddProduct = () => {
-    setIsAddProductOpen(true);
-  };
-
-  const handleProductSubmit = async (formData: any) => {
-    try {
-      const inventoryData = {
-        product_id: formData.product_id || 1, // Default or from form
-        product_name: formData.product_name,
-        barcode: formData.barcode,
-        category_id: formData.category_id || 1,
-        purchased_quantity: parseInt(formData.purchased_quantity) || 0,
-        sold_quantity: parseInt(formData.sold_quantity) || 0,
-        returned_quantity: parseInt(formData.returned_quantity) || 0,
-        damaged_quantity: parseInt(formData.damaged_quantity) || 0,
-        current_quantity: parseInt(formData.current_quantity) || 0,
-        unit_price_ht: parseFloat(formData.unit_price_ht) || 0,
-        total_cost: parseFloat(formData.total_cost) || 0,
-        supplier_id: formData.supplier_id || 1,
-        supplier_name: formData.supplier_name
-      };
-      
-      const newProduct = await merchantInventoryApi.create(inventoryData);
-      setInventoryData(prev => [newProduct, ...prev]);
-      
-      toast({
-        title: "Success",
-        description: "Product added to inventory successfully.",
-      });
-    } catch (error) {
-      console.error('Failed to add product:', error);
-      toast({
-        title: "Error",
-        description: "Failed to add product. Please try again.",
-        variant: "destructive"
-      });
-    }
+    toast({
+      title: t("add_product_title") || "Add Product",
+      description: t("add_product_placeholder") || "Feature coming soon! Here you can add new inventory products.",
+    });
   };
 
   const filteredRows = useMemo(() => {
-    return inventoryData.filter(row =>
+    return DUMMY_INVENTORY.filter(row =>
       columnDefs.every(col => {
         const filterVal = filters[col.key];
         if (!filterVal) return true;
@@ -148,7 +280,7 @@ const InventorySection = () => {
         return String(rowValue).toLowerCase().includes(filterVal.toLowerCase());
       })
     );
-  }, [filters, inventoryData]);
+  }, [filters]);
 
   return (
     <div className="space-y-6">
@@ -215,15 +347,15 @@ const InventorySection = () => {
             </DropdownMenu>
             <Button
               className="bg-[#0794FE] hover:bg-[#0670CC] text-white px-4"
-              onClick={() => handleStatusQuickFilter("low_stock")}
+              onClick={() => handleStatusQuickFilter("Endommagé")}
             >
-              Low Stock
+              produit endomagé
             </Button>
             <Button
               className="bg-[#0794FE] hover:bg-[#0670CC] text-white px-4"
-              onClick={() => handleStatusQuickFilter("available")}
+              onClick={() => handleStatusQuickFilter("Disponible")}
             >
-              Available Stock
+              produit disponible
             </Button>
           </div>
         </div>
@@ -238,13 +370,7 @@ const InventorySection = () => {
               </tr>
             </thead>
             <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={columnDefs.length} className="p-8 text-center text-gray-400 bg-white rounded-b-2xl">
-                    Loading inventory data...
-                  </td>
-                </tr>
-              ) : filteredRows.length === 0 ? (
+              {filteredRows.length === 0 ? (
                 <tr>
                   <td colSpan={columnDefs.length} className="p-8 text-center text-gray-400 bg-white rounded-b-2xl">
                     {t("no_data") || "No data found"}
@@ -252,12 +378,10 @@ const InventorySection = () => {
                 </tr>
               ) : (
                 filteredRows.slice(0, rowsPerPage).map((row, idx) => (
-                  <tr key={row.id || idx} className={`hover:bg-blue-50/60 transition-colors border-b last:border-b-0`}>
+                  <tr key={idx} className={`hover:bg-blue-50/60 transition-colors border-b last:border-b-0`}>
                     {columnDefs.map(col => (
                       <td key={col.key} className="px-4 py-4 text-sm whitespace-nowrap">
-                        {col.key === 'unit_price_ht' || col.key === 'total_cost' 
-                          ? `${row[col.key as keyof InventoryRow]} DZD`
-                          : row[col.key as keyof InventoryRow]}
+                        {row[col.key as keyof InventoryRow]}
                       </td>
                     ))}
                   </tr>
@@ -284,12 +408,6 @@ const InventorySection = () => {
           </div>
         </div>
       </div>
-      
-      <AddInventoryItemDialog
-        isOpen={isAddProductOpen}
-        onClose={() => setIsAddProductOpen(false)}
-        onSubmit={handleProductSubmit}
-      />
     </div>
   );
 };
