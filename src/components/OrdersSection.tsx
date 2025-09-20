@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -7,13 +7,16 @@ import { LanguageContext } from '@/contexts/LanguageContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import OrderDetailsModal from "@/components/OrderDetailsModal";
 import OrderFilterDialog from "@/components/OrderFilterDialog";
+import { merchantOrdersApi } from '@/services/api';
+import { toast } from '@/components/ui/use-toast';
 
 interface Order {
-  id: string;
-  supplier: string;
-  date: string;
+  id: number;
+  supplier_id?: number;
+  supplier_name: string;
+  order_date: string;
   amount: number;
-  status: 'confirmed' | 'pending' | 'cancelled';
+  status: 'pending' | 'delivered' | 'canceled';
 }
 
 interface OrdersSectionProps {
@@ -36,6 +39,7 @@ const OrdersSection = ({ onBack, onNavigateToBizz }: OrdersSectionProps) => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showOrderDetails, setShowOrderDetails] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<FilterState>({
     dateFrom: '',
     dateTo: '',
@@ -45,191 +49,48 @@ const OrdersSection = ({ onBack, onNavigateToBizz }: OrdersSectionProps) => {
     supplier: ''
   });
   
-  const [orders] = useState<Order[]>([
-    {
-      id: "10545",
-      supplier: "FRS Semmar",
-      date: "15/06/2025",
-      amount: 5000.00,
-      status: "confirmed"
-    },
-    {
-      id: "10546",
-      supplier: "Distributeur Alger",
-      date: "16/06/2025",
-      amount: 3200.50,
-      status: "pending"
-    },
-    {
-      id: "10547",
-      supplier: "Grossiste Oran",
-      date: "17/06/2025",
-      amount: 7800.75,
-      status: "confirmed"
-    },
-    {
-      id: "10548",
-      supplier: "FRS Ahmed",
-      date: "18/06/2025",
-      amount: 1500.00,
-      status: "cancelled"
-    },
-    {
-      id: "10549",
-      supplier: "Société Blida",
-      date: "19/06/2025",
-      amount: 4300.25,
-      status: "confirmed"
-    },
-    {
-      id: "10550",
-      supplier: "Import Export Annaba",
-      date: "20/06/2025",
-      amount: 6750.00,
-      status: "pending"
-    },
-    {
-      id: "10551",
-      supplier: "FRS Karim",
-      date: "21/06/2025",
-      amount: 2900.80,
-      status: "confirmed"
-    },
-    {
-      id: "10552",
-      supplier: "Distributeur Constantine",
-      date: "22/06/2025",
-      amount: 5500.60,
-      status: "pending"
-    },
-    {
-      id: "10553",
-      supplier: "Grossiste Tlemcen",
-      date: "23/06/2025",
-      amount: 3800.45,
-      status: "confirmed"
-    },
-    {
-      id: "10554",
-      supplier: "FRS Yacine",
-      date: "24/06/2025",
-      amount: 8200.30,
-      status: "cancelled"
-    },
-    {
-      id: "10555",
-      supplier: "Société Sétif",
-      date: "25/06/2025",
-      amount: 4700.15,
-      status: "confirmed"
-    },
-    {
-      id: "10556",
-      supplier: "Import Béjaïa",
-      date: "26/06/2025",
-      amount: 6100.90,
-      status: "pending"
-    },
-    {
-      id: "10557",
-      supplier: "FRS Malik",
-      date: "27/06/2025",
-      amount: 3500.75,
-      status: "confirmed"
-    },
-    {
-      id: "10558",
-      supplier: "Distributeur Batna",
-      date: "28/06/2025",
-      amount: 7300.40,
-      status: "pending"
-    },
-    {
-      id: "10559",
-      supplier: "Grossiste Mostaganem",
-      date: "29/06/2025",
-      amount: 2100.85,
-      status: "confirmed"
-    },
-    {
-      id: "10560",
-      supplier: "FRS Samir",
-      date: "30/06/2025",
-      amount: 5900.20,
-      status: "cancelled"
-    },
-    {
-      id: "10561",
-      supplier: "Société Djelfa",
-      date: "01/07/2025",
-      amount: 4200.55,
-      status: "confirmed"
-    },
-    {
-      id: "10562",
-      supplier: "Import Skikda",
-      date: "02/07/2025",
-      amount: 6800.70,
-      status: "pending"
-    },
-    {
-      id: "10563",
-      supplier: "FRS Rachid",
-      date: "03/07/2025",
-      amount: 3700.35,
-      status: "confirmed"
-    },
-    {
-      id: "10564",
-      supplier: "Distributeur Mascara",
-      date: "04/07/2025",
-      amount: 8500.95,
-      status: "pending"
-    },
-    {
-      id: "10565",
-      supplier: "Grossiste Tiaret",
-      date: "05/07/2025",
-      amount: 2800.40,
-      status: "confirmed"
-    },
-    {
-      id: "10566",
-      supplier: "FRS Omar",
-      date: "06/07/2025",
-      amount: 5300.65,
-      status: "cancelled"
-    },
-    {
-      id: "10567",
-      supplier: "Société Ouargla",
-      date: "07/07/2025",
-      amount: 4600.25,
-      status: "confirmed"
-    },
-    {
-      id: "10568",
-      supplier: "Import Ghardaïa",
-      date: "08/07/2025",
-      amount: 7100.80,
-      status: "pending"
-    },
-    {
-      id: "10569",
-      supplier: "FRS Farid",
-      date: "09/07/2025",
-      amount: 3900.50,
-      status: "confirmed"
-    }
-  ]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  // Fetch orders on mount
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        const data = await merchantOrdersApi.getAll();
+        
+        // Transform API data to component interface
+        const transformedOrders: Order[] = data.map(apiOrder => ({
+          id: apiOrder.id,
+          supplier_id: undefined, // Not in API response
+          supplier_name: apiOrder.supplier || 'Unknown Supplier',
+          order_date: apiOrder.date || new Date().toISOString(),
+          amount: apiOrder.amount || 0,
+          status: apiOrder.status === 'confirmed' ? 'delivered' : 
+                  apiOrder.status === 'cancelled' ? 'canceled' : 'pending'
+        }));
+        
+        setOrders(transformedOrders);
+      } catch (error) {
+        console.error('Failed to fetch orders:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load orders. Please try again.",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   const applyFilters = (orders: Order[]) => {
     return orders.filter(order => {
-      const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           order.supplier.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = order.id.toString().includes(searchTerm.toLowerCase()) ||
+                           order.supplier_name.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesStatus = !filters.status || order.status === filters.status;
-      const matchesSupplier = !filters.supplier || order.supplier.toLowerCase().includes(filters.supplier.toLowerCase());
+      const matchesSupplier = !filters.supplier || order.supplier_name.toLowerCase().includes(filters.supplier.toLowerCase());
       
       const matchesAmountMin = !filters.amountMin || order.amount >= parseFloat(filters.amountMin);
       const matchesAmountMax = !filters.amountMax || order.amount <= parseFloat(filters.amountMax);
@@ -242,11 +103,11 @@ const OrdersSection = ({ onBack, onNavigateToBizz }: OrdersSectionProps) => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'confirmed':
+      case 'delivered':
         return 'bg-green-100 text-green-800';
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
-      case 'cancelled':
+      case 'canceled':
         return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -325,12 +186,25 @@ const OrdersSection = ({ onBack, onNavigateToBizz }: OrdersSectionProps) => {
               </tr>
             </thead>
             <tbody>
-              {filteredOrders.map((order) => (
-                <tr key={order.id} className="border-b last:border-0 hover:bg-blue-50/40 transition-colors">
-                  <td className="px-4 py-3 text-sm">{order.id}</td>
-                  <td className="px-4 py-3 text-sm">{order.supplier}</td>
-                  <td className="px-4 py-3 text-sm">{order.date}</td>
-                  <td className="px-4 py-3 text-sm">{order.amount.toFixed(2)} DZD</td>
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="text-center text-gray-400 py-7 bg-white rounded-b-2xl">
+                    Loading orders...
+                  </td>
+                </tr>
+              ) : filteredOrders.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="text-center text-gray-400 py-7 bg-white rounded-b-2xl">
+                    {t('no_orders_found') || "No orders found."}
+                  </td>
+                </tr>
+              ) : (
+                filteredOrders.map((order) => (
+                  <tr key={order.id} className="border-b last:border-0 hover:bg-blue-50/40 transition-colors">
+                    <td className="px-4 py-3 text-sm">{order.id}</td>
+                    <td className="px-4 py-3 text-sm">{order.supplier_name}</td>
+                    <td className="px-4 py-3 text-sm">{new Date(order.order_date).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-sm">{order.amount.toFixed(2)} DZD</td>
                   <td className="px-4 py-3 text-sm">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 bg-green-500 rounded-full"></span>
@@ -356,13 +230,7 @@ const OrdersSection = ({ onBack, onNavigateToBizz }: OrdersSectionProps) => {
                     </div>
                   </td>
                 </tr>
-              ))}
-              {filteredOrders.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="text-center text-gray-400 py-7 bg-white rounded-b-2xl">
-                    {t('no_orders_found') || "No orders found."}
-                  </td>
-                </tr>
+                ))
               )}
             </tbody>
           </table>

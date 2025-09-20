@@ -10,6 +10,8 @@ import ProductCard from './ProductCard';
 import ProductDetail from './ProductDetail';
 import CartPage from './CartPage';
 import SupplierSection from './SupplierSection';
+import { merchantBizzApi, categoriesApi } from '@/services/api';
+import { toast } from '@/components/ui/use-toast';
 
 interface Seller {
   id: number;
@@ -62,6 +64,9 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartPopoverOpen, setCartPopoverOpen] = useState(false);
   const [messageSeller, setMessageSeller] = useState<Seller | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<string[]>(['All Products']);
+  const [loading, setLoading] = useState(true);
 
   // Hydrate cartItems from localStorage on mount
   useEffect(() => {
@@ -80,252 +85,61 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // New product listings (Coca Cola, Elio oils, Skor Civital) with random suppliers
-  const products: Product[] = [
-    // Elio Oil 2L
-    {
-      id: 101,
-      name: "Elio Oil 2L",
-      description: "Vegetable Oil - 2 Liter Bottle",
-      price: "350",
-      image: "/lovable-uploads/75fa4299-081c-4a60-b0f2-2e05b0a82ad4.png",
-      category: "Oils & Fats",
-      volume: "2 Liters",
-      packaging: "PET bottle",
-      storage: "Store at room temperature",
-      usage: "Cooking and frying",
-      sellers: [
-        {
-          id: 5,
-          name: "Atlas Alimentaire",
-          rating: "4.6",
-          reviews: 54,
-          price: "340",
-          isDefault: true,
-          quantityAvailable: 250,
-          deliveryAvailable: true,
-          paymentMethods: ["Cash", "Card"]
-        },
-        {
-          id: 8,
-          name: "Sarl NourFood",
-          rating: "4.9",
-          reviews: 112,
-          price: "350",
-          quantityAvailable: 110,
-          deliveryAvailable: true,
-          paymentMethods: ["Cash"]
-        },
-        {
-          id: 12,
-          name: "Epicerie Maroc",
-          rating: "4.7",
-          reviews: 78,
-          price: "345",
-          quantityAvailable: 45,
-          deliveryAvailable: false,
-          paymentMethods: ["Cash", "Card", "Cheque"]
+  // Fetch products and categories on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch products (bizz)
+        const bizzData = await merchantBizzApi.getAll();
+        
+        // Transform API data to Product format
+        const transformedProducts: Product[] = bizzData.map(bizz => ({
+          id: bizz.id,
+          name: bizz.product_name,
+          description: `${bizz.product_name} - Category ${bizz.category_id}`,
+          price: bizz.price.toString(),
+          image: "/placeholder.svg", // Default image
+          category: `Category ${bizz.category_id}`, // Will be mapped when categories are loaded
+          sellers: [{
+            id: bizz.boutique_id,
+            name: `Boutique ${bizz.boutique_id}`,
+            rating: bizz.rating?.toString() || "4.5",
+            reviews: bizz.reviews || 0,
+            price: bizz.price.toString(),
+            isDefault: true
+          }]
+        }));
+        
+        setProducts(transformedProducts);
+        
+        // Fetch categories
+        try {
+          const categoriesData = await categoriesApi.getAll();
+          const categoryNames = ['All Products', ...categoriesData.map(cat => cat.name)];
+          setCategories(categoryNames);
+        } catch (error) {
+          console.error('Failed to fetch categories:', error);
+          // Keep default categories if API fails
         }
-      ]
-    },
-    // Elio Oil 5L
-    {
-      id: 102,
-      name: "Elio Oil 5L",
-      description: "Vegetable Oil - 5 Liter Bottle",
-      price: "790",
-      image: "/lovable-uploads/c644764e-0ea6-4962-913f-1137b4e0e713.png",
-      category: "Oils & Fats",
-      volume: "5 Liters",
-      packaging: "Large PET bottle",
-      storage: "Store at room temperature",
-      usage: "Catering and large kitchens",
-      sellers: [
-        { id: 6, name: "Bled Distributeur", rating: "4.4", reviews: 99, price: "789", isDefault: true },
-        { id: 9, name: "Marché Express", rating: "4.8", reviews: 59, price: "795" },
-        { id: 15, name: "Djezzy Food Wholesale", rating: "4.5", reviews: 65, price: "780" }
-      ]
-    },
-    // Skor Civital 2KG
-    {
-      id: 103,
-      name: "Skor Civital 2KG",
-      description: "Refined sugar - 2 KG pack",
-      price: "290",
-      image: "/lovable-uploads/e74f37fd-6aa5-4408-9543-a9cce368970d.png",
-      category: "Sugar",
-      volume: "2 KG",
-      packaging: "Plastic pack",
-      storage: "Store in dry place",
-      usage: "Tea, baking, multi-use",
-      sellers: [
-        { id: 7, name: "AgroSweets", rating: "4.8", reviews: 77, price: "285", isDefault: true },
-        { id: 10, name: "Civital Centrale", rating: "4.6", reviews: 81, price: "290" },
-        { id: 11, name: "Ain FoodMarket", rating: "4.9", reviews: 63, price: "288" }
-      ]
-    },
-    // La Vache qui rit 24p
-    {
-      id: 104,
-      name: "La Vache qui rit 24p",
-      description: "Creamy cheese, 24 portions",
-      price: "450",
-      image: "/lovable-uploads/e7b1650b-c98e-4190-989c-e6153f13970f.png",
-      category: "Dairy Products",
-      volume: "24 portions",
-      packaging: "Round box",
-      storage: "Refrigerate after opening",
-      usage: "Spread, snacks, sandwiches",
-      sellers: [
-        { id: 13, name: "Dairy Market Plus", rating: "4.7", reviews: 82, price: "445", isDefault: true },
-        { id: 14, name: "Fromagerie Express", rating: "4.8", reviews: 65, price: "450" },
-        { id: 15, name: "SuperMart Distributors", rating: "4.6", reviews: 107, price: "455" }
-      ]
-    },
-    // Cheezy 24p
-    {
-      id: 105,
-      name: "Cheezy 24p",
-      description: "Spreadable processed cheese, 24 portions",
-      price: "390",
-      image: "/lovable-uploads/62fa08c2-a7b0-4852-90cc-e4621b3c1760.png",
-      category: "Dairy Products",
-      volume: "24 portions",
-      packaging: "Round box",
-      storage: "Refrigerate after opening",
-      usage: "Spread, snacks, sandwiches",
-      sellers: [
-        {
-          id: 16,
-          name: "Epicerie Maroc",
-          rating: "4.5",
-          reviews: 54,
-          price: "385",
-          isDefault: true,
-          quantityAvailable: 60,
-          deliveryAvailable: false,
-          paymentMethods: ["Cash"]
-        },
-        {
-          id: 17,
-          name: "Laiterie Maghreb",
-          rating: "4.8",
-          reviews: 103,
-          price: "390",
-          quantityAvailable: 120,
-          deliveryAvailable: true,
-          paymentMethods: ["Cash", "Card"]
-        },
-        {
-          id: 18,
-          name: "SuperMart Distributors",
-          rating: "4.7",
-          reviews: 91,
-          price: "395"
-        }
-      ]
-    },
-    // Random additional products
-    {
-      id: 106,
-      name: "Nestlé Water 1.5L",
-      description: "Pack of 6 bottles, spring water",
-      price: "210",
-      image: "/lovable-uploads/bc27ac7e-7ac9-405e-bf04-b04f5339fe06.png",
-      category: "Beverages",
-      volume: "1.5L x 6",
-      packaging: "Plastic bottles",
-      storage: "Store in cool dry place",
-      usage: "Daily hydration",
-      sellers: [
-        { id: 19, name: "Marché Express", rating: "4.6", reviews: 49, price: "210", isDefault: true },
-        { id: 20, name: "FreshMart", rating: "4.7", reviews: 37, price: "215" }
-      ]
-    },
-    {
-      id: 107,
-      name: "Barilla Spaghetti 500g",
-      description: "Classic Italian pasta",
-      price: "190",
-      image: "/placeholder.svg",
-      category: "Canned Foods",
-      volume: "500g",
-      packaging: "Plastic package",
-      storage: "Cool, dry place",
-      usage: "Pasta dishes",
-      sellers: [
-        { id: 21, name: "Epicerie Italia", rating: "4.8", reviews: 44, price: "189", isDefault: true },
-        { id: 22, name: "Bled Distributeur", rating: "4.5", reviews: 28, price: "190" }
-      ]
-    },
-    {
-      id: 108,
-      name: "Sunshine Chips",
-      description: "Crispy salted potato chips, 210g",
-      price: "120",
-      image: "/lovable-uploads/c09a307e-6df1-48ad-bf47-8beae7b89bcc.png", // Updated image here
-      category: "Snacks",
-      volume: "210g",
-      packaging: "Bag",
-      storage: "Store in dry place",
-      usage: "Snacking",
-      sellers: [
-        { id: 23, name: "SnackMania", rating: "4.4", reviews: 22, price: "119", isDefault: true },
-        { id: 24, name: "FreshMart", rating: "4.5", reviews: 19, price: "120" }
-      ]
-    },
-    {
-      id: 109,
-      name: "Oreo Pack 24p",
-      description: "Chocolate sandwich cookies, 24 pieces",
-      price: "250",
-      image: "/placeholder.svg",
-      category: "Snacks",
-      volume: "24 cookies",
-      packaging: "Box",
-      storage: "Store in cool dry place",
-      usage: "Snacks, tea time",
-      sellers: [
-        { id: 25, name: "SnackMania", rating: "4.5", reviews: 41, price: "248", isDefault: true },
-        { id: 26, name: "Epicerie Maroc", rating: "4.5", reviews: 34, price: "250" }
-      ]
-    },
-    {
-      id: 1,
-      name: "Coca-cola",
-      description: "2 liter bottle",
-      price: "150",
-      image: "/lovable-uploads/2772f3d5-06fc-4c62-a337-1fc9f51010b1.png",
-      category: "Beverages",
-      volume: "2 Liters",
-      packaging: "PET bottle with resealable cap",
-      storage: "Shelf stable and easy to store",
-      usage: "Ideal for supermarkets, convenience stores, and HoReCa",
-      sellers: [
-        { id: 1, name: "SuperMart Distributors", rating: "4.8", reviews: 245, price: "145", isDefault: true },
-        { id: 2, name: "Beverage Plus", rating: "4.6", reviews: 189, price: "150" },
-        { id: 3, name: "Wholesale Direct", rating: "4.7", reviews: 156, price: "148" }
-      ]
-    },
-    {
-      id: 2,
-      name: "Coca-cola",
-      description: "1 liter bottle",
-      price: "120",
-      image: "/lovable-uploads/2772f3d5-06fc-4c62-a337-1fc9f51010b1.png",
-      category: "Beverages",
-      volume: "1 Liter",
-      packaging: "PET bottle with resealable cap",
-      storage: "Shelf stable and easy to store",
-      usage: "Ideal for supermarkets, convenience stores, and HoReCa",
-      sellers: [
-        { id: 1, name: "SuperMart Distributors", rating: "4.8", reviews: 245, price: "115", isDefault: true },
-        { id: 2, name: "Beverage Plus", rating: "4.6", reviews: 189, price: "120" }
-      ]
-    }
-  ];
+        
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load products. Please try again.",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const categories = ['All Products', 'Beverages', 'Snacks', 'Cleaning', 'Meat & Poultry', 'Seafood', 'Dairy Products', 'Frozen Foods', 'Canned Foods'];
+    fetchData();
+  }, []);
+
+  // Remove static data - now loaded from API
 
   const filteredProducts = products.filter(product => {
     const matchesCategory = selectedCategory === 'All Products' || product.category === selectedCategory;
@@ -482,8 +296,13 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
         </div>
 
         {/* Product grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map(product => (
+        {loading ? (
+          <div className="text-center py-8">
+            <p className="text-gray-500">Loading products...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredProducts.map(product => (
             <div key={product.id} className="bg-white border border-blue-50 rounded-xl shadow hover:shadow-lg transition-shadow p-0 animate-fade-in flex flex-col hover-scale cursor-pointer"
               onClick={() => handleProductSelect(product)}
               style={{ minHeight: '320px' }}>
@@ -492,8 +311,9 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
                 onSelect={handleProductSelect}
               />
             </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

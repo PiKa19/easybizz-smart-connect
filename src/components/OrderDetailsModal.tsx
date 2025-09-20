@@ -22,11 +22,11 @@ import {
 } from "lucide-react";
 
 interface Order {
-  id: string;
-  supplier: string;
-  date: string;
+  id: number;
+  supplier_name: string;
+  order_date: string;
   amount: number;
-  status: 'confirmed' | 'pending' | 'cancelled';
+  status: 'pending' | 'delivered' | 'canceled';
 }
 
 interface OrderDetailsModalProps {
