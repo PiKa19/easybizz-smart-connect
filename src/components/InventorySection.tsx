@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { LanguageContext } from "@/contexts/LanguageContext";
 import { Filter, Plus } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+import AddInventoryItemDialog from "./AddInventoryItemDialog";
 // shadcn/ui dropdown menu
 import {
   DropdownMenu,
@@ -248,6 +249,8 @@ const InventorySection = () => {
 
   // One filter state per column
   const [filters, setFilters] = useState<Record<string, string>>({});
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [inventoryData, setInventoryData] = useState(DUMMY_INVENTORY);
 
   // Demo state, could integrate pagination here
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -258,14 +261,24 @@ const InventorySection = () => {
   };
 
   const handleAddProduct = () => {
-    toast({
-      title: t("add_product_title") || "Add Product",
-      description: t("add_product_placeholder") || "Feature coming soon! Here you can add new inventory products.",
-    });
+    setIsAddProductOpen(true);
+  };
+
+  const handleProductSubmit = (formData: any) => {
+    const newProduct = {
+      ...formData,
+      dateTime: new Date().toISOString().slice(0, 16).replace('T', ' '),
+      prixHT: parseFloat(formData.prixHT) || 0,
+      tva: parseFloat(formData.tva) || 0,
+      ttc: (parseFloat(formData.prixHT) || 0) * (1 + (parseFloat(formData.tva) || 0) / 100),
+      alertQty: parseInt(formData.alertQty) || 0,
+    };
+    
+    setInventoryData(prev => [newProduct, ...prev]);
   };
 
   const filteredRows = useMemo(() => {
-    return DUMMY_INVENTORY.filter(row =>
+    return inventoryData.filter(row =>
       columnDefs.every(col => {
         const filterVal = filters[col.key];
         if (!filterVal) return true;
@@ -280,7 +293,7 @@ const InventorySection = () => {
         return String(rowValue).toLowerCase().includes(filterVal.toLowerCase());
       })
     );
-  }, [filters]);
+  }, [filters, inventoryData]);
 
   return (
     <div className="space-y-6">
@@ -408,6 +421,12 @@ const InventorySection = () => {
           </div>
         </div>
       </div>
+      
+      <AddInventoryItemDialog
+        isOpen={isAddProductOpen}
+        onClose={() => setIsAddProductOpen(false)}
+        onSubmit={handleProductSubmit}
+      />
     </div>
   );
 };
