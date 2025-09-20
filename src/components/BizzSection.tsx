@@ -3,13 +3,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Search, ShoppingCart, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Search, ShoppingCart, ShoppingBag, Loader2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { LanguageContext } from '@/contexts/LanguageContext';
 import ProductCard from './ProductCard';
 import ProductDetail from './ProductDetail';
 import CartPage from './CartPage';
 import SupplierSection from './SupplierSection';
+import ApiFallback from './ApiFallback';
+import { useSafeBizz } from '@/hooks/useSafeApi';
+import type { Bizz as ApiBizz } from '@/lib/api';
 
 interface Seller {
   id: number;
@@ -63,6 +66,9 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
   const [cartPopoverOpen, setCartPopoverOpen] = useState(false);
   const [messageSeller, setMessageSeller] = useState<Seller | null>(null);
 
+  // Safe API integration
+  const { data: apiBizz, loading, error, refetch } = useSafeBizz();
+
   // Hydrate cartItems from localStorage on mount
   useEffect(() => {
     const storedCart = localStorage.getItem(CART_STORAGE_KEY);
@@ -80,254 +86,109 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // New product listings (Coca Cola, Elio oils, Skor Civital) with random suppliers
-  const products: Product[] = [
-    // Elio Oil 2L
-    {
-      id: 101,
-      name: "Elio Oil 2L",
-      description: "Vegetable Oil - 2 Liter Bottle",
-      price: "350",
-      image: "/lovable-uploads/75fa4299-081c-4a60-b0f2-2e05b0a82ad4.png",
-      category: "Oils & Fats",
-      volume: "2 Liters",
-      packaging: "PET bottle",
-      storage: "Store at room temperature",
-      usage: "Cooking and frying",
+  // Transform API data to Product format with proper validation
+  const transformApiBizzToProducts = (apiBizz: any): Product[] => {
+    console.log('🔍 Raw API data:', apiBizz);
+    console.log('🔍 Data type:', typeof apiBizz);
+    console.log('🔍 Is array:', Array.isArray(apiBizz));
+    
+    // Handle different response formats
+    if (!apiBizz) {
+      console.log('❌ No API data received');
+      return [];
+    }
+    
+    // If it's not an array, try to extract data from common response formats
+    let dataArray: any[] = [];
+    
+    if (Array.isArray(apiBizz)) {
+      dataArray = apiBizz;
+    } else if (apiBizz.data && Array.isArray(apiBizz.data)) {
+      dataArray = apiBizz.data;
+    } else if (apiBizz.results && Array.isArray(apiBizz.results)) {
+      dataArray = apiBizz.results;
+    } else if (apiBizz.items && Array.isArray(apiBizz.items)) {
+      dataArray = apiBizz.items;
+    } else {
+      console.log('❌ API data is not in expected format:', apiBizz);
+      return [];
+    }
+    
+    console.log('✅ Extracted data array:', dataArray);
+    
+    return dataArray.map((bizz, index) => ({
+      id: bizz.id || index,
+      name: bizz.product_name || bizz.name || `Product ${index + 1}`,
+      description: `${bizz.product_name || bizz.name || `Product ${index + 1}`} - Product from API`,
+      price: (bizz.price || 0).toString(),
+      image: "/placeholder.svg", // Default image since API doesn't provide images
+      category: "API Products", // Default category since API doesn't provide categories
+      volume: "Various",
+      packaging: "Standard",
+      storage: "Store as per manufacturer instructions",
+      usage: "General use",
       sellers: [
         {
-          id: 5,
-          name: "Atlas Alimentaire",
-          rating: "4.6",
-          reviews: 54,
-          price: "340",
+          id: bizz.boutique_id || bizz.store_id || index,
+          name: `Boutique ${bizz.boutique_id || bizz.store_id || index}`,
+          rating: (bizz.rating || 4.0).toString(),
+          reviews: bizz.reviews || 0,
+          price: (bizz.price || 0).toString(),
           isDefault: true,
-          quantityAvailable: 250,
+          quantityAvailable: 100,
           deliveryAvailable: true,
           paymentMethods: ["Cash", "Card"]
-        },
-        {
-          id: 8,
-          name: "Sarl NourFood",
-          rating: "4.9",
-          reviews: 112,
-          price: "350",
-          quantityAvailable: 110,
-          deliveryAvailable: true,
-          paymentMethods: ["Cash"]
-        },
-        {
-          id: 12,
-          name: "Epicerie Maroc",
-          rating: "4.7",
-          reviews: 78,
-          price: "345",
-          quantityAvailable: 45,
-          deliveryAvailable: false,
-          paymentMethods: ["Cash", "Card", "Cheque"]
         }
       ]
-    },
-    // Elio Oil 5L
+    }));
+  };
+
+  // Get products from API or fallback to empty array with error handling
+  const products: Product[] = (() => {
+    try {
+      if (!apiBizz) return [];
+      return transformApiBizzToProducts(apiBizz);
+    } catch (error) {
+      console.error('❌ Error transforming API data:', error);
+      return [];
+    }
+  })();
+
+  // Fallback products when API fails
+  const fallbackProducts: Product[] = [
     {
-      id: 102,
-      name: "Elio Oil 5L",
-      description: "Vegetable Oil - 5 Liter Bottle",
-      price: "790",
-      image: "/lovable-uploads/c644764e-0ea6-4962-913f-1137b4e0e713.png",
-      category: "Oils & Fats",
-      volume: "5 Liters",
-      packaging: "Large PET bottle",
-      storage: "Store at room temperature",
-      usage: "Catering and large kitchens",
-      sellers: [
-        { id: 6, name: "Bled Distributeur", rating: "4.4", reviews: 99, price: "789", isDefault: true },
-        { id: 9, name: "Marché Express", rating: "4.8", reviews: 59, price: "795" },
-        { id: 15, name: "Djezzy Food Wholesale", rating: "4.5", reviews: 65, price: "780" }
-      ]
-    },
-    // Skor Civital 2KG
-    {
-      id: 103,
-      name: "Skor Civital 2KG",
-      description: "Refined sugar - 2 KG pack",
-      price: "290",
-      image: "/lovable-uploads/e74f37fd-6aa5-4408-9543-a9cce368970d.png",
-      category: "Sugar",
-      volume: "2 KG",
-      packaging: "Plastic pack",
-      storage: "Store in dry place",
-      usage: "Tea, baking, multi-use",
-      sellers: [
-        { id: 7, name: "AgroSweets", rating: "4.8", reviews: 77, price: "285", isDefault: true },
-        { id: 10, name: "Civital Centrale", rating: "4.6", reviews: 81, price: "290" },
-        { id: 11, name: "Ain FoodMarket", rating: "4.9", reviews: 63, price: "288" }
-      ]
-    },
-    // La Vache qui rit 24p
-    {
-      id: 104,
-      name: "La Vache qui rit 24p",
-      description: "Creamy cheese, 24 portions",
-      price: "450",
-      image: "/lovable-uploads/e7b1650b-c98e-4190-989c-e6153f13970f.png",
-      category: "Dairy Products",
-      volume: "24 portions",
-      packaging: "Round box",
-      storage: "Refrigerate after opening",
-      usage: "Spread, snacks, sandwiches",
-      sellers: [
-        { id: 13, name: "Dairy Market Plus", rating: "4.7", reviews: 82, price: "445", isDefault: true },
-        { id: 14, name: "Fromagerie Express", rating: "4.8", reviews: 65, price: "450" },
-        { id: 15, name: "SuperMart Distributors", rating: "4.6", reviews: 107, price: "455" }
-      ]
-    },
-    // Cheezy 24p
-    {
-      id: 105,
-      name: "Cheezy 24p",
-      description: "Spreadable processed cheese, 24 portions",
-      price: "390",
-      image: "/lovable-uploads/62fa08c2-a7b0-4852-90cc-e4621b3c1760.png",
-      category: "Dairy Products",
-      volume: "24 portions",
-      packaging: "Round box",
-      storage: "Refrigerate after opening",
-      usage: "Spread, snacks, sandwiches",
+      id: 999,
+      name: "API Connection Issue",
+      description: "Unable to load products from API. Please check your connection.",
+      price: "0",
+      image: "/placeholder.svg",
+      category: "System",
+      volume: "N/A",
+      packaging: "N/A",
+      storage: "N/A",
+      usage: "Debugging",
       sellers: [
         {
-          id: 16,
-          name: "Epicerie Maroc",
-          rating: "4.5",
-          reviews: 54,
-          price: "385",
+          id: 999,
+          name: "System",
+          rating: "0.0",
+          reviews: 0,
+          price: "0",
           isDefault: true,
-          quantityAvailable: 60,
+          quantityAvailable: 0,
           deliveryAvailable: false,
-          paymentMethods: ["Cash"]
-        },
-        {
-          id: 17,
-          name: "Laiterie Maghreb",
-          rating: "4.8",
-          reviews: 103,
-          price: "390",
-          quantityAvailable: 120,
-          deliveryAvailable: true,
-          paymentMethods: ["Cash", "Card"]
-        },
-        {
-          id: 18,
-          name: "SuperMart Distributors",
-          rating: "4.7",
-          reviews: 91,
-          price: "395"
+          paymentMethods: []
         }
-      ]
-    },
-    // Random additional products
-    {
-      id: 106,
-      name: "Nestlé Water 1.5L",
-      description: "Pack of 6 bottles, spring water",
-      price: "210",
-      image: "/lovable-uploads/bc27ac7e-7ac9-405e-bf04-b04f5339fe06.png",
-      category: "Beverages",
-      volume: "1.5L x 6",
-      packaging: "Plastic bottles",
-      storage: "Store in cool dry place",
-      usage: "Daily hydration",
-      sellers: [
-        { id: 19, name: "Marché Express", rating: "4.6", reviews: 49, price: "210", isDefault: true },
-        { id: 20, name: "FreshMart", rating: "4.7", reviews: 37, price: "215" }
-      ]
-    },
-    {
-      id: 107,
-      name: "Barilla Spaghetti 500g",
-      description: "Classic Italian pasta",
-      price: "190",
-      image: "/placeholder.svg",
-      category: "Canned Foods",
-      volume: "500g",
-      packaging: "Plastic package",
-      storage: "Cool, dry place",
-      usage: "Pasta dishes",
-      sellers: [
-        { id: 21, name: "Epicerie Italia", rating: "4.8", reviews: 44, price: "189", isDefault: true },
-        { id: 22, name: "Bled Distributeur", rating: "4.5", reviews: 28, price: "190" }
-      ]
-    },
-    {
-      id: 108,
-      name: "Sunshine Chips",
-      description: "Crispy salted potato chips, 210g",
-      price: "120",
-      image: "/lovable-uploads/c09a307e-6df1-48ad-bf47-8beae7b89bcc.png", // Updated image here
-      category: "Snacks",
-      volume: "210g",
-      packaging: "Bag",
-      storage: "Store in dry place",
-      usage: "Snacking",
-      sellers: [
-        { id: 23, name: "SnackMania", rating: "4.4", reviews: 22, price: "119", isDefault: true },
-        { id: 24, name: "FreshMart", rating: "4.5", reviews: 19, price: "120" }
-      ]
-    },
-    {
-      id: 109,
-      name: "Oreo Pack 24p",
-      description: "Chocolate sandwich cookies, 24 pieces",
-      price: "250",
-      image: "/placeholder.svg",
-      category: "Snacks",
-      volume: "24 cookies",
-      packaging: "Box",
-      storage: "Store in cool dry place",
-      usage: "Snacks, tea time",
-      sellers: [
-        { id: 25, name: "SnackMania", rating: "4.5", reviews: 41, price: "248", isDefault: true },
-        { id: 26, name: "Epicerie Maroc", rating: "4.5", reviews: 34, price: "250" }
-      ]
-    },
-    {
-      id: 1,
-      name: "Coca-cola",
-      description: "2 liter bottle",
-      price: "150",
-      image: "/lovable-uploads/2772f3d5-06fc-4c62-a337-1fc9f51010b1.png",
-      category: "Beverages",
-      volume: "2 Liters",
-      packaging: "PET bottle with resealable cap",
-      storage: "Shelf stable and easy to store",
-      usage: "Ideal for supermarkets, convenience stores, and HoReCa",
-      sellers: [
-        { id: 1, name: "SuperMart Distributors", rating: "4.8", reviews: 245, price: "145", isDefault: true },
-        { id: 2, name: "Beverage Plus", rating: "4.6", reviews: 189, price: "150" },
-        { id: 3, name: "Wholesale Direct", rating: "4.7", reviews: 156, price: "148" }
-      ]
-    },
-    {
-      id: 2,
-      name: "Coca-cola",
-      description: "1 liter bottle",
-      price: "120",
-      image: "/lovable-uploads/2772f3d5-06fc-4c62-a337-1fc9f51010b1.png",
-      category: "Beverages",
-      volume: "1 Liter",
-      packaging: "PET bottle with resealable cap",
-      storage: "Shelf stable and easy to store",
-      usage: "Ideal for supermarkets, convenience stores, and HoReCa",
-      sellers: [
-        { id: 1, name: "SuperMart Distributors", rating: "4.8", reviews: 245, price: "115", isDefault: true },
-        { id: 2, name: "Beverage Plus", rating: "4.6", reviews: 189, price: "120" }
       ]
     }
   ];
 
+  // Use fallback products if API fails and no data
+  const displayProducts = products.length > 0 ? products : (error ? fallbackProducts : []);
+
   const categories = ['All Products', 'Beverages', 'Snacks', 'Cleaning', 'Meat & Poultry', 'Seafood', 'Dairy Products', 'Frozen Foods', 'Canned Foods'];
 
-  const filteredProducts = products.filter(product => {
+  const filteredProducts = displayProducts.filter(product => {
     const matchesCategory = selectedCategory === 'All Products' || product.category === selectedCategory;
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
@@ -481,24 +342,65 @@ const BizzSection = ({ onBack }: BizzSectionProps) => {
           ))}
         </div>
 
-        {/* Product grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map(product => (
-            <div key={product.id} className="bg-white border border-blue-50 rounded-xl shadow hover:shadow-lg transition-shadow p-0 animate-fade-in flex flex-col hover-scale cursor-pointer"
-              onClick={() => handleProductSelect(product)}
-              style={{ minHeight: '320px' }}>
-              <ProductCard 
-                product={product} 
-                onSelect={handleProductSelect}
-              />
+        {/* Loading state */}
+        {loading && (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-[#0794FE]" />
+            <span className="ml-2 text-[#0794FE]">Loading products...</span>
+          </div>
+        )}
+
+        {/* Error state */}
+        {error && (
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <p className="text-red-600 mb-4">Error loading products: {error}</p>
+              <Button onClick={refetch} className="bg-[#0794FE] hover:bg-[#065fad] text-white">
+                Retry
+              </Button>
             </div>
-          ))}
-        </div>
+          </div>
+        )}
+
+        {/* Product grid */}
+        {!loading && !error && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredProducts.map(product => (
+              <div key={product.id} className="bg-white border border-blue-50 rounded-xl shadow hover:shadow-lg transition-shadow p-0 animate-fade-in flex flex-col hover-scale cursor-pointer"
+                onClick={() => handleProductSelect(product)}
+                style={{ minHeight: '320px' }}>
+                <ProductCard 
+                  product={product} 
+                  onSelect={handleProductSelect}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* No products state */}
+        {!loading && !error && filteredProducts.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500">No products found</p>
+          </div>
+        )}
       </div>
     </div>
   );
 
   const renderContent = () => {
+    // Show fallback if API failed and we're in products view
+    if (currentView === 'products' && error && !loading) {
+      return (
+        <ApiFallback
+          title="Products"
+          error={error}
+          onRetry={refetch}
+          onTestApi={() => window.open('http://5.196.209.135/api/merchant/bizz', '_blank')}
+        />
+      );
+    }
+
     switch (currentView) {
       case 'products':
         return renderProductsView();
