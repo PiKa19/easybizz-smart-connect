@@ -3,12 +3,9 @@ import React, { useState, useMemo, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LanguageContext } from "@/contexts/LanguageContext";
-import { Filter, Plus, Loader2 } from "lucide-react";
+import { Filter, Plus } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import AddInventoryItemDialog from "./AddInventoryItemDialog";
-import ApiFallback from "./ApiFallback";
-import { useSafeMerchantInventory } from '@/hooks/useSafeApi';
-import type { MerchantInventory } from '@/lib/api';
 // shadcn/ui dropdown menu
 import {
   DropdownMenu,
@@ -253,66 +250,7 @@ const InventorySection = () => {
   // One filter state per column
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
-  
-  // Safe API integration
-  const { data: apiInventory, loading, error, refetch } = useSafeMerchantInventory();
-
-  // Transform API data to InventoryRow format with proper validation
-  const transformApiInventoryToRows = (apiData: any): InventoryRow[] => {
-    console.log('🔍 Raw Inventory API data:', apiData);
-    console.log('🔍 Data type:', typeof apiData);
-    console.log('🔍 Is array:', Array.isArray(apiData));
-    
-    // Handle different response formats
-    if (!apiData) {
-      console.log('❌ No Inventory API data received');
-      return [];
-    }
-    
-    // If it's not an array, try to extract data from common response formats
-    let dataArray: any[] = [];
-    
-    if (Array.isArray(apiData)) {
-      dataArray = apiData;
-    } else if (apiData.data && Array.isArray(apiData.data)) {
-      dataArray = apiData.data;
-    } else if (apiData.results && Array.isArray(apiData.results)) {
-      dataArray = apiData.results;
-    } else if (apiData.items && Array.isArray(apiData.items)) {
-      dataArray = apiData.items;
-    } else {
-      console.log('❌ Inventory API data is not in expected format:', apiData);
-      return [];
-    }
-    
-    console.log('✅ Extracted inventory data array:', dataArray);
-    
-    return dataArray.map((item, index) => ({
-      product: item.product_name || item.name || `Product ${index + 1}`,
-      ref: `REF-${item.id || index}`,
-      codebar: item.barcode || `BC-${item.id || index}`,
-      dateTime: new Date().toISOString().slice(0, 16).replace('T', ' '),
-      fabricationDate: new Date().toISOString().slice(0, 10),
-      perimationDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-      prixHT: item.unit_price_ht || item.unit_price || 0,
-      tva: 19, // Default VAT
-      ttc: (item.unit_price_ht || item.unit_price || 0) * 1.19,
-      status: (item.current_quantity || 0) > 0 ? "Disponible" : "Rupture",
-      alertQty: 10, // Default alert quantity
-      alertDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-      supplier: item.supplier_name || item.supplier || "Unknown Supplier"
-    }));
-  };
-
-  const inventoryData: InventoryRow[] = (() => {
-    try {
-      if (!apiInventory) return [];
-      return transformApiInventoryToRows(apiInventory);
-    } catch (error) {
-      console.error('❌ Error transforming inventory API data:', error);
-      return [];
-    }
-  })();
+  const [inventoryData, setInventoryData] = useState(DUMMY_INVENTORY);
 
   // Demo state, could integrate pagination here
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -356,18 +294,6 @@ const InventorySection = () => {
       })
     );
   }, [filters, inventoryData]);
-
-  // Show fallback if API failed
-  if (error && !loading) {
-    return (
-      <ApiFallback
-        title="Inventory"
-        error={error}
-        onRetry={refetch}
-        onTestApi={() => window.open('http://5.196.209.135/api/merchant/inventory', '_blank')}
-      />
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -446,59 +372,37 @@ const InventorySection = () => {
             </Button>
           </div>
         </div>
-        {/* Loading state */}
-        {loading && (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-[#0794FE]" />
-            <span className="ml-2 text-[#0794FE]">Loading inventory...</span>
-          </div>
-        )}
-
-        {/* Error state */}
-        {error && (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-center">
-              <p className="text-red-600 mb-4">Error loading inventory: {error}</p>
-              <Button onClick={refetch} className="bg-[#0794FE] hover:bg-[#065fad] text-white">
-                Retry
-              </Button>
-            </div>
-          </div>
-        )}
-
         {/* Table Wrapper */}
-        {!loading && !error && (
-          <div className="overflow-x-auto mt-2">
-            <table className="w-full min-w-[900px]">
-              <thead>
-                <tr className="bg-[#0794FE] text-white">
-                  {columnDefs.map(col => (
-                    <th key={col.key} className="px-4 py-3 text-left text-sm font-medium first:rounded-tl-2xl last:rounded-tr-2xl">{col.label}</th>
-                  ))}
+        <div className="overflow-x-auto mt-2">
+          <table className="w-full min-w-[900px]">
+            <thead>
+              <tr className="bg-[#0794FE] text-white">
+                {columnDefs.map(col => (
+                  <th key={col.key} className="px-4 py-3 text-left text-sm font-medium first:rounded-tl-2xl last:rounded-tr-2xl">{col.label}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filteredRows.length === 0 ? (
+                <tr>
+                  <td colSpan={columnDefs.length} className="p-8 text-center text-gray-400 bg-white rounded-b-2xl">
+                    {t("no_data") || "No data found"}
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {filteredRows.length === 0 ? (
-                  <tr>
-                    <td colSpan={columnDefs.length} className="p-8 text-center text-gray-400 bg-white rounded-b-2xl">
-                      {t("no_data") || "No data found"}
-                    </td>
+              ) : (
+                filteredRows.slice(0, rowsPerPage).map((row, idx) => (
+                  <tr key={idx} className={`hover:bg-blue-50/60 transition-colors border-b last:border-b-0`}>
+                    {columnDefs.map(col => (
+                      <td key={col.key} className="px-4 py-4 text-sm whitespace-nowrap">
+                        {row[col.key as keyof InventoryRow]}
+                      </td>
+                    ))}
                   </tr>
-                ) : (
-                  filteredRows.slice(0, rowsPerPage).map((row, idx) => (
-                    <tr key={idx} className={`hover:bg-blue-50/60 transition-colors border-b last:border-b-0`}>
-                      {columnDefs.map(col => (
-                        <td key={col.key} className="px-4 py-4 text-sm whitespace-nowrap">
-                          {row[col.key as keyof InventoryRow]}
-                        </td>
-                      ))}
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
         <div className="flex items-center justify-between px-6 py-4 border-t bg-gray-50 rounded-b-2xl">
           <div className="text-sm text-gray-600 flex items-center gap-2">
             {t("rows_per_page") || "Rows per page"}:

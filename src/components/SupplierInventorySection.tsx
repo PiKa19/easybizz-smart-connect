@@ -7,9 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Search, Edit, Trash2, AlertTriangle, Package, TrendingUp, TrendingDown, Loader2 } from 'lucide-react';
-import { useSupplierInventoryCrud } from '@/hooks/useApi';
-import type { SupplierInventory } from '@/lib/api';
+import { Plus, Search, Edit, Trash2, AlertTriangle, Package, TrendingUp, TrendingDown } from 'lucide-react';
 
 interface InventoryItem {
   id: string;
@@ -44,30 +42,79 @@ const SupplierInventorySection = () => {
     supplier: ''
   });
 
-  // API integration
-  const { data: apiInventory, loading, error, refetch, create, update, remove } = useSupplierInventoryCrud();
-
-  // Transform API data to InventoryItem format
-  const transformApiInventoryToItems = (apiData: SupplierInventory[]): InventoryItem[] => {
-    if (!apiData) return [];
-    
-    return apiData.map((item) => ({
-      id: item.id.toString(),
-      name: item.product_name,
-      sku: `SKU-${item.id}`,
-      category: `Category ${item.category_id}`,
-      currentStock: item.current_quantity,
-      minStock: 10, // Default minimum stock
-      maxStock: 100, // Default maximum stock
-      unitPrice: item.unit_price,
-      totalValue: item.total_cost,
-      lastRestocked: new Date().toISOString().slice(0, 10),
-      supplier: 'Self',
-      status: item.status ? 'In Stock' : 'Out of Stock'
-    }));
-  };
-
-  const inventory: InventoryItem[] = apiInventory ? transformApiInventoryToItems(apiInventory) : [];
+  // Mock inventory data
+  const [inventory, setInventory] = useState<InventoryItem[]>([
+    {
+      id: '1',
+      name: 'Coca-Cola 2L',
+      sku: 'CC-2L-001',
+      category: 'Beverages',
+      currentStock: 150,
+      minStock: 50,
+      maxStock: 300,
+      unitPrice: 150,
+      totalValue: 22500,
+      lastRestocked: '2024-01-10',
+      supplier: 'Coca-Cola Algeria',
+      status: 'In Stock'
+    },
+    {
+      id: '2',
+      name: 'Elio Oil 5L',
+      sku: 'EO-5L-002',
+      category: 'Oils & Fats',
+      currentStock: 25,
+      minStock: 30,
+      maxStock: 100,
+      unitPrice: 790,
+      totalValue: 19750,
+      lastRestocked: '2024-01-08',
+      supplier: 'Elio Industries',
+      status: 'Low Stock'
+    },
+    {
+      id: '3',
+      name: 'Skor Civital 2KG',
+      sku: 'SC-2K-003',
+      category: 'Sugar',
+      currentStock: 0,
+      minStock: 20,
+      maxStock: 80,
+      unitPrice: 290,
+      totalValue: 0,
+      lastRestocked: '2024-01-05',
+      supplier: 'Civital',
+      status: 'Out of Stock'
+    },
+    {
+      id: '4',
+      name: 'La Vache qui rit 24p',
+      sku: 'LV-24P-004',
+      category: 'Dairy',
+      currentStock: 85,
+      minStock: 40,
+      maxStock: 120,
+      unitPrice: 450,
+      totalValue: 38250,
+      lastRestocked: '2024-01-12',
+      supplier: 'Fromageries Bel',
+      status: 'In Stock'
+    },
+    {
+      id: '5',
+      name: 'Cheezy 24p',
+      sku: 'CZ-24P-005',
+      category: 'Dairy',
+      currentStock: 200,
+      minStock: 60,
+      maxStock: 150,
+      unitPrice: 390,
+      totalValue: 78000,
+      lastRestocked: '2024-01-15',
+      supplier: 'Local Dairy Co',
+      status: 'Overstocked'
+    }
+  ]);
 
   const categories = ['all', 'Beverages', 'Oils & Fats', 'Sugar', 'Dairy', 'Snacks'];
   const statuses = ['all', 'In Stock', 'Low Stock', 'Out of Stock', 'Overstocked'];
@@ -353,43 +400,7 @@ const SupplierInventorySection = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {/* Loading state */}
-                {loading && (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-12 text-center">
-                      <div className="flex items-center justify-center">
-                        <Loader2 className="w-6 h-6 animate-spin text-[#0794FE] mr-2" />
-                        <span className="text-[#0794FE]">Loading inventory...</span>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-
-                {/* Error state */}
-                {error && (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-12 text-center">
-                      <div className="text-center">
-                        <p className="text-red-600 mb-4">Error loading inventory: {error}</p>
-                        <Button onClick={refetch} className="bg-[#0794FE] hover:bg-[#065fad] text-white">
-                          Retry
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-
-                {/* No data state */}
-                {!loading && !error && filteredInventory.length === 0 && (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
-                      No inventory items found
-                    </td>
-                  </tr>
-                )}
-
-                {/* Data rows */}
-                {!loading && !error && filteredInventory.map((item) => (
+                {filteredInventory.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
