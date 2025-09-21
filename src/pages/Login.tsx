@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { LanguageContext } from "@/contexts/LanguageContext";
+import { apiService } from "@/lib/api";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -23,6 +24,8 @@ const Login = () => {
 
     // Check for the specific allowed user
     if (email === "baraka@gmail.com" && password === "baraka123") {
+      // Set authentication token for API requests
+      apiService.setAuthToken('mock_auth_token_baraka_user');
       navigate('/dashboard');
     } else {
       setError("Invalid email or password. Please use baraka@gmail.com with password baraka123");
