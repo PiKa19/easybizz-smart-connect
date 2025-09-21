@@ -13,8 +13,7 @@ import {
   LogOut,
   Search,
   Menu,
-  X,
-  Wrench
+  X
 } from 'lucide-react';
 import { LanguageContext } from '@/contexts/LanguageContext';
 import UserProfile from './UserProfile';
@@ -30,9 +29,6 @@ import InventorySection from "./InventorySection";
 import HistorySection from "./HistorySection";
 import NotificationSection from "./NotificationSection";
 import SettingsSection from "./SettingsSection";
-import ApiTestComponent from "./ApiTestComponent";
-import ApiResponseInspector from "./ApiResponseInspector";
-import ErrorBoundary from "./ErrorBoundary";
 // Extracted components:
 import DashboardHeader from './dashboard/DashboardHeader';
 import DashboardSidebar from './dashboard/DashboardSidebar';
@@ -68,8 +64,6 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     { id: 'historique', label: t('historique'), icon: History },
     { id: 'notification', label: t('notification'), icon: Bell },
     { id: 'cashier', label: t('cashier'), icon: Calculator },
-    { id: 'api-test', label: 'API Test', icon: Wrench },
-    { id: 'api-inspector', label: 'API Inspector', icon: Wrench },
     { id: 'settings', label: t('settings'), icon: Settings },
   ];
 
@@ -123,11 +117,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
       case 'boutique':
         return <BoutiqueSection onBack={() => setActiveSection('home')} />;
       case 'bizz':
-        return (
-          <ErrorBoundary>
-            <BizzSection onBack={() => setActiveSection('home')} />
-          </ErrorBoundary>
-        );
+        return <BizzSection onBack={() => setActiveSection('home')} />;
       case 'products':
         return <ProductsSection onBack={() => setActiveSection('home')} />;
       case 'orders':
@@ -142,15 +132,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
       case 'cashier':
         return <CashierSection onBack={() => setActiveSection('home')} />;
       case 'inventory':
-        return (
-          <ErrorBoundary>
-            <InventorySection />
-          </ErrorBoundary>
-        );
-      case 'api-test':
-        return <ApiTestComponent />;
-      case 'api-inspector':
-        return <ApiResponseInspector />;
+        return <InventorySection />;
       case 'historique':
         return <HistorySection />;
       case 'notification':
