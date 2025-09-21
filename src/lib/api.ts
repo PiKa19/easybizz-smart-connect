@@ -140,7 +140,7 @@ class ApiService {
 
     // Add Authorization header if token exists
     if (this.authToken) {
-      defaultHeaders['Authorization'] = `Bearer ${this.authToken}`;
+      (defaultHeaders as any)['Authorization'] = `Bearer ${this.authToken}`;
     }
 
     const config: RequestInit = {
