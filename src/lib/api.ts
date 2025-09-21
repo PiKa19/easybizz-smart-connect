@@ -1,5 +1,5 @@
 // API Configuration and Service Functions
-const API_BASE_URL = 'http://5.196.209.135/api';
+const API_BASE_URL = '/api';
 
 // Types for API responses
 export interface Bizz {
@@ -121,9 +121,6 @@ class ApiService {
     const defaultHeaders = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Accept, Authorization',
     };
 
     const config: RequestInit = {
