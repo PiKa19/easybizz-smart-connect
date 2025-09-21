@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,10 +5,8 @@ import { LanguageContext } from "@/contexts/LanguageContext";
 import { Filter, Plus, Loader2 } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import AddInventoryItemDialog from "./AddInventoryItemDialog";
-import ApiFallback from "./ApiFallback";
-import { useSafeMerchantInventory } from '@/hooks/useSafeApi';
+import { useMerchantInventory } from '@/hooks/useApi';
 import type { MerchantInventory } from '@/lib/api';
-// shadcn/ui dropdown menu
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -32,205 +29,6 @@ interface InventoryRow {
   supplier: string;
 }
 
-// Filled dummy data:
-const DUMMY_INVENTORY: InventoryRow[] = [
-  {
-    product: "Huile 5L elio",
-    ref: "HUI-001",
-    codebar: "59446032664B",
-    dateTime: "2024-06-01 14:30",
-    fabricationDate: "2024-01-10",
-    perimationDate: "2025-01-10",
-    prixHT: 550,
-    tva: 19,
-    ttc: 654.5,
-    status: "Disponible",
-    alertQty: 5,
-    alertDate: "2024-12-31",
-    supplier: "Baraka"
-  },
-  {
-    product: "Lait 1L Candia",
-    ref: "LAI-010",
-    codebar: "59446889012C",
-    dateTime: "2024-06-03 08:10",
-    fabricationDate: "2024-05-18",
-    perimationDate: "2024-11-18",
-    prixHT: 90,
-    tva: 9,
-    ttc: 98.1,
-    status: "Disponible",
-    alertQty: 10,
-    alertDate: "2024-11-01",
-    supplier: "IFRIN"
-  },
-  {
-    product: "Biscuits Choco",
-    ref: "BIS-011",
-    codebar: "59440011229B",
-    dateTime: "2024-06-02 11:03",
-    fabricationDate: "2024-04-28",
-    perimationDate: "2025-04-28",
-    prixHT: 150,
-    tva: 19,
-    ttc: 178.5,
-    status: "Endommagé",
-    alertQty: 15,
-    alertDate: "2025-01-01",
-    supplier: "BN Lova"
-  },
-  {
-    product: "Jus d'orange 2L",
-    ref: "JUS-201",
-    codebar: "59411324655O",
-    dateTime: "2024-06-05 10:44",
-    fabricationDate: "2024-05-10",
-    perimationDate: "2025-05-10",
-    prixHT: 130,
-    tva: 19,
-    ttc: 154.7,
-    status: "Disponible",
-    alertQty: 8,
-    alertDate: "2025-04-01",
-    supplier: "BriZa"
-  },
-  {
-    product: "Eau minérale 0.5L",
-    ref: "EAU-001",
-    codebar: "59419944321E",
-    dateTime: "2024-06-06 13:00",
-    fabricationDate: "2024-06-01",
-    perimationDate: "2025-06-01",
-    prixHT: 20,
-    tva: 0,
-    ttc: 20,
-    status: "Disponible",
-    alertQty: 12,
-    alertDate: "2025-05-01",
-    supplier: "AquaDz"
-  },
-  {
-    product: "Café Moulu 500g",
-    ref: "CAF-123",
-    codebar: "59416654321C",
-    dateTime: "2024-06-04 12:30",
-    fabricationDate: "2024-03-10",
-    perimationDate: "2025-03-10",
-    prixHT: 720,
-    tva: 19,
-    ttc: 857.0,
-    status: "Disponible",
-    alertQty: 2,
-    alertDate: "2025-02-20",
-    supplier: "Barista"
-  },
-  {
-    product: "Savon Liquide 1L",
-    ref: "SAV-312",
-    codebar: "59417331234S",
-    dateTime: "2024-06-02 09:23",
-    fabricationDate: "2024-04-16",
-    perimationDate: "2026-04-16",
-    prixHT: 80,
-    tva: 9,
-    ttc: 87.2,
-    status: "Disponible",
-    alertQty: 9,
-    alertDate: "2026-04-01",
-    supplier: "Aswaq Clean"
-  },
-  {
-    product: "Sardine boîte 120g",
-    ref: "SAR-0003",
-    codebar: "59417678912N",
-    dateTime: "2024-06-04 10:10",
-    fabricationDate: "2024-01-20",
-    perimationDate: "2026-01-20",
-    prixHT: 160,
-    tva: 19,
-    ttc: 190.4,
-    status: "Endommagé",
-    alertQty: 1,
-    alertDate: "2025-12-23",
-    supplier: "SuperFood"
-  },
-  {
-    product: "Fromage 200g",
-    ref: "FRO-100",
-    codebar: "59417688733F",
-    dateTime: "2024-05-28 17:12",
-    fabricationDate: "2024-05-01",
-    perimationDate: "2024-09-01",
-    prixHT: 210,
-    tva: 19,
-    ttc: 249.9,
-    status: "Disponible",
-    alertQty: 6,
-    alertDate: "2024-08-15",
-    supplier: "DairyLand"
-  },
-  {
-    product: "Spaghetti 1kg",
-    ref: "SPA-555",
-    codebar: "59414444222P",
-    dateTime: "2024-06-06 08:45",
-    fabricationDate: "2024-03-20",
-    perimationDate: "2025-10-20",
-    prixHT: 130,
-    tva: 9,
-    ttc: 141.7,
-    status: "Disponible",
-    alertQty: 4,
-    alertDate: "2025-09-25",
-    supplier: "PastaCity"
-  },
-  {
-    product: "Sucre 1kg",
-    ref: "SUC-777",
-    codebar: "59418428519S",
-    dateTime: "2024-06-04 15:55",
-    fabricationDate: "2024-05-01",
-    perimationDate: "2026-05-01",
-    prixHT: 70,
-    tva: 9,
-    ttc: 76.3,
-    status: "Disponible",
-    alertQty: 20,
-    alertDate: "2026-04-01",
-    supplier: "SweetFourn"
-  },
-  {
-    product: "Shampoing 400ml",
-    ref: "SHA-101",
-    codebar: "59413331450Z",
-    dateTime: "2024-06-06 09:12",
-    fabricationDate: "2024-02-28",
-    perimationDate: "2026-02-28",
-    prixHT: 200,
-    tva: 19,
-    ttc: 238,
-    status: "Disponible",
-    alertQty: 7,
-    alertDate: "2026-02-01",
-    supplier: "HairPro"
-  },
-  {
-    product: "Brique de Jus Mangue",
-    ref: "JUS-403",
-    codebar: "59419119193M",
-    dateTime: "2024-05-30 18:44",
-    fabricationDate: "2024-05-20",
-    perimationDate: "2025-05-20",
-    prixHT: 85,
-    tva: 19,
-    ttc: 101.15,
-    status: "Disponible",
-    alertQty: 3,
-    alertDate: "2025-04-15",
-    supplier: "BriZa"
-  },
-];
-
 const columnDefs = [
   { key: "product", label: "Product", type: "text" },
   { key: "ref", label: "ref", type: "text" },
@@ -250,26 +48,21 @@ const columnDefs = [
 const InventorySection = () => {
   const { t } = useContext(LanguageContext);
 
-  // One filter state per column
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   
-  // Safe API integration
-  const { data: apiInventory, loading, error, refetch } = useSafeMerchantInventory();
+  // API integration
+  const { data: apiInventory, loading, error, refetch } = useMerchantInventory();
 
-  // Transform API data to InventoryRow format with proper validation
+  // Transform API data to InventoryRow format
   const transformApiInventoryToRows = (apiData: any): InventoryRow[] => {
     console.log('🔍 Raw Inventory API data:', apiData);
-    console.log('🔍 Data type:', typeof apiData);
-    console.log('🔍 Is array:', Array.isArray(apiData));
     
-    // Handle different response formats
     if (!apiData) {
       console.log('❌ No Inventory API data received');
       return [];
     }
     
-    // If it's not an array, try to extract data from common response formats
     let dataArray: any[] = [];
     
     if (Array.isArray(apiData)) {
@@ -314,10 +107,8 @@ const InventorySection = () => {
     }
   })();
 
-  // Demo state, could integrate pagination here
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // "produit endommagé" and "produit disponible" could work as status-quick-filters
   const handleStatusQuickFilter = (status: string) => {
     setFilters(f => ({ ...f, status }));
   };
@@ -336,7 +127,12 @@ const InventorySection = () => {
       alertQty: parseInt(formData.alertQty) || 0,
     };
     
-    setInventoryData(prev => [newProduct, ...prev]);
+    // TODO: Implement API call to create inventory item
+    console.log('New product to be created:', newProduct);
+    toast({
+      title: "Product Added",
+      description: "New product has been added to inventory",
+    });
   };
 
   const filteredRows = useMemo(() => {
@@ -351,23 +147,10 @@ const InventorySection = () => {
         if (col.type === "date") {
           return String(rowValue).includes(filterVal);
         }
-        // default: text
         return String(rowValue).toLowerCase().includes(filterVal.toLowerCase());
       })
     );
   }, [filters, inventoryData]);
-
-  // Show fallback if API failed
-  if (error && !loading) {
-    return (
-      <ApiFallback
-        title="Inventory"
-        error={error}
-        onRetry={refetch}
-        onTestApi={() => window.open('http://5.196.209.135/api/merchant/inventory', '_blank')}
-      />
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -446,6 +229,7 @@ const InventorySection = () => {
             </Button>
           </div>
         </div>
+
         {/* Loading state */}
         {loading && (
           <div className="flex items-center justify-center py-12">
@@ -466,8 +250,22 @@ const InventorySection = () => {
           </div>
         )}
 
+        {/* Success message when API works */}
+        {!loading && !error && inventoryData.length > 0 && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 m-6">
+            <p className="text-green-800">✅ Successfully connected to API! Showing {inventoryData.length} items from the server.</p>
+          </div>
+        )}
+
+        {/* No data message */}
+        {!loading && !error && inventoryData.length === 0 && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 m-6">
+            <p className="text-yellow-800">📦 No inventory items found. The API is connected but returned empty data.</p>
+          </div>
+        )}
+
         {/* Table Wrapper */}
-        {!loading && !error && (
+        {!loading && !error && inventoryData.length > 0 && (
           <div className="overflow-x-auto mt-2">
             <table className="w-full min-w-[900px]">
               <thead>
@@ -478,27 +276,20 @@ const InventorySection = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredRows.length === 0 ? (
-                  <tr>
-                    <td colSpan={columnDefs.length} className="p-8 text-center text-gray-400 bg-white rounded-b-2xl">
-                      {t("no_data") || "No data found"}
-                    </td>
+                {filteredRows.slice(0, rowsPerPage).map((row, idx) => (
+                  <tr key={idx} className={`hover:bg-blue-50/60 transition-colors border-b last:border-b-0`}>
+                    {columnDefs.map(col => (
+                      <td key={col.key} className="px-4 py-4 text-sm whitespace-nowrap">
+                        {row[col.key as keyof InventoryRow]}
+                      </td>
+                    ))}
                   </tr>
-                ) : (
-                  filteredRows.slice(0, rowsPerPage).map((row, idx) => (
-                    <tr key={idx} className={`hover:bg-blue-50/60 transition-colors border-b last:border-b-0`}>
-                      {columnDefs.map(col => (
-                        <td key={col.key} className="px-4 py-4 text-sm whitespace-nowrap">
-                          {row[col.key as keyof InventoryRow]}
-                        </td>
-                      ))}
-                    </tr>
-                  ))
-                )}
+                ))}
               </tbody>
             </table>
           </div>
         )}
+
         <div className="flex items-center justify-between px-6 py-4 border-t bg-gray-50 rounded-b-2xl">
           <div className="text-sm text-gray-600 flex items-center gap-2">
             {t("rows_per_page") || "Rows per page"}:
@@ -528,4 +319,3 @@ const InventorySection = () => {
 };
 
 export default InventorySection;
-

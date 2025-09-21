@@ -122,7 +122,8 @@ const SupplierInventorySection = () => {
               newItem.currentStock > newItem.maxStock ? 'Overstocked' : 'In Stock'
     };
     
-    setInventory(prev => [...prev, item]);
+    // TODO: Implement API call to create inventory item
+    console.log('New inventory item to be created:', item);
     setNewItem({
       name: '',
       sku: '',
@@ -137,7 +138,8 @@ const SupplierInventorySection = () => {
   };
 
   const handleDeleteItem = (id: string) => {
-    setInventory(prev => prev.filter(item => item.id !== id));
+    // TODO: Implement API call to delete inventory item
+    console.log('Inventory item to be deleted:', id);
   };
 
   return (

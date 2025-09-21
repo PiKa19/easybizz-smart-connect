@@ -160,80 +160,80 @@ export function useApiCrud<T, CreateData, UpdateData>(
 export function useBizzCrud() {
   return useApiCrud(
     () => apiService.getBizz(),
-    (data) => apiService.createBizz(data),
-    (id, data) => apiService.updateBizz(id, data),
-    (id) => apiService.deleteBizz(id)
+    (data: Omit<Bizz, 'id'>) => apiService.createBizz(data),
+    (id: number, data: Partial<Bizz>) => apiService.updateBizz(id, data),
+    (id: number) => apiService.deleteBizz(id)
   );
 }
 
 export function useBoutiquesCrud() {
   return useApiCrud(
     () => apiService.getBoutiques(),
-    (data) => apiService.createBoutique(data),
-    (id, data) => apiService.updateBoutique(id, data),
-    (id) => apiService.deleteBoutique(id)
+    (data: Omit<Boutique, 'id'>) => apiService.createBoutique(data),
+    (id: number, data: Partial<Boutique>) => apiService.updateBoutique(id, data),
+    (id: number) => apiService.deleteBoutique(id)
   );
 }
 
 export function useMerchantInventoryCrud() {
   return useApiCrud(
     () => apiService.getMerchantInventory(),
-    (data) => apiService.createMerchantInventory(data),
-    (id, data) => apiService.updateMerchantInventory(id, data),
-    (id) => apiService.deleteMerchantInventory(id)
+    (data: Omit<MerchantInventory, 'id'>) => apiService.createMerchantInventory(data),
+    (id: number, data: Partial<MerchantInventory>) => apiService.updateMerchantInventory(id, data),
+    (id: number) => apiService.deleteMerchantInventory(id)
   );
 }
 
 export function useMerchantOrdersCrud() {
   return useApiCrud(
     () => apiService.getMerchantOrders(),
-    (data) => apiService.createMerchantOrder(data),
-    (id, data) => apiService.updateMerchantOrder(id, data),
-    (id) => apiService.deleteMerchantOrder(id)
+    (data: Omit<MerchantOrder, 'id'>) => apiService.createMerchantOrder(data),
+    (id: number, data: Partial<MerchantOrder>) => apiService.updateMerchantOrder(id, data),
+    (id: number) => apiService.deleteMerchantOrder(id)
   );
 }
 
 export function useSupplierClientsCrud() {
   return useApiCrud(
     () => apiService.getSupplierClients(),
-    (data) => apiService.createSupplierClient(data),
-    (id, data) => apiService.updateSupplierClient(id, data),
-    (id) => apiService.deleteSupplierClient(id)
+    (data: Omit<SupplierClient, 'id'>) => apiService.createSupplierClient(data),
+    (id: number, data: Partial<SupplierClient>) => apiService.updateSupplierClient(id, data),
+    (id: number) => apiService.deleteSupplierClient(id)
   );
 }
 
 export function useSupplierInventoryCrud() {
   return useApiCrud(
     () => apiService.getSupplierInventory(),
-    (data) => apiService.createSupplierInventory(data),
-    (id, data) => apiService.updateSupplierInventory(id, data),
-    (id) => apiService.deleteSupplierInventory(id)
+    (data: Omit<SupplierInventory, 'id'>) => apiService.createSupplierInventory(data),
+    (id: number, data: Partial<SupplierInventory>) => apiService.updateSupplierInventory(id, data),
+    (id: number) => apiService.deleteSupplierInventory(id)
   );
 }
 
 export function useSupplierOrdersCrud() {
   return useApiCrud(
     () => apiService.getSupplierOrders(),
-    (data) => apiService.createSupplierOrder(data),
-    (id, data) => apiService.updateSupplierOrder(id, data),
-    (id) => apiService.deleteSupplierOrder(id)
+    (data: Omit<SupplierOrder, 'id'>) => apiService.createSupplierOrder(data),
+    (id: number, data: Partial<SupplierOrder>) => apiService.updateSupplierOrder(id, data),
+    (id: number) => apiService.deleteSupplierOrder(id)
   );
 }
 
 export function useSupplierProductsCrud() {
   return useApiCrud(
     () => apiService.getSupplierProducts(),
-    (data) => apiService.createSupplierProduct(data),
-    (id, data) => apiService.updateSupplierProduct(id, data),
-    (id) => apiService.deleteSupplierProduct(id)
+    (data: Omit<SupplierProduct, 'id'>) => apiService.createSupplierProduct(data),
+    (id: number, data: Partial<SupplierProduct>) => apiService.updateSupplierProduct(id, data),
+    (id: number) => apiService.deleteSupplierProduct(id)
   );
 }
 
 export function useSuppliersCrud() {
   return useApiCrud(
     () => apiService.getSuppliers(),
-    (data) => apiService.createSupplier(data),
-    (id, data) => apiService.updateSupplier(id, data),
-    (id) => apiService.deleteSupplier(id)
+    (data: Omit<Supplier, 'id'>) => apiService.createSupplier(data),
+    (id: number, data: Partial<Supplier>) => apiService.updateSupplier(id, data),
+    (id: number) => apiService.deleteSupplier(id)
   );
 }

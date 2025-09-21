@@ -19,7 +19,7 @@ const ApiResponseInspector = () => {
     setLoading(endpoint);
     try {
       console.log(`🔍 Testing ${name} endpoint:`, endpoint);
-      const data = await apiService.request(endpoint);
+      const data = await (apiService as any).request(endpoint);
       console.log(`✅ ${name} response:`, data);
       
       setResponses(prev => [...prev, {
