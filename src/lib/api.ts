@@ -133,20 +133,20 @@ class ApiService {
     
     console.log('🌐 Making API request to:', url);
     
-    const defaultHeaders = {
+    const defaultHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
 
     // Add Authorization header if token exists
     if (this.authToken) {
-      (defaultHeaders as any)['Authorization'] = `Bearer ${this.authToken}`;
+      defaultHeaders['Authorization'] = `Bearer ${this.authToken}`;
     }
 
     const config: RequestInit = {
       ...options,
       mode: 'cors',
-      credentials: 'omit',
+      credentials: 'include',
       headers: {
         ...defaultHeaders,
         ...options.headers,

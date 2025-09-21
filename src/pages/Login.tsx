@@ -25,7 +25,8 @@ const Login = () => {
     // Check for the specific allowed user
     if (email === "baraka@gmail.com" && password === "baraka123") {
       // Set authentication token for API requests
-      apiService.setAuthToken('mock_auth_token_baraka_user');
+      apiService.setAuthToken('baraka_authenticated_token_2024');
+      console.log('✅ Authentication token set for user:', email);
       navigate('/dashboard');
     } else {
       setError("Invalid email or password. Please use baraka@gmail.com with password baraka123");
